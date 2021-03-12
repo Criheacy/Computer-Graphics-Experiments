@@ -79,14 +79,6 @@ glm::vec2 Graphics::ProjectToScreen(glm::vec2 src)
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
-// Obsolete
-//glm::vec2 Graphics::ConvertToCoordinate(glm::vec2 src)
-//{
-//    glm::mat3x3 inverseProject = glm::inverse(project);
-//
-//    return inverseProject * glm::vec3(src.x, src.y, 1.0f);
-//}
-
 /******************** Triangle Class ********************/
 
 Triangle::Triangle(float a)
@@ -110,11 +102,6 @@ bool Triangle::InObject(glm::vec2 src)
 
     float v = (glm::dot(glm::cross(CA, CA), glm::cross(PA, BA)) - glm::dot(glm::cross(CA, BA), glm::cross(PA, CA)))
         / (glm::dot(glm::cross(CA, CA), glm::cross(BA, BA)) - glm::dot(glm::cross(CA, BA), glm::cross(BA, CA)));
-
-    if ((u >= 0 && u <= 1 && v >= 0 && v <= 1 && u + v <= 1))
-    {
-        printf("Triangle FLAG\n");
-    }
 
     return (u >= 0 && u <= 1 && v >= 0 && v <= 1 && u + v <= 1);
 }
@@ -140,8 +127,6 @@ Circle::Circle(float r)
 
 bool Circle::InObject(glm::vec2 src)
 {
-    /*printf("[%6.2f, %6.2f] --INV-Project-> [%6.2f, %6.2f]\n", src.x, src.y,
-        InverseTransform(src).x, InverseTransform(src).y);*/
     glm::vec2 PO = InverseTransform(src) - center;
     return glm::length(PO) <= radius;
 }
