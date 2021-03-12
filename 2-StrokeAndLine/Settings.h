@@ -39,3 +39,5 @@
 #define ENABLE_SCALE_AT_POINT true
 
 #define ENABLE_HOVERING_HINT true
+
+#define FADE_FRAME_LINES_WHEN_SCALE 7

@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     // Initialize and create window
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    glutCreateWindow("1 - Triangle and Circle");
+    glutCreateWindow("2 - Stroke and Line");
 
     Grid::Instance().Scale(30);
     //Grid::Instance().MarkPoint(1, 1);

@@ -125,8 +125,15 @@ void Grid::Render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     RenderPoints();
-    RenderGridLines();
-    RenderAuxiliaryLine();
+
+    if ((transform[0][0] + transform[1][1]) / 2 >= FADE_FRAME_LINES_WHEN_SCALE)
+    {
+        RenderGridLines();
+        if (shapeType == SHAPE_LINE)
+        {
+            RenderAuxiliaryLine();
+        }
+    }
 
     glutSwapBuffers();
 }
@@ -215,5 +222,14 @@ void Grid::RenderGridLines()
 
 void Grid::RenderAuxiliaryLine()
 {
+    glLoadIdentity();
+    glColor3f(LINE_COLOR.r, LINE_COLOR.g, LINE_COLOR.b);
 
+    glm::vec2 from = ProjectToScreen(Transform(startPoint));
+    glm::vec2 to = ProjectToScreen(Transform(endPoint));
+
+    glBegin(GL_LINES);
+    glVertex2f(from.x, from.y);
+    glVertex2f(to.x, to.y);
+    glEnd();
 }
