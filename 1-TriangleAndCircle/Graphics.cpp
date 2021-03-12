@@ -80,7 +80,6 @@ glm::vec2 Graphics::InverseTransform(glm::vec2 src)
 
 glm::vec2 Graphics::ProjectToScreen(glm::vec2 src)
 {
-    project[1].x;
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
