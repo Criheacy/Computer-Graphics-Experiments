@@ -7,20 +7,12 @@ Graphics::Graphics()
 {
     transform = glm::mat3x3(1.0f);
 
-    /*project = glm::mat3x3(
-        2.0f / SCREEN_WIDTH, 0.0f, -1.0f,
-        0.0f, -2.0f / SCREEN_HEIGHT, 1.0f,
-        0.0f, 0.0f, 1.0f);*/
-
     project = glm::mat3x3(
         2.0f / SCREEN_WIDTH, 0.0f, 0.0f,
         0.0f, -2.0f / SCREEN_HEIGHT, 0.0f,
         -1.0f, 1.0f, 1.0f);
 
-    /*project = glm::mat3x3(
-        1.0f / SCREEN_WIDTH, 0.0f, 0.0f,
-        0.0f, -1.0f / SCREEN_HEIGHT, 0.0f,
-        0.0f, 0.0f, 1.0f);*/
+    anchor = glm::vec2(0.0f, 0.0f);
 }
 
 void Graphics::Translate(glm::vec2 deltaPosition)
@@ -42,6 +34,18 @@ void Graphics::Rotate(float deltaAngle)
     transform = rotationMatrix * transform;
 }
 
+void Graphics::MoveAnchor(glm::vec2 deltaPosition)
+{
+    anchor += deltaPosition;
+}
+
+void Graphics::Reanchor()
+{
+    anchor += glm::vec2(transform[2].x, transform[2].y);
+    transform[2].x = 0.0f;
+    transform[2].y = 0.0f;
+}
+
 bool Graphics::InObject(glm::vec2 src)
 {
     return false;
@@ -59,14 +63,14 @@ int Graphics::GetRenderMode()
 
 glm::vec2 Graphics::Transform(glm::vec2 src)
 {
-    return transform * glm::vec3(src.x, src.y, 1.0f);
+    return transform * glm::vec3(src.x, src.y, 1.0f) + glm::vec3(anchor, 0.0f);
 }
 
 glm::vec2 Graphics::InverseTransform(glm::vec2 src)
 {
     glm::mat3x3 inverseTransform = glm::inverse(transform);
 
-    return inverseTransform * glm::vec3(src.x, src.y, 1.0f);
+    return inverseTransform * (glm::vec3(src.x, src.y, 1.0f) - glm::vec3(anchor, 0.0f));
 }
 
 glm::vec2 Graphics::ProjectToScreen(glm::vec2 src)
@@ -124,20 +128,6 @@ std::vector<glm::vec3> Triangle::GetVertices()
         vertices.push_back(glm::vec3(transformedPoint, 0.0f));
     }
     return vertices;
-}
-
-glm::vec2 Triangle::Transform(glm::vec2 src)
-{
-    //printf("[%6.2f, %6.2f] --Transform-> [%6.2f, %6.2f]\n", src.x, src.y,
-    //    (transform * glm::vec3(src.x, src.y, 1.0f)).x, (transform * glm::vec3(src.x, src.y, 1.0f)).y);
-    return transform * glm::vec3(src.x, src.y, 1.0f);
-}
-
-glm::vec2 Triangle::ProjectToScreen(glm::vec2 src)
-{
-    /*printf("[%6.2f, %6.2f] --Project-> [%6.2f, %6.2f]\n", src.x, src.y,
-        (project * glm::vec3(src.x, src.y, 1.0f)).x, (project * glm::vec3(src.x, src.y, 1.0f)).y);*/
-    return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
 /******************** Circle Class ********************/

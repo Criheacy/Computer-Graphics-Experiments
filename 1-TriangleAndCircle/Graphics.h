@@ -15,6 +15,9 @@ public:
     void Translate(glm::vec2 deltaPosition);
     void Rotate(float deltaAngle);
 
+    void MoveAnchor(glm::vec2 deltaPosition);
+    void Reanchor();
+
     // Check if coordinate of point is in graphics object
     virtual bool InObject(glm::vec2 src);
 
@@ -35,6 +38,9 @@ protected:
     // Get transformed coordinates
     glm::vec2 InverseTransform(glm::vec2 src);
 
+    // Attributes
+
+    glm::vec2 anchor;
     glm::mat3x3 transform;
     glm::mat3x3 project;
 };
@@ -46,10 +52,6 @@ public:
 
     bool InObject(glm::vec2 src) override;
     std::vector<glm::vec3> GetVertices() override;
-
-protected:
-    glm::vec2 Transform(glm::vec2 src);
-    glm::vec2 ProjectToScreen(glm::vec2 src);
 
 private:
     std::vector<glm::vec2> pointList;

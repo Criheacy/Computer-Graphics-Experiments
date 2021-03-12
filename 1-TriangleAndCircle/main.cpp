@@ -7,6 +7,7 @@
 int mouseX;
 int mouseY;
 bool leftPressed;
+bool middlePressed;
 bool rightPressed;
 int mouseDragFromX;
 int mouseDragFromY;
@@ -29,19 +30,19 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN)
     {
-        printf("[%d %d]\n", x, y);
         for (auto graphic = renderer->GetGraphicsFirst();
             graphic != renderer->GetGraphicsLast(); graphic++)
             if ((*graphic)->InObject(glm::vec2(x, y)))
             {
                 mouseHolding = *graphic;
-                printf("FLAG\n");
                 mouseX = mouseDragFromX = x;
                 mouseY = mouseDragFromY = y;
             }
 
         if (button == GLUT_LEFT_BUTTON)
             leftPressed = true;
+        else if (button == GLUT_MIDDLE_BUTTON)
+            middlePressed = true;
         else if (button == GLUT_RIGHT_BUTTON)
             rightPressed = true;
     }
@@ -50,6 +51,8 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
         mouseHolding = NULL;
         if (button == GLUT_LEFT_BUTTON)
             leftPressed = false;
+        else if (button == GLUT_MIDDLE_BUTTON)
+            middlePressed = false;
         else if (button == GLUT_RIGHT_BUTTON)
             rightPressed = false;
     }
@@ -61,14 +64,18 @@ void HandleMouseMotionEvent(int x, int y)
     {
         if (leftPressed)
         {
-            float angle = sqrtf((mouseDragFromX - x) * (mouseDragFromX - x)
-                + (mouseDragFromY - y) * (mouseDragFromY - y));
-            mouseHolding->Rotate(angle * 0.1f);
+            float angle = (x - mouseX + y - mouseY) * 0.5f;
+            mouseHolding->Rotate(angle);
+            mouseX = x, mouseY = y;
+        }
+        if (middlePressed)
+        {
+            mouseHolding->Translate(glm::vec2(x - mouseX, y - mouseY));
+            mouseX = x, mouseY = y;
         }
         if (rightPressed)
         {
-            glm::vec2 delta = glm::vec2(x - mouseX, y - mouseY);
-            mouseHolding->Translate(delta);
+            mouseHolding->MoveAnchor(glm::vec2(x - mouseX, y - mouseY));
             mouseX = x, mouseY = y;
         }
     }
@@ -85,11 +92,11 @@ int main(int argc, char* argv[])
 
     // Instantiate graphics and renderer
     renderer = new Renderer();
-    Triangle* triangle = new Triangle(250);
-    Circle* circle = new Circle(100);
+    Triangle* triangle = new Triangle(100);
+    Circle* circle = new Circle(40);
 
-    triangle->Translate(glm::vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.5f));
-    circle->Translate(glm::vec2(SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.5f));
+    triangle->MoveAnchor(glm::vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.5f));
+    circle->MoveAnchor(glm::vec2(SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.5f));
 
     renderer->AddGraphics((Graphics*)(triangle));
     renderer->AddGraphics((Graphics*)(circle));
