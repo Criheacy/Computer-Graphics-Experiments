@@ -13,8 +13,8 @@ Grid::Grid()
     pointList = std::vector<glm::vec2>();
     hoveringPoint = glm::vec2(-1.0f, -1.0f);
 
-    startPoint = glm::vec2(0.0f, 0.0f);
-    endPoint = glm::vec2(0.0f, 0.0f);
+    startPoint = glm::vec2(-1.0f, -1.0f);
+    endPoint = glm::vec2(-1.0f, -1.0f);
 
     anchor = glm::vec2(0.0f);
     shapeType = SHAPE_NONE;
@@ -81,6 +81,26 @@ glm::vec2 Grid::ProjectToScreen(glm::vec2 src)
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
+void Grid::SetStartPoint(glm::vec2 point)
+{
+    startPoint = point;
+    endPoint = point;
+    ClearPoints();
+    shapeType = SHAPE_LINE;
+}
+
+void Grid::SetEndPoint(glm::vec2 point)
+{
+    if (point != endPoint)
+    {
+        endPoint = point;
+        ClearPoints();
+        if (startPoint.x <= endPoint.x)
+            Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+        else Algorithm::BresenhamLine(this, endPoint.x, startPoint.x, endPoint.y, startPoint.y);
+    }
+}
+
 void Grid::MarkPoint(int x, int y)
 {
     pointList.push_back(glm::vec2(x, y));
@@ -145,6 +165,19 @@ void Grid::RenderPoints()
     float scaleY = 2.0f * transform[1][1] / SCREEN_HEIGHT;
 
     glLoadIdentity();
+
+    if (ENABLE_HOVERING_HINT)
+    {
+        glColor3f(HOVER_COLOR.r, HOVER_COLOR.g, HOVER_COLOR.b);
+        dist = ProjectToScreen(Transform(glm::vec2(hoveringPoint.x, hoveringPoint.y)));
+        glBegin(GL_POLYGON);
+        glVertex2f(dist.x - 0.5f * scaleX, dist.y - 0.5f * scaleY);
+        glVertex2f(dist.x - 0.5f * scaleX, dist.y + 0.5f * scaleY);
+        glVertex2f(dist.x + 0.5f * scaleX, dist.y + 0.5f * scaleY);
+        glVertex2f(dist.x + 0.5f * scaleX, dist.y - 0.5f * scaleY);
+        glEnd();
+    }
+
     glColor3f(MARK_COLOR.r, MARK_COLOR.g, MARK_COLOR.b);
 
     for (auto point = pointList.begin(); point != pointList.end(); point++)
@@ -158,17 +191,6 @@ void Grid::RenderPoints()
         glEnd();
     }
 
-    if (ENABLE_HOVERING_HINT)
-    {
-        glColor3f(HOVER_COLOR.r, HOVER_COLOR.g, HOVER_COLOR.b);
-        dist = ProjectToScreen(Transform(glm::vec2(hoveringPoint.x, hoveringPoint.y)));
-        glBegin(GL_POLYGON);
-        glVertex2f(dist.x - 0.5f * scaleX, dist.y - 0.5f * scaleY);
-        glVertex2f(dist.x - 0.5f * scaleX, dist.y + 0.5f * scaleY);
-        glVertex2f(dist.x + 0.5f * scaleX, dist.y + 0.5f * scaleY);
-        glVertex2f(dist.x + 0.5f * scaleX, dist.y - 0.5f * scaleY);
-        glEnd();
-    }
 }
 
 void Grid::RenderGridLines()

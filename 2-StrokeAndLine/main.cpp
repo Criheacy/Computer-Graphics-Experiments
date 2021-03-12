@@ -2,6 +2,7 @@
 
 #include "Settings.h"
 #include "Grid.h"
+#include "Algorithm.h"
 
 int mouseX;
 int mouseY;
@@ -29,7 +30,10 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
         mouseX = x, mouseY = y;
         mouseDragFromX = x, mouseDragFromY = y;
         if (button == GLUT_LEFT_BUTTON)
+        {
             leftPressed = true;
+            Grid::Instance().SetStartPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
+        }
         else if (button == GLUT_MIDDLE_BUTTON)
             middlePressed = true;
         else if (button == GLUT_RIGHT_BUTTON)
@@ -51,11 +55,7 @@ void HandleMouseMotionEvent(int x, int y)
     if (leftPressed)
     {
         Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
-        glm::vec2 coord = Grid::Instance().InPoint(glm::vec2(x, y));
-        printf("[%d, %d]\n", (int)coord.x, (int)coord.y);
-        /*float angle = (x - mouseX + y - mouseY) * 0.5f;
-        mouseHolding->Rotate(angle);
-        mouseX = x, mouseY = y;*/
+        Grid::Instance().SetEndPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
     }
     if (middlePressed)
     {

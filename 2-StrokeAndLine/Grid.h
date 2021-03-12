@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Settings.h"
+#include "Algorithm.h"
+
 // Singleton class
 class Grid
 {
@@ -14,6 +17,9 @@ public:
 	void Scale(float scale);
 	void ScaleAt(float scale, glm::vec2 scalingPoint);
 	void Reanchor(glm::vec2 anchor);
+
+	void SetStartPoint(glm::vec2 point);
+	void SetEndPoint(glm::vec2 point);
 
 	// Draw line pixels
 	void MarkPoint(int x, int y);
