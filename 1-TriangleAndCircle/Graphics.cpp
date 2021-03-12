@@ -75,12 +75,13 @@ glm::vec2 Graphics::ProjectToScreen(glm::vec2 src)
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
-glm::vec2 Graphics::ConvertToCoordinate(glm::vec2 src)
-{
-    glm::mat3x3 inverseProject = glm::inverse(project);
-
-    return inverseProject * glm::vec3(src.x, src.y, 1.0f);
-}
+// Obsolete
+//glm::vec2 Graphics::ConvertToCoordinate(glm::vec2 src)
+//{
+//    glm::mat3x3 inverseProject = glm::inverse(project);
+//
+//    return inverseProject * glm::vec3(src.x, src.y, 1.0f);
+//}
 
 /******************** Triangle Class ********************/
 
@@ -117,7 +118,7 @@ bool Triangle::InObject(glm::vec2 src)
 std::vector<glm::vec3> Triangle::GetVertices()
 {
     std::vector<glm::vec3> vertices = std::vector<glm::vec3>();
-    for (int i = 0; i < pointList.size(); i++)
+    for (int i = 0; i < (int)pointList.size(); i++)
     {
         glm::vec2 transformedPoint = ProjectToScreen(Transform(pointList[i]));
         vertices.push_back(glm::vec3(transformedPoint, 0.0f));

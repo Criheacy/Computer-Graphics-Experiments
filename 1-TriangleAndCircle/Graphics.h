@@ -15,16 +15,24 @@ public:
     void Translate(glm::vec2 deltaPosition);
     void Rotate(float deltaAngle);
 
+    // Check if coordinate of point is in graphics object
     virtual bool InObject(glm::vec2 src);
+
+    // Provide vertices data for renderer
     virtual std::vector<glm::vec3> GetVertices();
+
+    // Provide render mode for renderer
     int GetRenderMode();
 
+    // Convert coordinate from vector to screen position
     glm::vec2 ProjectToScreen(glm::vec2 src);
-    glm::vec2 ConvertToCoordinate(glm::vec2 src);
+//    glm::vec2 ConvertToCoordinate(glm::vec2 src);
 
 protected:
-    // Get transformed coordinates
+    // Convert from origin to coordinate which has been transformed (such as translated or rotated ...)
     glm::vec2 Transform(glm::vec2 src);
+
+    // Get transformed coordinates
     glm::vec2 InverseTransform(glm::vec2 src);
 
     glm::mat3x3 transform;

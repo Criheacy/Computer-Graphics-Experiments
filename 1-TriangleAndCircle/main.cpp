@@ -83,7 +83,8 @@ int main(int argc, char* argv[])
     Triangle* triangle = new Triangle(250);
     Circle* circle = new Circle(100);
 
-    triangle->Translate(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT));
+    triangle->Translate(glm::vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.5f));
+    circle->Translate(glm::vec2(SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.5f));
 
     renderer->AddGraphics((Graphics*)(triangle));
     renderer->AddGraphics((Graphics*)(circle));
