@@ -20,6 +20,11 @@ void RenderScene(void)
     glutPostRedisplay();
 }
 
+void Resize(int width, int height)
+{
+    glutReshapeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
 void HandleMouseButtonEvent(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN)
@@ -90,6 +95,7 @@ int main(int argc, char* argv[])
     renderer->AddGraphics((Graphics*)(circle));
 
     // Add callback functions
+    glutReshapeFunc(Resize);
     glutDisplayFunc(RenderScene);
     glutMouseFunc(HandleMouseButtonEvent);
     glutMotionFunc(HandleMouseMotionEvent);
