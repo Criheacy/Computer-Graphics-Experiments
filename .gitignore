@@ -1,0 +1,7 @@
+*.vs/
+*Debug/
+*Release/
+*.sln
+*.vcxproj*
+*glut.dll
+*glut32.dll
