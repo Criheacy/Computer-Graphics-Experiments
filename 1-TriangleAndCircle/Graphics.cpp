@@ -56,6 +56,11 @@ std::vector<glm::vec3> Graphics::GetVertices()
     return std::vector<glm::vec3>();
 }
 
+glm::vec3 Graphics::GetColor()
+{
+    return glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
 int Graphics::GetRenderMode()
 {
     return GL_POLYGON;
@@ -117,6 +122,11 @@ std::vector<glm::vec3> Triangle::GetVertices()
     return vertices;
 }
 
+glm::vec3 Triangle::GetColor()
+{
+    return glm::vec3(1.0f, 0.733f, 0.02f);
+}
+
 /******************** Circle Class ********************/
 
 Circle::Circle(float r)
@@ -145,4 +155,9 @@ std::vector<glm::vec3> Circle::GetVertices()
         vertices.push_back(glm::vec3(transformedPoint, 0.0f));
     }
     return vertices;
+}
+
+glm::vec3 Circle::GetColor()
+{
+    return glm::vec3(0.02f, 0.733f, 1.0f);
 }

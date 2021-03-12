@@ -92,11 +92,11 @@ int main(int argc, char* argv[])
 
     // Instantiate graphics and renderer
     renderer = new Renderer();
-    Triangle* triangle = new Triangle(100);
-    Circle* circle = new Circle(40);
+    Triangle* triangle = new Triangle(150);
+    Circle* circle = new Circle(60);
 
-    triangle->MoveAnchor(glm::vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.5f));
-    circle->MoveAnchor(glm::vec2(SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.5f));
+    triangle->MoveAnchor(glm::vec2(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.45f));
+    circle->MoveAnchor(glm::vec2(SCREEN_WIDTH * 0.7f, SCREEN_HEIGHT * 0.5f));
 
     renderer->AddGraphics((Graphics*)(triangle));
     renderer->AddGraphics((Graphics*)(circle));

@@ -24,6 +24,9 @@ public:
     // Provide vertices data for renderer
     virtual std::vector<glm::vec3> GetVertices();
 
+    // Provide render color for renderer
+    virtual glm::vec3 GetColor();
+
     // Provide render mode for renderer
     int GetRenderMode();
 
@@ -52,6 +55,7 @@ public:
 
     bool InObject(glm::vec2 src) override;
     std::vector<glm::vec3> GetVertices() override;
+    glm::vec3 GetColor() override;
 
 private:
     std::vector<glm::vec2> pointList;
@@ -64,6 +68,7 @@ public:
 
     bool InObject(glm::vec2 src) override;
     std::vector<glm::vec3> GetVertices() override;
+    glm::vec3 GetColor() override;
 
 private:
     glm::vec2 center;
