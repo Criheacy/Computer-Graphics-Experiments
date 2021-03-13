@@ -1,5 +1,6 @@
 #include <glut.h>
 
+#include "UIComponents.h"
 #include "Settings.h"
 #include "Grid.h"
 #include "Algorithm.h"
@@ -15,6 +16,8 @@ int mouseDragFromY;
 void RenderScene(void)
 {
     Grid::Instance().Render();
+    UI::Canvas::Instance().Render();
+    glutSwapBuffers();
     glutPostRedisplay();
 }
 
@@ -27,8 +30,11 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN)
     {
+        if (UI::Canvas::Instance().HandleMouseDown(glm::vec2(x, y))) return;
+
         mouseX = x, mouseY = y;
         mouseDragFromX = x, mouseDragFromY = y;
+
         if (button == GLUT_LEFT_BUTTON)
         {
             leftPressed = true;
@@ -41,6 +47,8 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
     }
     else if (state == GLUT_UP)
     {
+        if (UI::Canvas::Instance().HandleMouseUp(glm::vec2(x, y))) return;
+
         if (button == GLUT_LEFT_BUTTON)
             leftPressed = false;
         else if (button == GLUT_MIDDLE_BUTTON)
@@ -52,6 +60,8 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
 
 void HandleMouseMotionEvent(int x, int y)
 {
+    if (UI::Canvas::Instance().HandleMotion(glm::vec2(x, y))) return;
+
     if (leftPressed)
     {
         Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
@@ -72,6 +82,7 @@ void HandleMouseMotionEvent(int x, int y)
 
 void HandleMousePassiveMotionEvent(int x, int y)
 {
+    UI::Canvas::Instance().HandleMotion(glm::vec2(x, y));
     Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
 }
 
@@ -85,6 +96,17 @@ int main(int argc, char* argv[])
     glutCreateWindow("2 - Stroke and Line");
 
     Grid::Instance().Scale(30);
+
+    UI::Button lineButton = UI::Button(2, SCREEN_WIDTH - 100, 30, SCREEN_WIDTH - 30, 60);
+    lineButton.SetText("LINE");
+    UI::Button circleButton = UI::Button(3, SCREEN_WIDTH - 100, 80, SCREEN_WIDTH - 30, 110);
+    circleButton.SetText("CIRCLE");
+
+    UI::RadioButton radioButton = UI::RadioButton(1);
+    radioButton.AddButton(lineButton);
+    radioButton.AddButton(circleButton);
+
+    UI::Canvas::Instance().AddComponent(&radioButton);
 
     // Add callback functions
     glutReshapeFunc(Resize);

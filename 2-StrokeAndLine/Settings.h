@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <vector>
+#include <string>
 
 #include <glut.h>
 
@@ -38,3 +39,7 @@
 #define ENABLE_HOVERING_HINT true
 
 #define FADE_FRAME_LINES_WHEN_SCALE 7
+
+#define FONT_TYPE GLUT_BITMAP_9_BY_15
+#define FONT_WIDTH 9
+#define FONT_HEIGHT 15

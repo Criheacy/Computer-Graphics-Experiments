@@ -152,8 +152,6 @@ void Grid::Render()
             RenderAuxiliaryLine();
         }
     }
-
-    glutSwapBuffers();
 }
 
 void Grid::RenderPoints()
