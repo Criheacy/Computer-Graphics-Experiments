@@ -18,8 +18,10 @@ public:
 	void ScaleAt(float scale, glm::vec2 scalingPoint);
 	void Reanchor(glm::vec2 anchor);
 
+	// Provide interactive interface
 	void SetStartPoint(glm::vec2 point);
 	void SetEndPoint(glm::vec2 point);
+	void SetHoverPoint(glm::vec2 point);
 
 	// Draw line pixels
 	void MarkPoint(int x, int y);
@@ -27,8 +29,6 @@ public:
 
 	// Convert screen coordinate to point data in pointlist
 	glm::vec2 InPoint(glm::vec2 src);
-
-	void SetHoverPoint(glm::vec2 point);
 
 	// Render all elements
 	void Render();
@@ -40,6 +40,7 @@ protected:
 
 	glm::vec2 ProjectToScreen(glm::vec2 src);
 
+private:
 	int ConstrainScale();
 
 	// Render marked points

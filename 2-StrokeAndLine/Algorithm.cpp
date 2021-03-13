@@ -18,9 +18,7 @@ void Algorithm::DDALine(class Grid* grid, int fromX, int toX, int fromY, int toY
 
 void Algorithm::BresenhamLine(class Grid* grid, int fromX, int toX, int fromY, int toY)
 {
-	//printf("From(%d,%d)To(%d,%d) --> ", fromX, fromY, toX, toY);
 	int section = ConvertToSection(fromX, toX, fromY, toY);
-	//printf("From(%d,%d)To(%d,%d)\n", fromX, fromY, toX, toY);
 
 	int x = fromX;
 	int y = fromY;

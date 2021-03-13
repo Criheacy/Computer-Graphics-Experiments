@@ -85,7 +85,6 @@ int main(int argc, char* argv[])
     glutCreateWindow("2 - Stroke and Line");
 
     Grid::Instance().Scale(30);
-    //Grid::Instance().MarkPoint(1, 1);
 
     // Add callback functions
     glutReshapeFunc(Resize);
