@@ -99,8 +99,16 @@ int main(int argc, char* argv[])
 
     UI::Button lineButton = UI::Button(2, SCREEN_WIDTH - 100, 30, SCREEN_WIDTH - 30, 60);
     lineButton.SetText("LINE");
+    lineButton.SetOnSelectListener([]() -> void {
+        Grid::Instance().SetShapeType(SHAPE_LINE);
+        Grid::Instance().ClearPoints();
+    });
     UI::Button circleButton = UI::Button(3, SCREEN_WIDTH - 100, 80, SCREEN_WIDTH - 30, 110);
     circleButton.SetText("CIRCLE");
+    circleButton.SetOnSelectListener([]() -> void {
+        Grid::Instance().SetShapeType(SHAPE_CIRCLE);
+        Grid::Instance().ClearPoints();
+    });
 
     UI::RadioButton radioButton = UI::RadioButton(1);
     radioButton.AddButton(lineButton);

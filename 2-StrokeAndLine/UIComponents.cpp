@@ -321,9 +321,15 @@ namespace UI
 		}
 	}
 
+	void Button::SetOnSelectListener(void (*OnSelected)(void))
+	{
+		this->OnSelected = OnSelected;
+	}
+
 	void Button::Select()
 	{
 		isSelected = true;
+		OnSelected();
 	}
 
 	void Button::Deselect()

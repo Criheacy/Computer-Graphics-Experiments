@@ -23,6 +23,8 @@ public:
 	void SetEndPoint(glm::vec2 point);
 	void SetHoverPoint(glm::vec2 point);
 
+	void SetShapeType(int shapeType);
+
 	// Draw line pixels
 	void MarkPoint(int x, int y);
 	void ClearPoints();
@@ -63,4 +65,5 @@ private:
 	int shapeType;
 	glm::vec2 startPoint;
 	glm::vec2 endPoint;
+	int dist;
 };

@@ -87,12 +87,15 @@ namespace UI
 		void Render() override;
 
 		// Interactive interface
+		void SetOnSelectListener(void (*OnSelected)(void));
 		void Select();
 		void Deselect();
 
 	private:
 		std::string text;
 		glm::vec2 textOffset;
+
+		void (*OnSelected)(void);
 
 		bool isSelected;
 		bool isHovering;

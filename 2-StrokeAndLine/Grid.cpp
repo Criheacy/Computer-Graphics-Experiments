@@ -86,17 +86,37 @@ void Grid::SetStartPoint(glm::vec2 point)
     startPoint = point;
     endPoint = point;
     ClearPoints();
-    shapeType = SHAPE_LINE;
 }
 
 void Grid::SetEndPoint(glm::vec2 point)
 {
-    if (point != endPoint)
+    if (shapeType == SHAPE_LINE)
     {
-        endPoint = point;
-        ClearPoints();
-        Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+        if (point != endPoint)
+        {
+            endPoint = point;
+            ClearPoints();
+
+            Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+        }
     }
+    else if (shapeType == SHAPE_CIRCLE)
+    {
+        int dist = glm::length(point - startPoint);
+
+        if (dist != this->dist)
+        {
+            this->dist = dist;
+            ClearPoints();
+
+            Algorithm::MidPointCircle(this, startPoint.x, startPoint.y, this->dist);
+        }
+    }
+}
+
+void Grid::SetShapeType(int shapeType)
+{
+    this->shapeType = shapeType;
 }
 
 void Grid::MarkPoint(int x, int y)
@@ -147,10 +167,7 @@ void Grid::Render()
     if ((transform[0][0] + transform[1][1]) / 2 >= FADE_FRAME_LINES_WHEN_SCALE)
     {
         RenderGridLines();
-        if (shapeType == SHAPE_LINE)
-        {
-            RenderAuxiliaryLine();
-        }
+        RenderAuxiliaryLine();
     }
 }
 
@@ -243,11 +260,28 @@ void Grid::RenderAuxiliaryLine()
     glLoadIdentity();
     glColor3f(LINE_COLOR.r, LINE_COLOR.g, LINE_COLOR.b);
 
-    glm::vec2 from = ProjectToScreen(Transform(startPoint));
-    glm::vec2 to = ProjectToScreen(Transform(endPoint));
+    if (shapeType == SHAPE_LINE)
+    {
+        glm::vec2 from = ProjectToScreen(Transform(startPoint));
+        glm::vec2 to = ProjectToScreen(Transform(endPoint));
 
-    glBegin(GL_LINES);
-    glVertex2f(from.x, from.y);
-    glVertex2f(to.x, to.y);
-    glEnd();
+        glBegin(GL_LINES);
+        glVertex2f(from.x, from.y);
+        glVertex2f(to.x, to.y);
+        glEnd();
+    }
+    else if (shapeType == SHAPE_CIRCLE)
+    {
+        glBegin(GL_LINE_LOOP);
+        int number = 360;
+
+        for (int i = 0; i < number; i++)
+        {
+            glm::vec2 point = glm::vec2(dist * cosf(2 * i * PI / number),
+                dist * sinf(2 * i * PI / number)) + startPoint;
+            point = ProjectToScreen(Transform(point));
+            glVertex2f(point.x, point.y);
+        }
+        glEnd();
+    }
 }

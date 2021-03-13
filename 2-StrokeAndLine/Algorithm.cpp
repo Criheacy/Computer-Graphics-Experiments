@@ -42,6 +42,30 @@ void Algorithm::BresenhamLine(class Grid* grid, int fromX, int toX, int fromY, i
 	}
 }
 
+void Algorithm::MidPointCircle(class Grid* grid, int centerX, int centerY, int radius)
+{
+	int x = centerX;
+	int y = centerY + radius;
+
+	float d = 2 * x - 2 * centerX - y + centerY + 1.25;
+
+	MarkEightPoints(grid, centerX, centerY, x, y);
+
+	for (; x - centerX <= y - centerY; x++)
+	{
+		if (d < 0)
+		{
+			d += 2 * x - 2 * centerX + 3;
+		}
+		else
+		{
+			d += 2 * x - 2 * centerX - 2 * y + 2 * centerY + 5;
+			y--;
+		}
+		MarkEightPoints(grid, centerX, centerY, x, y);
+	}
+}
+
 int Algorithm::ConvertToSection(int& fromX, int& toX, int& fromY, int& toY)
 {
 	/* section:
@@ -116,4 +140,15 @@ void Algorithm::MarkMappedPoint(class Grid* grid, int x, int y, int fromX, int f
 	y = fromY + deltaY;
 
 	grid->MarkPoint(x, y);
+}
+
+void Algorithm::MarkEightPoints(Grid* grid, int centerX, int centerY, int x, int y)
+{
+	int deltaX = x - centerX;
+	int deltaY = y - centerY;
+
+	grid->MarkPoint(centerX + deltaX, centerY + deltaY); grid->MarkPoint(centerX + deltaY, centerY + deltaX);
+	grid->MarkPoint(centerX - deltaX, centerY + deltaY); grid->MarkPoint(centerX - deltaY, centerY + deltaX);
+	grid->MarkPoint(centerX + deltaX, centerY - deltaY); grid->MarkPoint(centerX + deltaY, centerY - deltaX);
+	grid->MarkPoint(centerX - deltaX, centerY - deltaY); grid->MarkPoint(centerX - deltaY, centerY - deltaX);
 }
