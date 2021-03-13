@@ -11,6 +11,7 @@
 
 #define SCREEN_WIDTH 700
 #define SCREEN_HEIGHT 700
+#define NEG_INT_MIN -2147483648
 
 #define PI acosf(-1)
 #define DRAW_GIZMOS true

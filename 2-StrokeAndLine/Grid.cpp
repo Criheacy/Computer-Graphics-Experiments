@@ -95,9 +95,7 @@ void Grid::SetEndPoint(glm::vec2 point)
     {
         endPoint = point;
         ClearPoints();
-        if (startPoint.x <= endPoint.x)
-            Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
-        else Algorithm::BresenhamLine(this, endPoint.x, startPoint.x, endPoint.y, startPoint.y);
+        Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
     }
 }
 
