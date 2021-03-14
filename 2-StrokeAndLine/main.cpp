@@ -95,19 +95,23 @@ int main(int argc, char* argv[])
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     glutCreateWindow("2 - Stroke and Line");
 
+    // Scaling grid background
     Grid::Instance().Scale(30);
 
+    // Declear buttons on UI canvas
     UI::Button lineButton = UI::Button(2, SCREEN_WIDTH - 100, 30, SCREEN_WIDTH - 30, 60);
     lineButton.SetText("LINE");
     lineButton.SetOnSelectListener([]() -> void {
         Grid::Instance().SetShapeType(SHAPE_LINE);
         Grid::Instance().ClearPoints();
+        Grid::Instance().ResetStartEndPoint();
     });
     UI::Button circleButton = UI::Button(3, SCREEN_WIDTH - 100, 80, SCREEN_WIDTH - 30, 110);
     circleButton.SetText("CIRCLE");
     circleButton.SetOnSelectListener([]() -> void {
         Grid::Instance().SetShapeType(SHAPE_CIRCLE);
         Grid::Instance().ClearPoints();
+        Grid::Instance().ResetStartEndPoint();
     });
 
     UI::RadioButton radioButton = UI::RadioButton(1);

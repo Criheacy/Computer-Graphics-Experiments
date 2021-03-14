@@ -83,9 +83,10 @@ glm::vec2 Grid::ProjectToScreen(glm::vec2 src)
 
 void Grid::SetStartPoint(glm::vec2 point)
 {
+    ClearPoints();
+    ResetStartEndPoint();
     startPoint = point;
     endPoint = point;
-    ClearPoints();
 }
 
 void Grid::SetEndPoint(glm::vec2 point)
@@ -112,6 +113,13 @@ void Grid::SetEndPoint(glm::vec2 point)
             Algorithm::MidPointCircle(this, startPoint.x, startPoint.y, this->dist);
         }
     }
+}
+
+void Grid::ResetStartEndPoint()
+{
+    startPoint = glm::vec2(0.0f, 0.0f);
+    endPoint = glm::vec2(0.0f, 0.0f);
+    dist = 0;
 }
 
 void Grid::SetShapeType(int shapeType)

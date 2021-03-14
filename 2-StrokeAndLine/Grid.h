@@ -22,6 +22,7 @@ public:
 	void SetStartPoint(glm::vec2 point);
 	void SetEndPoint(glm::vec2 point);
 	void SetHoverPoint(glm::vec2 point);
+	void ResetStartEndPoint();
 
 	void SetShapeType(int shapeType);
 
