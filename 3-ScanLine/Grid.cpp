@@ -10,14 +10,14 @@ Grid::Grid()
         0.0f, -2.0f / SCREEN_HEIGHT, 0.0f,
         -1.0f, 1.0f, 1.0f);
 
-    pointList = std::vector<glm::vec2>();
+    /*pointList = std::vector<glm::vec2>();
     hoveringPoint = glm::vec2(-1.0f, -1.0f);
 
     startPoint = glm::vec2(-1.0f, -1.0f);
     endPoint = glm::vec2(-1.0f, -1.0f);
 
     anchor = glm::vec2(0.0f);
-    shapeType = SHAPE_NONE;
+    shapeType = SHAPE_NONE;*/
 }
 
 Grid& Grid::Instance()
@@ -91,71 +91,20 @@ glm::vec2 Grid::ProjectToScreen(glm::vec2 src)
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
-void Grid::SetStartPoint(glm::vec2 point)
-{
-    ClearPoints();
-    ResetStartEndPoint();
-    startPoint = point;
-    endPoint = point;
-}
-
-void Grid::SetEndPoint(glm::vec2 point)
-{
-    if (shapeType == SHAPE_LINE)
-    {
-        if (point != endPoint)
-        {
-            endPoint = point;
-            ClearPoints();
-
-            Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
-        }
-    }
-    else if (shapeType == SHAPE_CIRCLE)
-    {
-        int dist = glm::length(point - startPoint);
-
-        if (dist != this->dist)
-        {
-            this->dist = dist;
-            ClearPoints();
-
-            Algorithm::MidPointCircle(this, startPoint.x, startPoint.y, this->dist);
-        }
-    }
-}
-
-void Grid::ResetStartEndPoint()
-{
-    startPoint = glm::vec2(0.0f, 0.0f);
-    endPoint = glm::vec2(0.0f, 0.0f);
-    dist = 0;
-}
-
-void Grid::SetShapeType(int shapeType)
-{
-    this->shapeType = shapeType;
-}
-
 void Grid::MarkPoint(int x, int y)
 {
-    pointList.push_back(glm::vec2(x, y));
+
 }
 
 void Grid::ClearPoints()
 {
-    pointList.clear();
+
 }
 
 glm::vec2 Grid::InPoint(glm::vec2 src)
 {
     glm::vec2 inv = InverseTransform(src);
     return glm::vec2((int)roundf(inv.x), (int)roundf(inv.y));
-}
-
-void Grid::SetHoverPoint(glm::vec2 point)
-{
-    hoveringPoint = point;
 }
 
 int Grid::ConstrainScale()
@@ -197,7 +146,7 @@ void Grid::RenderPoints()
 
     glLoadIdentity();
 
-    if (ENABLE_HOVERING_HINT)
+    /*if (ENABLE_HOVERING_HINT)
     {
         glColor3f(HOVER_COLOR.r, HOVER_COLOR.g, HOVER_COLOR.b);
         dist = ProjectToScreen(Transform(glm::vec2(hoveringPoint.x, hoveringPoint.y)));
@@ -220,7 +169,7 @@ void Grid::RenderPoints()
         glVertex2f(dist.x + 0.5f * scaleX, dist.y + 0.5f * scaleY);
         glVertex2f(dist.x + 0.5f * scaleX, dist.y - 0.5f * scaleY);
         glEnd();
-    }
+    }*/
 
 }
 
@@ -278,7 +227,7 @@ void Grid::RenderAuxiliaryLine()
     glLoadIdentity();
     glColor3f(LINE_COLOR.r, LINE_COLOR.g, LINE_COLOR.b);
 
-    if (shapeType == SHAPE_LINE)
+    /*if (shapeType == SHAPE_LINE)
     {
         glm::vec2 from = ProjectToScreen(Transform(startPoint));
         glm::vec2 to = ProjectToScreen(Transform(endPoint));
@@ -301,5 +250,5 @@ void Grid::RenderAuxiliaryLine()
             glVertex2f(point.x, point.y);
         }
         glEnd();
-    }
+    }*/
 }

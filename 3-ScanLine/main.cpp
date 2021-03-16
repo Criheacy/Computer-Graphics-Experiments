@@ -50,7 +50,7 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
         if (button == GLUT_LEFT_BUTTON)
         {
             leftPressed = true;
-            Grid::Instance().SetStartPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
+            /*Grid::Instance().SetStartPoint(Grid::Instance().InPoint(glm::vec2(x, y)));*/
         }
         else if (button == GLUT_MIDDLE_BUTTON)
             middlePressed = true;
@@ -76,8 +76,8 @@ void HandleMouseMotionEvent(int x, int y)
 
     if (leftPressed)
     {
-        Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
-        Grid::Instance().SetEndPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
+        /*Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
+        Grid::Instance().SetEndPoint(Grid::Instance().InPoint(glm::vec2(x, y)));*/
     }
     if (middlePressed)
     {
@@ -95,7 +95,6 @@ void HandleMouseMotionEvent(int x, int y)
 void HandleMousePassiveMotionEvent(int x, int y)
 {
     UI::Canvas::Instance().HandleMotion(glm::vec2(x, y));
-    Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
 }
 
 int main(int argc, char* argv[])
@@ -111,26 +110,13 @@ int main(int argc, char* argv[])
     Grid::Instance().Scale(30);
 
     // Declear buttons on UI canvas
-    UI::Button lineButton = UI::Button(2, SCREEN_WIDTH - 100, 30, SCREEN_WIDTH - 30, 60);
-    lineButton.SetText("LINE");
-    lineButton.SetOnSelectListener([]() -> void {
-        Grid::Instance().SetShapeType(SHAPE_LINE);
+    UI::Button applyAlgorithm = UI::Button(2, SCREEN_WIDTH - 130, 30, SCREEN_WIDTH - 30, 60);
+    applyAlgorithm.SetText("SCAN LINE");
+    applyAlgorithm.SetOnSelectListener([]() -> void {
         Grid::Instance().ClearPoints();
-        Grid::Instance().ResetStartEndPoint();
-    });
-    UI::Button circleButton = UI::Button(3, SCREEN_WIDTH - 100, 80, SCREEN_WIDTH - 30, 110);
-    circleButton.SetText("CIRCLE");
-    circleButton.SetOnSelectListener([]() -> void {
-        Grid::Instance().SetShapeType(SHAPE_CIRCLE);
-        Grid::Instance().ClearPoints();
-        Grid::Instance().ResetStartEndPoint();
     });
 
-    UI::RadioButton radioButton = UI::RadioButton(1);
-    radioButton.AddButton(lineButton);
-    radioButton.AddButton(circleButton);
-
-    UI::Canvas::Instance().AddComponent(&radioButton);
+    UI::Canvas::Instance().AddComponent(&applyAlgorithm);
 
     lastTime = glutGet(GLUT_ELAPSED_TIME);
 
