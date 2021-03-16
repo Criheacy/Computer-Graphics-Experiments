@@ -43,8 +43,18 @@ void Grid::Scale(float scale)
         0.0f, 0.0f, 1.0f);
     if (ENABLE_SCALE_CONSTRAINT)
     {
-        if (ConstrainScale() * (scale - 1.0f) <= 0)
-            transform = scalingMatrix * transform;
+        float nowScale = (transform[0][0] + transform[1][1]) / 2;
+        if (nowScale * scale >= SCALE_CONSTRAINT_MAX)
+        {
+            nowScale = SCALE_CONSTRAINT_MAX;
+            transform[0][0] = transform[1][1] = nowScale;
+        }
+        else if (nowScale * scale <= SCALE_CONSTRAINT_MIN)
+        {
+            nowScale = SCALE_CONSTRAINT_MIN;
+            transform[0][0] = transform[1][1] = nowScale;
+        }
+        else transform = scalingMatrix * transform;
     }
     else
     {

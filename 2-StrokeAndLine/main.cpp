@@ -13,11 +13,24 @@ bool rightPressed;
 int mouseDragFromX;
 int mouseDragFromY;
 
+int frameCount;
+int lastTime;
+
 void RenderScene(void)
 {
     Grid::Instance().Render();
     UI::Canvas::Instance().Render();
     glutSwapBuffers();
+
+    frameCount++;
+
+    if (glutGet(GLUT_ELAPSED_TIME) - lastTime >= 1000)
+    {
+        printf("FPS: %d\n", frameCount);
+        lastTime += 1000;
+        frameCount = 0;
+    }
+
     glutPostRedisplay();
 }
 
@@ -119,6 +132,8 @@ int main(int argc, char* argv[])
     radioButton.AddButton(circleButton);
 
     UI::Canvas::Instance().AddComponent(&radioButton);
+
+    lastTime = glutGet(GLUT_ELAPSED_TIME);
 
     // Add callback functions
     glutReshapeFunc(Resize);
