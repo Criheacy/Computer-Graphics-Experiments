@@ -44,6 +44,8 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
     {
         if (UI::Canvas::Instance().HandleMouseDown(glm::vec2(x, y))) return;
 
+        Grid::Instance().HandleMouseDown(glm::vec2(x, y));
+
         mouseX = x, mouseY = y;
         mouseDragFromX = x, mouseDragFromY = y;
 

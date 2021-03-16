@@ -78,7 +78,7 @@ void Polygon::RemoveVertex(Vertex* vertex, bool force)
 Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 {
 	float minDistance = (1 << 30);
-	Edge* minEdge = nullptr;
+	Edge* minEdge = new Edge{ nullptr, nullptr };
 	Edge* nowEdge = new Edge{ nullptr, nullptr };
 
 	if (vertexList.size() < 2)
@@ -92,9 +92,17 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 		if (dist < minDistance)
 		{
 			minDistance = dist;
-			minEdge = nowEdge;
+			minEdge->from = nowEdge->from;
+			minEdge->to = nowEdge->to;
 		}
+
+		printf("%.2f, %.2f\n", dist, minDistance);
 	}
+
+	printf("Min Edge: (%.2f, %.2f) (%.2f, %.2f)", minEdge->from->vertex.x, minEdge->from->vertex.y,
+		minEdge->to->vertex.x, minEdge->to->vertex.y);
+
+	return minEdge;
 }
 
 float Polygon::GetDistanceToEdge(glm::vec2 point, Polygon::Edge* edge)
@@ -111,7 +119,7 @@ float Polygon::GetDistanceToEdge(glm::vec2 point, Polygon::Edge* edge)
 	else if (vResult.x > 1)
 		return GetDistanceToVertex(point, edge->to);
 
-	return vResult.y * glm::length(oEdge);
+	return fabs(vResult.y) * glm::length(oEdge);
 }
 
 Polygon::Vertex* Polygon::GetNearestVertex(glm::vec2 point)

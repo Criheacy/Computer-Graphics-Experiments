@@ -74,6 +74,32 @@ void Grid::Reanchor(glm::vec2 anchor)
     this->anchor = anchor;
 }
 
+void Grid::HandleMouseDown(glm::vec2 position)
+{
+    glm::vec2 invPosition = InverseTransform(position);
+    //Polygon::Vertex* nearestVertex = polygon.GetNearestVertex(invPosition);
+
+    //printf("(%.2f, %.2f) ", nearestVertex->vertex.x, nearestVertex->vertex.y);
+
+    //printf("dist = %.2f\n", polygon.GetDistanceToVertex(invPosition, nearestVertex));
+
+    Polygon::Edge* nearestEdge = polygon.GetNearestEdge(invPosition);
+    
+    printf("(%.2f, %.2f) (%.2f, %.2f)", nearestEdge->from->vertex.x, nearestEdge->from->vertex.y, nearestEdge->to->vertex.x, nearestEdge->to->vertex.y);
+
+    printf("dist = %.2f\n", polygon.GetDistanceToEdge(invPosition, nearestEdge));
+}
+
+void Grid::HandleMouseDrag(glm::vec2 deltaPosition)
+{
+
+}
+
+void Grid::HandleMouseMove(glm::vec2 deltaPosition)
+{
+
+}
+
 glm::vec2 Grid::Transform(glm::vec2 src)
 {
     return transform * glm::vec3(src.x, src.y, 1.0f) + glm::vec3(anchor, 0.0f);
