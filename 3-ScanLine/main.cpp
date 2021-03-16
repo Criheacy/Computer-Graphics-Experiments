@@ -44,27 +44,31 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
     {
         if (UI::Canvas::Instance().HandleMouseDown(glm::vec2(x, y))) return;
 
-        Grid::Instance().HandleMouseDown(glm::vec2(x, y));
-
         mouseX = x, mouseY = y;
         mouseDragFromX = x, mouseDragFromY = y;
 
         if (button == GLUT_LEFT_BUTTON)
         {
             leftPressed = true;
-            /*Grid::Instance().SetStartPoint(Grid::Instance().InPoint(glm::vec2(x, y)));*/
+            Grid::Instance().HandleLeftMouseDown(glm::vec2(x, y));
         }
         else if (button == GLUT_MIDDLE_BUTTON)
             middlePressed = true;
         else if (button == GLUT_RIGHT_BUTTON)
+        {
+            Grid::Instance().HandleRightMouseDown(glm::vec2(x, y));
             rightPressed = true;
+        }
     }
     else if (state == GLUT_UP)
     {
         if (UI::Canvas::Instance().HandleMouseUp(glm::vec2(x, y))) return;
 
         if (button == GLUT_LEFT_BUTTON)
+        {
             leftPressed = false;
+            Grid::Instance().HandleMouseUp(glm::vec2(x, y));
+        }
         else if (button == GLUT_MIDDLE_BUTTON)
             middlePressed = false;
         else if (button == GLUT_RIGHT_BUTTON)
@@ -78,6 +82,7 @@ void HandleMouseMotionEvent(int x, int y)
 
     if (leftPressed)
     {
+        Grid::Instance().HandleMouseDrag(glm::vec2(x, y));
         /*Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
         Grid::Instance().SetEndPoint(Grid::Instance().InPoint(glm::vec2(x, y)));*/
     }
@@ -97,6 +102,7 @@ void HandleMouseMotionEvent(int x, int y)
 void HandleMousePassiveMotionEvent(int x, int y)
 {
     UI::Canvas::Instance().HandleMotion(glm::vec2(x, y));
+    Grid::Instance().HandleMouseMove(glm::vec2(x, y));
 }
 
 int main(int argc, char* argv[])
@@ -109,7 +115,7 @@ int main(int argc, char* argv[])
     glutCreateWindow("2 - Stroke and Line");
 
     // Scaling grid background
-    Grid::Instance().Scale(20);
+    Grid::Instance().Scale(15);
 
     // Declear buttons on UI canvas
     UI::Button applyAlgorithm = UI::Button(2, SCREEN_WIDTH - 130, 30, SCREEN_WIDTH - 30, 60);

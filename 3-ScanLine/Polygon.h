@@ -21,10 +21,10 @@ public:
 	void InitialTriangle(float a);
 	void ClearVertex();
 
-	Vertex* operator[](int i);
-	Vertex* GetFirstVertex();
+	Vertex* GetVertexHead();
+	int GetVertexNumber();
 
-	void CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge);
+	Vertex* CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge);
 	void RemoveVertex(Vertex* vertex, bool force = false);
 
 	Edge* GetNearestEdge(glm::vec2 point);
@@ -34,5 +34,6 @@ public:
 	float GetDistanceToVertex(glm::vec2 point, Vertex* vertex);
 
 private:
-	std::vector<Vertex*> vertexList;
+	Vertex* vertexHead;
+	int vertexNumber;
 };

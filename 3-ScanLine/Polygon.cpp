@@ -2,7 +2,7 @@
 
 Polygon::Polygon()
 {
-	InitialTriangle(10);
+	InitialTriangle(20);
 }
 
 void Polygon::InitialTriangle(float a)
@@ -15,32 +15,36 @@ void Polygon::InitialTriangle(float a)
 	top->next = left;
 	left->next = right;
 	right->next = top;
-	vertexList.push_back(top);
-	vertexList.push_back(left);
-	vertexList.push_back(right);
+
+	vertexHead = top;
+	vertexNumber = 3;
 }
 
 void Polygon::ClearVertex()
 {
-	for (auto vertex : vertexList)
+	if (vertexHead == nullptr) return;
+	Vertex* nextVertex;
+	while (vertexHead->next != vertexHead)
 	{
-		delete vertex;
-		vertex = nullptr;
+		nextVertex = vertexHead->next->next;
+		delete vertexHead->next;
+		vertexHead->next = nextVertex;
 	}
-	vertexList.clear();
+	delete vertexHead;
+	vertexHead = nullptr;
 }
 
-Polygon::Vertex* Polygon::operator[](int i)
+Polygon::Vertex* Polygon::GetVertexHead()
 {
-	return vertexList[i];
+	return vertexHead;
 }
 
-Polygon::Vertex* Polygon::GetFirstVertex()
+int Polygon::GetVertexNumber()
 {
-	return vertexList[0];
+	return vertexNumber;
 }
 
-void Polygon::CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge)
+Polygon::Vertex* Polygon::CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge)
 {
 	Vertex* fromVertex = attachedEdge->from;
 	Vertex* toVertex = attachedEdge->to;
@@ -49,30 +53,41 @@ void Polygon::CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge)
 	if (fromVertex->next != attachedEdge->to)
 	{
 		printf("[LOG] In 'CreateNewVertexOn': Invalid Edge\n");
-		return;
+		return nullptr;
 	}
 
 	Vertex* newVertex = new Vertex{ position, fromVertex->next };
 	fromVertex->next = newVertex;
-	vertexList.push_back(newVertex);
+	vertexNumber++;
+	return newVertex;
 }
 
 void Polygon::RemoveVertex(Vertex* vertex, bool force)
 {
-	if (vertexList.empty()) return;
-	if ((vertexList.size() <= 3) && !force) return;
-
-	Vertex* preVertex = *(vertexList.begin());
-	for (auto nowVertex = vertexList.begin(); nowVertex != vertexList.end(); nowVertex++)
+	if (GetVertexNumber() == 0) return;
+	if ((GetVertexNumber() <= 3) && !force) return;
+	
+	Vertex* preVertex = vertexHead;
+	Vertex* nowVertex = vertexHead->next;
+	do
 	{
-		if (*nowVertex == vertex)
+		if (nowVertex == vertex)
 		{
-			preVertex->next = (*nowVertex)->next;
-			vertexList.erase(nowVertex);
+			preVertex->next = nowVertex->next;
+			if (nowVertex == vertexHead)
+			{
+				if (vertexHead->next == vertexHead)
+					vertexHead = nullptr;
+				else vertexHead = preVertex;
+			}
+			delete nowVertex;
+			nowVertex = nullptr;
+			vertexNumber--;
 			break;
 		}
-		preVertex = (*nowVertex);
-	}
+		preVertex = nowVertex;
+		nowVertex = nowVertex->next;
+	} while (nowVertex != vertexHead->next);
 }
 
 Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
@@ -81,13 +96,14 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 	Edge* minEdge = new Edge{ nullptr, nullptr };
 	Edge* nowEdge = new Edge{ nullptr, nullptr };
 
-	if (vertexList.size() < 2)
+	if (GetVertexNumber() < 2)
 		return nullptr;
 
-	for (auto vertex = vertexList.begin(); vertex != vertexList.end(); vertex++)
+	Vertex* nowVertex = vertexHead;
+	do
 	{
-		nowEdge->from = *vertex;
-		nowEdge->to = (*vertex)->next;
+		nowEdge->from = nowVertex;
+		nowEdge->to = nowVertex->next;
 		float dist = GetDistanceToEdge(point, nowEdge);
 		if (dist < minDistance)
 		{
@@ -95,12 +111,10 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 			minEdge->from = nowEdge->from;
 			minEdge->to = nowEdge->to;
 		}
-
-		printf("%.2f, %.2f\n", dist, minDistance);
-	}
-
-	printf("Min Edge: (%.2f, %.2f) (%.2f, %.2f)", minEdge->from->vertex.x, minEdge->from->vertex.y,
-		minEdge->to->vertex.x, minEdge->to->vertex.y);
+		nowVertex = nowVertex->next;
+	} while (nowVertex != vertexHead);
+	delete nowEdge;
+	nowEdge = nullptr;
 
 	return minEdge;
 }
@@ -112,6 +126,7 @@ float Polygon::GetDistanceToEdge(glm::vec2 point, Polygon::Edge* edge)
 
 	glm::vec2 vTarget = point - edge->from->vertex;
 
+	// Add check to inversable or not
 	glm::vec2 vResult = glm::inverse(glm::mat2x2(vEdge, oEdge)) * vTarget;
 
 	if (vResult.x < 0)
@@ -126,14 +141,18 @@ Polygon::Vertex* Polygon::GetNearestVertex(glm::vec2 point)
 {
 	float minDistance = (1 << 30);
 	Vertex* minVertex = nullptr;
-	for (auto vertex = vertexList.begin(); vertex != vertexList.end(); vertex++)
+
+
+	Vertex* nowVertex = vertexHead;
+	do
 	{
-		if (glm::length(point - (*vertex)->vertex) < minDistance)
+		if (glm::length(point - nowVertex->vertex) < minDistance)
 		{
-			minDistance = glm::length(point - (*vertex)->vertex);
-			minVertex = *vertex;
+			minDistance = glm::length(point - nowVertex->vertex);
+			minVertex = nowVertex;
 		}
-	}
+		nowVertex = nowVertex->next;
+	} while (nowVertex != vertexHead);
 	return minVertex;
 }
 

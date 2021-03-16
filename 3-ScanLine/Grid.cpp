@@ -74,30 +74,74 @@ void Grid::Reanchor(glm::vec2 anchor)
     this->anchor = anchor;
 }
 
-void Grid::HandleMouseDown(glm::vec2 position)
+void Grid::HandleLeftMouseDown(glm::vec2 position)
 {
-    glm::vec2 invPosition = InverseTransform(position);
-    //Polygon::Vertex* nearestVertex = polygon.GetNearestVertex(invPosition);
+    if (hoveringEdge != nullptr)
+    {
+        position = InverseTransform(position);
+        position.x = (int)roundf(position.x);
+        position.y = (int)roundf(position.y);
+        holdingVertex = polygon.CreateNewVertexOn(position, hoveringEdge);
+        hoveringEdge = nullptr;
+    }
+    else if (hoveringVertex != nullptr)
+    {
+        holdingVertex = hoveringVertex;
+    }
+}
 
-    //printf("(%.2f, %.2f) ", nearestVertex->vertex.x, nearestVertex->vertex.y);
+void Grid::HandleRightMouseDown(glm::vec2 position)
+{
+    if (hoveringVertex != nullptr)
+    {
+        polygon.RemoveVertex(hoveringVertex);
+        hoveringVertex = nullptr;
+    }
+}
 
-    //printf("dist = %.2f\n", polygon.GetDistanceToVertex(invPosition, nearestVertex));
+void Grid::HandleMouseUp(glm::vec2 position)
+{
+    holdingVertex = nullptr;
+}
 
-    Polygon::Edge* nearestEdge = polygon.GetNearestEdge(invPosition);
+void Grid::HandleMouseDrag(glm::vec2 position)
+{
+    if (holdingVertex == nullptr) return;
+
+    position = InverseTransform(position);
+    position.x = (int)roundf(position.x);
+    position.y = (int)roundf(position.y);
+
+    if (position != holdingVertex->vertex)
+    {
+        holdingVertex->vertex = position;
+    }
+}
+
+void Grid::HandleMouseMove(glm::vec2 position)
+{
+    hoveringVertex = nullptr;
+    hoveringEdge = nullptr;
+
+    float dist;
+    float distFix = (transform[0][0] + transform[1][1]) / 2 / 10;
+    position = InverseTransform(position);
+    Polygon::Vertex* nearestVertex = polygon.GetNearestVertex(position);
+    dist = polygon.GetDistanceToVertex(position, nearestVertex);
     
-    printf("(%.2f, %.2f) (%.2f, %.2f)", nearestEdge->from->vertex.x, nearestEdge->from->vertex.y, nearestEdge->to->vertex.x, nearestEdge->to->vertex.y);
+    if (dist <= VERTEX_SELECT_DIST / distFix)
+    {
+        hoveringVertex = nearestVertex;
+        return;
+    }
 
-    printf("dist = %.2f\n", polygon.GetDistanceToEdge(invPosition, nearestEdge));
-}
+    Polygon::Edge* nearestEdge = polygon.GetNearestEdge(position);
+    dist = polygon.GetDistanceToEdge(position, nearestEdge);
 
-void Grid::HandleMouseDrag(glm::vec2 deltaPosition)
-{
-
-}
-
-void Grid::HandleMouseMove(glm::vec2 deltaPosition)
-{
-
+    if (dist <= EDGE_SELECT_DIST / distFix)
+    {
+        hoveringEdge = nearestEdge;
+    }
 }
 
 glm::vec2 Grid::Transform(glm::vec2 src)
@@ -160,13 +204,14 @@ void Grid::Render()
     if ((transform[0][0] + transform[1][1]) / 2 >= FADE_FRAME_LINES_WHEN_SCALE)
     {
         RenderGridLines();
-        RenderPolygon();
     }
+
+    RenderPolygon();
 }
 
 void Grid::RenderPoints()
 {
-    glm::vec2 dist;
+//    glm::vec2 dist;
     float scaleX = 2.0f * transform[0][0] / SCREEN_WIDTH;
     float scaleY = 2.0f * transform[1][1] / SCREEN_HEIGHT;
 
@@ -245,46 +290,92 @@ void Grid::RenderGridLines()
         glVertex2f(1.0f, to.y);
         glEnd();
     }
-
 }
 
 void Grid::RenderPolygon()
 {
     glLoadIdentity();
-    glColor3f(LINE_COLOR.r, LINE_COLOR.g, LINE_COLOR.b);
+    glColor3f(POLYGON_EDGE_COLOR.r, POLYGON_EDGE_COLOR.g, POLYGON_EDGE_COLOR.b);
+
+    float scaleAvg = (transform[0][0] + transform[1][1]) / 2;
+    glLineWidth(ceilf(STROKE_WIDTH_MAX * scaleAvg / SCALE_CONSTRAINT_MAX * 1.5f));
 
     glBegin(GL_LINE_LOOP);
-    Polygon::Vertex* vertex = nullptr;
-    for (int i = 0; i < 3; i++)
+    Polygon::Vertex* vertex = polygon.GetVertexHead();
+    if (vertex != nullptr)
     {
-        vertex = polygon[i];
-        glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
-        glVertex2f(point.x, point.y);
+        do
+        {
+            glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
+            glVertex2f(point.x, point.y);
+            vertex = vertex->next;
+        } while (vertex != polygon.GetVertexHead());
     }
     glEnd();
 
-    /*if (shapeType == SHAPE_LINE)
-    {
-        glm::vec2 from = ProjectToScreen(Transform(startPoint));
-        glm::vec2 to = ProjectToScreen(Transform(endPoint));
+    RenderHoveringEdge();
 
+    // Draw gizmo circle
+    if (vertex != nullptr)
+    {
+        do
+        {
+            RenderCircleGizmo(vertex->vertex, POLYGON_VERTEX_COLOR, 1, true);
+            vertex = vertex->next;
+        } while (vertex != polygon.GetVertexHead());
+    }
+
+    RenderHoveringVertex();
+}
+
+void Grid::RenderHoveringEdge()
+{
+    if (hoveringEdge != nullptr)
+    {
+        glLineWidth(5);
+        glColor3f(POLYGON_HOVER_COLOR.r, POLYGON_HOVER_COLOR.g, POLYGON_HOVER_COLOR.b);
         glBegin(GL_LINES);
+        glm::vec2 from = ProjectToScreen(Transform(hoveringEdge->from->vertex));
         glVertex2f(from.x, from.y);
+        glm::vec2 to = ProjectToScreen(Transform(hoveringEdge->to->vertex));
         glVertex2f(to.x, to.y);
         glEnd();
     }
-    else if (shapeType == SHAPE_CIRCLE)
-    {
-        glBegin(GL_LINE_LOOP);
-        int number = 360;
+}
 
-        for (int i = 0; i < number; i++)
-        {
-            glm::vec2 point = glm::vec2(dist * cosf(2 * i * PI / number),
-                dist * sinf(2 * i * PI / number)) + startPoint;
-            point = ProjectToScreen(Transform(point));
-            glVertex2f(point.x, point.y);
-        }
-        glEnd();
-    }*/
+void Grid::RenderHoveringVertex()
+{
+    if (hoveringVertex != nullptr)
+    {
+        //RenderCircleGizmo(hoveringVertex->vertex, BACKGROUND_COLOR, 2.5f, true);
+        //RenderCircleGizmo(hoveringVertex->vertex, POLYGON_HOVER_COLOR, 2.5f, false);
+        //RenderCircleGizmo(hoveringVertex->vertex, POLYGON_VERTEX_COLOR, 1, true);
+        RenderCircleGizmo(hoveringVertex->vertex, POLYGON_HOVER_COLOR, 1.5f, true);
+    }
+}
+
+void Grid::RenderCircleGizmo(glm::vec2 position, glm::vec3 color, float radius, bool filled)
+{
+    glColor3f(color.r, color.g, color.b);
+
+    if (filled)
+    {
+        glBegin(GL_POLYGON);
+    }
+    else
+    {
+        glLineWidth(1.5f);
+        glBegin(GL_LINE_LOOP);
+    }
+
+    int number = 30;
+    glm::vec2 pPoint = ProjectToScreen(Transform(position));
+    float pRadius = radius * GIZMO_SCALE;
+    for (int i = 0; i < number; i++)
+    {
+        glm::vec2 point = glm::vec2(pRadius / SCREEN_WIDTH * cosf(2 * i * PI / number),
+            pRadius / SCREEN_HEIGHT * sinf(2 * i * PI / number)) + pPoint;
+        glVertex2f(point.x, point.y);
+    }
+    glEnd();
 }

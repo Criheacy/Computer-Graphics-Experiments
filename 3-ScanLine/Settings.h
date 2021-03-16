@@ -23,8 +23,13 @@
 #define HOVER_COLOR glm::vec3(0.92f, 0.92f, 0.92f)
 #define GRID_COLOR glm::vec3(0.9f, 0.9f, 0.9f)
 
+#define POLYGON_VERTEX_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
+#define POLYGON_EDGE_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
+#define POLYGON_HOVER_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
+#define POLYGON_PRESS_COLOR glm::vec3(0.0f, 0.0f, 0.0f)
+
 #define STROKE_WIDTH_RATIO 0.05f
-#define STROKE_WIDTH_MAX 5
+#define STROKE_WIDTH_MAX 3
 
 #define SHAPE_NONE 0
 #define SHAPE_LINE 1
@@ -43,3 +48,5 @@
 #define FONT_TYPE GLUT_BITMAP_9_BY_15
 #define FONT_WIDTH 9
 #define FONT_HEIGHT 15
+
+#define GIZMO_SCALE 8
