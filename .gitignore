@@ -5,3 +5,4 @@
 *.vcxproj*
 *glut.dll
 *glut32.dll
+*Demos/
