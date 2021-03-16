@@ -8,17 +8,6 @@
 class Grid
 {
 public:
-	struct Vertex {
-		glm::vec2 point;
-		Vertex* nextPoint;
-	};
-
-	struct Point {
-		glm::vec2 point;
-		glm::vec3 color;
-	};
-
-public:
 	static Grid& Instance();
 
 	// DO NOT implement this class
@@ -31,8 +20,9 @@ public:
 	void Reanchor(glm::vec2 anchor);
 
 	// Provide interactive interface
-	/* To be implemented */
-
+	void HandleMouseDown(glm::vec2 position);
+	void HandleMouseUp(glm::vec2 position);
+	void HandleMouseMove(glm::vec2 position);
 
 	// Convert screen coordinate to point data in pointlist
 	glm::vec2 InPoint(glm::vec2 src);
@@ -61,7 +51,7 @@ private:
 	void RenderGridLines();
 
 	// Render auxiliary line
-	void RenderAuxiliaryLine();
+	void RenderPolygon();
 
 private:
 	glm::mat3x3 transform;

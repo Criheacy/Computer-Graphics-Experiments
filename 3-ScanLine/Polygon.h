@@ -21,6 +21,9 @@ public:
 	void InitialTriangle(float a);
 	void ClearVertex();
 
+	Vertex* operator[](int i);
+	Vertex* GetFirstVertex();
+
 	void CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge);
 	void RemoveVertex(Vertex* vertex, bool force = false);
 

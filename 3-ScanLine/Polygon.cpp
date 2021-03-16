@@ -9,9 +9,9 @@ void Polygon::InitialTriangle(float a)
 {
 	ClearVertex();
 	float sq3 = sqrtf(3);
-	Vertex* top = new Vertex{ glm::vec2((int)(a / 2), (int)(-sq3 * a / 6)), nullptr };
-	Vertex* left = new Vertex{ glm::vec2((int)(-a / 2), (int)(-sq3 * a / 6)), nullptr };
-	Vertex* right = new Vertex{ glm::vec2(0, (int)(sq3 * a / 3)), nullptr };
+	Vertex* top = new Vertex{ glm::vec2((int)roundf(a / 2), (int)roundf(-sq3 * a / 6)), nullptr };
+	Vertex* left = new Vertex{ glm::vec2((int)roundf(-a / 2), (int)roundf(-sq3 * a / 6)), nullptr };
+	Vertex* right = new Vertex{ glm::vec2(0, (int)roundf(sq3 * a / 3)), nullptr };
 	top->next = left;
 	left->next = right;
 	right->next = top;
@@ -28,6 +28,16 @@ void Polygon::ClearVertex()
 		vertex = nullptr;
 	}
 	vertexList.clear();
+}
+
+Polygon::Vertex* Polygon::operator[](int i)
+{
+	return vertexList[i];
+}
+
+Polygon::Vertex* Polygon::GetFirstVertex()
+{
+	return vertexList[0];
 }
 
 void Polygon::CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge)

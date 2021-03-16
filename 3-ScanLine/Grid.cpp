@@ -134,7 +134,7 @@ void Grid::Render()
     if ((transform[0][0] + transform[1][1]) / 2 >= FADE_FRAME_LINES_WHEN_SCALE)
     {
         RenderGridLines();
-        RenderAuxiliaryLine();
+        RenderPolygon();
     }
 }
 
@@ -222,10 +222,20 @@ void Grid::RenderGridLines()
 
 }
 
-void Grid::RenderAuxiliaryLine()
+void Grid::RenderPolygon()
 {
     glLoadIdentity();
     glColor3f(LINE_COLOR.r, LINE_COLOR.g, LINE_COLOR.b);
+
+    glBegin(GL_LINE_LOOP);
+    Polygon::Vertex* vertex = nullptr;
+    for (int i = 0; i < 3; i++)
+    {
+        vertex = polygon[i];
+        glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
+        glVertex2f(point.x, point.y);
+    }
+    glEnd();
 
     /*if (shapeType == SHAPE_LINE)
     {

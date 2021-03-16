@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
     glutCreateWindow("2 - Stroke and Line");
 
     // Scaling grid background
-    Grid::Instance().Scale(30);
+    Grid::Instance().Scale(20);
 
     // Declear buttons on UI canvas
     UI::Button applyAlgorithm = UI::Button(2, SCREEN_WIDTH - 130, 30, SCREEN_WIDTH - 30, 60);
