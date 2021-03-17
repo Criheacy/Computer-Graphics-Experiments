@@ -2,6 +2,7 @@
 
 void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 {
+	printf("Entering ScanLine\n");
 	std::vector<Polygon::Edge*> edgeList = std::vector<Polygon::Edge*>();
 	EdgeLink* edgeLinkHead = new EdgeLink();
 	edgeLinkHead->next = nullptr;
@@ -31,11 +32,15 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 	std::sort(edgeList.begin(), edgeList.end(), EdgeYComparer);
 	int edgeListCnt = 0;
 
+	printf("Sorting Complete\n");
+	printf("Starting Scaning Line [%d, %d]\n", scanMin, scanMax);
 	// Start line scanning
 	for (int scanY = scanMin; scanY <= scanMax; scanY++)
 	{
+		printf("Scaning %d ...\n", scanY);
 		// Insert node into edgelist
-		while (edgeList[edgeListCnt]->from->vertex.y >= scanY)
+		while (edgeListCnt < edgeList.size()
+			&& edgeList[edgeListCnt]->from->vertex.y <= scanY)
 		{
 			EdgeLink* edgeLinkNode = new EdgeLink
 			{
@@ -46,11 +51,21 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 					/ (edgeList[edgeListCnt]->to->vertex.y - edgeList[edgeListCnt]->from->vertex.y),
 				nullptr, nullptr
 			};
+			printf("\tInput Vertex\n");
 			InsertNodeToEdgeLink(edgeLinkHead, edgeLinkNode);
+			edgeListCnt++;
 		}
 
+		printf("\tRemove Node From Edge Link\n");
+		// Remove out-date nodes
+		RemoveNodeFromEdgeLink(edgeLinkHead);
+
+		printf("\tOne-Time Sorting Edge Link\n");
 		OneTimeSortToEdgeLink(edgeLinkHead);
 
+		EdgeLinkLog(edgeLinkHead);
+
+		printf("\tDraw Scan Line\n");
 		// Render row in scaning line
 		EdgeLink* edgeLinkNode = edgeLinkHead->next;
 		while (edgeLinkNode != nullptr)
@@ -64,9 +79,7 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 			edgeLinkNode = edgeLinkNode->next->next;
 		}
 
-		// Remove out-date nodes
-		RemoveNodeFromEdgeLink(edgeLinkHead);
-
+		printf("\tUpdate Node\n");
 		// Update nodes
 		UpdateNodeInEdgeLink(edgeLinkHead);
 	}
@@ -107,7 +120,8 @@ void Algorithm::OneTimeSortToEdgeLink(EdgeLink* head)
 		{
 			// Swap nowNode and nowNode->next in link
 			nowNode->pre->next = nowNode->next;
-			nowNode->next->next->pre = nowNode;
+			if (nowNode->next->next != nullptr)
+				nowNode->next->next->pre = nowNode;
 			nowNode->next->pre = nowNode->pre;
 			nowNode->next = nowNode->next->next;
 			nowNode->pre->next->next = nowNode;
@@ -138,13 +152,24 @@ void Algorithm::RemoveNodeFromEdgeLink(EdgeLink* head)
 		{
 			// Delete nowNode
 			nowNode->pre->next = nowNode->next;
-			nowNode->next->pre = nowNode->pre;
+			if (nowNode->next != nullptr)
+				nowNode->next->pre = nowNode->pre;
 			
 			nextNode = nowNode->next;
 			delete nowNode;
 			nowNode = nullptr;
 		}
 		else nextNode = nowNode->next;
+	}
+}
+
+void Algorithm::EdgeLinkLog(EdgeLink* head)
+{
+	EdgeLink* nowNode = head;
+	while (nowNode->next != nullptr)
+	{
+		nowNode = nowNode->next;
+		printf("(%.1f,%.1f)[%.2f]\n", nowNode->now.x, nowNode->now.y, nowNode->delta);
 	}
 }
 

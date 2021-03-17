@@ -26,5 +26,7 @@ protected:
 
 	static void RemoveNodeFromEdgeLink(EdgeLink* head);
 
+	static void EdgeLinkLog(EdgeLink* head);
+
 	static void MarkLine(Grid* grid, int y, int fromX, int toX);
 };

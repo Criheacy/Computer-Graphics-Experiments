@@ -173,8 +173,6 @@ void Grid::MarkPoint(int x, int y)
 
 void Grid::ClearPoints()
 {
-    for (auto point = pointList.begin(); point != pointList.end(); point++)
-        delete &(*point);
     pointList.clear();
 }
 
