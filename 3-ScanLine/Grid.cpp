@@ -13,6 +13,12 @@ Grid::Grid()
 
     showScanningLine = false;
     scanningLine = glm::vec2(0.0f, 0.0f);
+
+    hoveringEdge = nullptr;
+    hoveringVertex = nullptr;
+    holdingVertex = nullptr;
+
+    waitingList = std::queue<glm::vec2>();
 }
 
 Grid& Grid::Instance()
@@ -164,6 +170,42 @@ glm::vec2 Grid::ProjectToScreen(glm::vec2 src)
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
+void Grid::AddPointToWaitingList(int x, int y)
+{
+    waitingList.push(glm::vec2(x, y));
+}
+
+void Grid::StartAnimation()
+{
+    int pointNumber = waitingList.size();
+    animator.SetValueRange(pointNumber, 0);
+    int duration = 8000;
+    if (pointNumber < 100)
+        duration = 80 * pointNumber;
+    animator.SetDuration(duration);
+
+    showScanningLine = true;
+    animator.StartAnimation();
+}
+
+void Grid::UpdateAnimation()
+{
+    int nowValue = animator.GetValue();
+    while (nowValue < (int)waitingList.size())
+    {
+        if (waitingList.empty()) break;
+
+        glm::vec2 nextNode = waitingList.front();
+        if (nextNode.y != scanningLine.y)
+            scanningLine.y = nextNode.y;
+
+        pointList.push_back(nextNode);
+        waitingList.pop();
+    }
+    if (waitingList.empty())
+        showScanningLine = false;
+}
+
 void Grid::SetScanLineShownState(bool state)
 {
     showScanningLine = state;
@@ -233,7 +275,7 @@ void Grid::RenderPoints()
     for (auto point = pointList.begin(); point != pointList.end(); point++)
     {
         dist = ProjectToScreen(Transform(glm::vec2((*point).x, (*point).y)));
-        if ((*point).y == scanningLine.y)
+        if (showScanningLine && (*point).y == scanningLine.y)
             glColor3f(POINT_ON_SCANNING_LINE_COLOR.r, POINT_ON_SCANNING_LINE_COLOR.g, POINT_ON_SCANNING_LINE_COLOR.b);
         else glColor3f(MARK_COLOR.r, MARK_COLOR.g, MARK_COLOR.b);
         glBegin(GL_POLYGON);

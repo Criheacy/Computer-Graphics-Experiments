@@ -3,6 +3,7 @@
 #include "Polygon.h"
 #include "Settings.h"
 #include "Algorithm.h"
+#include "Animator.hpp"
 
 #define VERTEX_SELECT_DIST 1
 #define EDGE_SELECT_DIST 0.8
@@ -37,6 +38,11 @@ public:
 	glm::vec2 Transform(glm::vec2 src);
 	glm::vec2 InverseTransform(glm::vec2 src);
 	glm::vec2 ProjectToScreen(glm::vec2 src);
+
+	// Set Animation
+	void AddPointToWaitingList(int x, int y);
+	void StartAnimation();
+	void UpdateAnimation();
 
 	// Draw line pixels
 	void SetScanLineShownState(bool state);
@@ -82,7 +88,11 @@ private:
 
 	Polygon::Vertex* holdingVertex;
 
+	Animator<int> animator = Animator<int>(0);
+
 	bool showScanningLine;
 	glm::vec2 scanningLine;	// usually render Y-coordinate
 	std::vector<glm::vec2> pointList;
+
+	std::queue<glm::vec2> waitingList;
 };

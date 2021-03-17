@@ -1,9 +1,10 @@
 #include <glut.h>
 
-#include "UIComponents.h"
-#include "Settings.h"
 #include "Grid.h"
+#include "Settings.h"
+#include "Animator.hpp"
 #include "Algorithm.h"
+#include "UIComponents.h"
 
 int mouseX;
 int mouseY;
@@ -18,17 +19,12 @@ int lastTime;
 
 void RenderScene(void)
 {
+    if (SHOW_SCANNING_ANIMATION)
+        Grid::Instance().UpdateAnimation();
+
     Grid::Instance().Render();
     UI::Canvas::Instance().Render();
     glutSwapBuffers();
-
-    frameCount++;
-
-    if (glutGet(GLUT_ELAPSED_TIME) - lastTime >= 1000)
-    {
-        lastTime += 1000;
-        frameCount = 0;
-    }
 
     glutPostRedisplay();
 }

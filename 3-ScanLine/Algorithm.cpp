@@ -35,7 +35,7 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 	for (int scanY = scanMin; scanY <= scanMax; scanY++)
 	{
 		// Insert node into edgelist
-		while (edgeListCnt < edgeList.size()
+		while (edgeListCnt < (int)edgeList.size()
 			&& edgeList[edgeListCnt]->from->vertex.y <= scanY)
 		{
 			EdgeLink* edgeLinkNode = new EdgeLink
@@ -72,6 +72,9 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 		// Update nodes
 		UpdateNodeInEdgeLink(edgeLinkHead);
 	}
+
+	if (SHOW_SCANNING_ANIMATION)
+		grid->StartAnimation();
 }
 
 // Compare Y-coordinate of smaller vertex of each edge
@@ -161,6 +164,14 @@ void Algorithm::EdgeLinkLog(EdgeLink* head)
 
 void Algorithm::MarkLine(Grid* grid, int y, int fromX, int toX)
 {
-	for (int i = fromX; i <= toX; i++)
-		grid->MarkPoint(i, y);
+	if (SHOW_SCANNING_ANIMATION)
+	{
+		for (int i = fromX; i <= toX; i++)
+			grid->AddPointToWaitingList(i, y);
+	}
+	else
+	{
+		for (int i = fromX; i <= toX; i++)
+			grid->MarkPoint(i, y);
+	}
 }
