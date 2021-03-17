@@ -13,6 +13,10 @@ public:
 		EdgeLink* pre;
 	};
 
+	Algorithm() = delete;
+	Algorithm(const Algorithm&) = delete;
+	Algorithm& operator=(const Algorithm&) = delete;
+
 	static void ScanLine(class Grid* grid, class Polygon* polygon);
 
 protected:

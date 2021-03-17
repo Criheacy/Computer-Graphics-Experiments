@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <vector>
+#include <random>
 #include <string>
 #include <algorithm>
 
@@ -13,28 +14,25 @@
 
 #define SCREEN_WIDTH 700
 #define SCREEN_HEIGHT 700
-#define NEG_INT_MIN -2147483648
 
 #define PI acosf(-1)
 #define DRAW_GIZMOS true
 
 #define BACKGROUND_COLOR glm::vec3(1.0f, 1.0f, 1.0f)
 #define LINE_COLOR glm::vec3(0.0f, 0.0f, 0.0f)
-#define MARK_COLOR glm::vec3(0.5f, 0.5f, 0.5f)
-#define HOVER_COLOR glm::vec3(0.92f, 0.92f, 0.92f)
+#define MARK_COLOR glm::vec3(0.95f, 0.2f, 0.0f)
 #define GRID_COLOR glm::vec3(0.9f, 0.9f, 0.9f)
+
+#define SCANNING_LINE_COLOR glm::vec3(0.12f, 0.27f, 0.95f)
+#define POINT_ON_SCANNING_LINE_COLOR glm::vec3(0.0f, 0.0f, 0.0f)
+#define SCANNING_LINE_BLINKING_COLOR glm::vec3(1.0f, 1.0f, 1.0f)
 
 #define POLYGON_VERTEX_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
 #define POLYGON_EDGE_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
 #define POLYGON_HOVER_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
 #define POLYGON_PRESS_COLOR glm::vec3(0.0f, 0.0f, 0.0f)
 
-#define STROKE_WIDTH_RATIO 0.05f
 #define STROKE_WIDTH_MAX 3
-
-#define SHAPE_NONE 0
-#define SHAPE_LINE 1
-#define SHAPE_CIRCLE 2
 
 #define ENABLE_SCALE_CONSTRAINT true
 #define SCALE_CONSTRAINT_MAX 50

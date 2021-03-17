@@ -2,7 +2,6 @@
 
 void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 {
-	printf("Entering ScanLine\n");
 	std::vector<Polygon::Edge*> edgeList = std::vector<Polygon::Edge*>();
 	EdgeLink* edgeLinkHead = new EdgeLink();
 	edgeLinkHead->next = nullptr;
@@ -32,12 +31,9 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 	std::sort(edgeList.begin(), edgeList.end(), EdgeYComparer);
 	int edgeListCnt = 0;
 
-	printf("Sorting Complete\n");
-	printf("Starting Scaning Line [%d, %d]\n", scanMin, scanMax);
 	// Start line scanning
 	for (int scanY = scanMin; scanY <= scanMax; scanY++)
 	{
-		printf("Scaning %d ...\n", scanY);
 		// Insert node into edgelist
 		while (edgeListCnt < edgeList.size()
 			&& edgeList[edgeListCnt]->from->vertex.y <= scanY)
@@ -51,21 +47,15 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 					/ (edgeList[edgeListCnt]->to->vertex.y - edgeList[edgeListCnt]->from->vertex.y),
 				nullptr, nullptr
 			};
-			printf("\tInput Vertex\n");
 			InsertNodeToEdgeLink(edgeLinkHead, edgeLinkNode);
 			edgeListCnt++;
 		}
 
-		printf("\tRemove Node From Edge Link\n");
 		// Remove out-date nodes
 		RemoveNodeFromEdgeLink(edgeLinkHead);
 
-		printf("\tOne-Time Sorting Edge Link\n");
 		OneTimeSortToEdgeLink(edgeLinkHead);
 
-		EdgeLinkLog(edgeLinkHead);
-
-		printf("\tDraw Scan Line\n");
 		// Render row in scaning line
 		EdgeLink* edgeLinkNode = edgeLinkHead->next;
 		while (edgeLinkNode != nullptr)
@@ -75,11 +65,10 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 				printf("[LOG]: Error: unpaired single node\n");
 				return;
 			}
-			MarkLine(grid, scanY, edgeLinkNode->now.x, edgeLinkNode->next->now.x);
+			MarkLine(grid, scanY, (int)roundf(edgeLinkNode->now.x), (int)roundf(edgeLinkNode->next->now.x));
 			edgeLinkNode = edgeLinkNode->next->next;
 		}
 
-		printf("\tUpdate Node\n");
 		// Update nodes
 		UpdateNodeInEdgeLink(edgeLinkHead);
 	}
@@ -167,10 +156,7 @@ void Algorithm::EdgeLinkLog(EdgeLink* head)
 {
 	EdgeLink* nowNode = head;
 	while (nowNode->next != nullptr)
-	{
 		nowNode = nowNode->next;
-		printf("(%.1f,%.1f)[%.2f]\n", nowNode->now.x, nowNode->now.y, nowNode->delta);
-	}
 }
 
 void Algorithm::MarkLine(Grid* grid, int y, int fromX, int toX)

@@ -1,4 +1,3 @@
-#include "Settings.h"
 #include "Grid.h"
 
 Grid::Grid()
@@ -10,14 +9,10 @@ Grid::Grid()
         0.0f, -2.0f / SCREEN_HEIGHT, 0.0f,
         -1.0f, 1.0f, 1.0f);
 
-    /*pointList = std::vector<glm::vec2>();
-    hoveringPoint = glm::vec2(-1.0f, -1.0f);
-
-    startPoint = glm::vec2(-1.0f, -1.0f);
-    endPoint = glm::vec2(-1.0f, -1.0f);
-
     anchor = glm::vec2(0.0f);
-    shapeType = SHAPE_NONE;*/
+
+    showScanningLine = false;
+    scanningLine = glm::vec2(0.0f, 0.0f);
 }
 
 Grid& Grid::Instance()
@@ -83,6 +78,7 @@ void Grid::HandleLeftMouseDown(glm::vec2 position)
         position.y = (int)roundf(position.y);
         holdingVertex = polygon.CreateNewVertexOn(position, hoveringEdge);
         hoveringEdge = nullptr;
+        ClearPoints();
     }
     else if (hoveringVertex != nullptr)
     {
@@ -96,6 +92,7 @@ void Grid::HandleRightMouseDown(glm::vec2 position)
     {
         polygon.RemoveVertex(hoveringVertex);
         hoveringVertex = nullptr;
+        ClearPoints();
     }
 }
 
@@ -115,6 +112,7 @@ void Grid::HandleMouseDrag(glm::vec2 position)
     if (position != holdingVertex->vertex)
     {
         holdingVertex->vertex = position;
+        ClearPoints();
     }
 }
 
@@ -166,6 +164,16 @@ glm::vec2 Grid::ProjectToScreen(glm::vec2 src)
     return project * glm::vec3(src.x, src.y, 1.0f);
 }
 
+void Grid::SetScanLineShownState(bool state)
+{
+    showScanningLine = state;
+}
+
+void Grid::SetScanLinePosition(glm::vec2 position)
+{
+    scanningLine = position;
+}
+
 void Grid::MarkPoint(int x, int y)
 {
     pointList.push_back(glm::vec2(x, y));
@@ -204,6 +212,8 @@ void Grid::Render()
     glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    if (showScanningLine)
+        RenderScanningLine();
     RenderPoints();
 
     if ((transform[0][0] + transform[1][1]) / 2 >= FADE_FRAME_LINES_WHEN_SCALE)
@@ -220,11 +230,12 @@ void Grid::RenderPoints()
     float scaleX = 2.0f * transform[0][0] / SCREEN_WIDTH;
     float scaleY = 2.0f * transform[1][1] / SCREEN_HEIGHT;
 
-    glColor3f(MARK_COLOR.r, MARK_COLOR.g, MARK_COLOR.b);
-
     for (auto point = pointList.begin(); point != pointList.end(); point++)
     {
         dist = ProjectToScreen(Transform(glm::vec2((*point).x, (*point).y)));
+        if ((*point).y == scanningLine.y)
+            glColor3f(POINT_ON_SCANNING_LINE_COLOR.r, POINT_ON_SCANNING_LINE_COLOR.g, POINT_ON_SCANNING_LINE_COLOR.b);
+        else glColor3f(MARK_COLOR.r, MARK_COLOR.g, MARK_COLOR.b);
         glBegin(GL_POLYGON);
         glVertex2f(dist.x - 0.5f * scaleX, dist.y - 0.5f * scaleY);
         glVertex2f(dist.x - 0.5f * scaleX, dist.y + 0.5f * scaleY);
@@ -279,6 +290,22 @@ void Grid::RenderGridLines()
         glVertex2f(1.0f, to.y);
         glEnd();
     }
+}
+
+void Grid::RenderScanningLine()
+{
+    glm::vec2 dist;
+    float scaleX = 2.0f * transform[0][0] / SCREEN_WIDTH;
+    float scaleY = 2.0f * transform[1][1] / SCREEN_HEIGHT;
+
+    dist = ProjectToScreen(Transform(glm::vec2(scanningLine.x, scanningLine.y)));
+    glColor3f(SCANNING_LINE_COLOR.r, SCANNING_LINE_COLOR.g, SCANNING_LINE_COLOR.b);
+    glBegin(GL_POLYGON);
+    glVertex2f(-1.0f, dist.y - 0.5f * scaleY);
+    glVertex2f(-1.0f, dist.y + 0.5f * scaleY);
+    glVertex2f(1.0f, dist.y + 0.5f * scaleY);
+    glVertex2f(1.0f, dist.y - 0.5f * scaleY);
+    glEnd();
 }
 
 void Grid::RenderPolygon()

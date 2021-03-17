@@ -39,6 +39,8 @@ public:
 	glm::vec2 ProjectToScreen(glm::vec2 src);
 
 	// Draw line pixels
+	void SetScanLineShownState(bool state);
+	void SetScanLinePosition(glm::vec2 position);
 	void MarkPoint(int x, int y);
 	void ClearPoints();
 
@@ -56,6 +58,8 @@ private:
 
 	// Render background grids line
 	void RenderGridLines();
+
+	void RenderScanningLine();
 
 	// Render auxiliary line
 	void RenderPolygon();
@@ -78,5 +82,7 @@ private:
 
 	Polygon::Vertex* holdingVertex;
 
+	bool showScanningLine;
+	glm::vec2 scanningLine;	// usually render Y-coordinate
 	std::vector<glm::vec2> pointList;
 };
