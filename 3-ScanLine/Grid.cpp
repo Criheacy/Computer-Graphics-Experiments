@@ -144,6 +144,11 @@ void Grid::HandleMouseMove(glm::vec2 position)
     }
 }
 
+void Grid::ScanLineOnPolygon()
+{
+    Algorithm::ScanLine(this, &polygon);
+}
+
 glm::vec2 Grid::Transform(glm::vec2 src)
 {
     return transform * glm::vec3(src.x, src.y, 1.0f) + glm::vec3(anchor, 0.0f);
@@ -163,12 +168,14 @@ glm::vec2 Grid::ProjectToScreen(glm::vec2 src)
 
 void Grid::MarkPoint(int x, int y)
 {
-
+    pointList.push_back(glm::vec2(x, y));
 }
 
 void Grid::ClearPoints()
 {
-
+    for (auto point = pointList.begin(); point != pointList.end(); point++)
+        delete &(*point);
+    pointList.clear();
 }
 
 glm::vec2 Grid::InPoint(glm::vec2 src)
@@ -211,23 +218,9 @@ void Grid::Render()
 
 void Grid::RenderPoints()
 {
-//    glm::vec2 dist;
+    glm::vec2 dist;
     float scaleX = 2.0f * transform[0][0] / SCREEN_WIDTH;
     float scaleY = 2.0f * transform[1][1] / SCREEN_HEIGHT;
-
-    glLoadIdentity();
-
-    /*if (ENABLE_HOVERING_HINT)
-    {
-        glColor3f(HOVER_COLOR.r, HOVER_COLOR.g, HOVER_COLOR.b);
-        dist = ProjectToScreen(Transform(glm::vec2(hoveringPoint.x, hoveringPoint.y)));
-        glBegin(GL_POLYGON);
-        glVertex2f(dist.x - 0.5f * scaleX, dist.y - 0.5f * scaleY);
-        glVertex2f(dist.x - 0.5f * scaleX, dist.y + 0.5f * scaleY);
-        glVertex2f(dist.x + 0.5f * scaleX, dist.y + 0.5f * scaleY);
-        glVertex2f(dist.x + 0.5f * scaleX, dist.y - 0.5f * scaleY);
-        glEnd();
-    }
 
     glColor3f(MARK_COLOR.r, MARK_COLOR.g, MARK_COLOR.b);
 
@@ -240,7 +233,7 @@ void Grid::RenderPoints()
         glVertex2f(dist.x + 0.5f * scaleX, dist.y + 0.5f * scaleY);
         glVertex2f(dist.x + 0.5f * scaleX, dist.y - 0.5f * scaleY);
         glEnd();
-    }*/
+    }
 
 }
 
@@ -268,8 +261,6 @@ void Grid::RenderGridLines()
     float scaleAvg = (transform[0][0] + transform[1][1]) / 2;
 
     glLineWidth(STROKE_WIDTH_MAX * scaleAvg / SCALE_CONSTRAINT_MAX);
-
-    //printf("X:[%d-%d] Y:[%d-%d]\n", fromX, toX, fromY, toY);
 
     for (int i = fromX; i <= toX; i++)
     {
@@ -346,12 +337,7 @@ void Grid::RenderHoveringEdge()
 void Grid::RenderHoveringVertex()
 {
     if (hoveringVertex != nullptr)
-    {
-        //RenderCircleGizmo(hoveringVertex->vertex, BACKGROUND_COLOR, 2.5f, true);
-        //RenderCircleGizmo(hoveringVertex->vertex, POLYGON_HOVER_COLOR, 2.5f, false);
-        //RenderCircleGizmo(hoveringVertex->vertex, POLYGON_VERTEX_COLOR, 1, true);
         RenderCircleGizmo(hoveringVertex->vertex, POLYGON_HOVER_COLOR, 1.5f, true);
-    }
 }
 
 void Grid::RenderCircleGizmo(glm::vec2 position, glm::vec3 color, float radius, bool filled)

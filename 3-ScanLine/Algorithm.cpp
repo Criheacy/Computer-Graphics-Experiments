@@ -1,154 +1,155 @@
 #include "Algorithm.h"
 
-void Algorithm::DDALine(class Grid* grid, int fromX, int toX, int fromY, int toY)
+void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 {
-	int section = ConvertToSection(fromX, toX, fromY, toY);
+	std::vector<Polygon::Edge*> edgeList = std::vector<Polygon::Edge*>();
+	EdgeLink* edgeLinkHead = new EdgeLink();
+	edgeLinkHead->next = nullptr;
+	edgeLinkHead->pre = nullptr;
 
-	float deltaX = toX - fromX;
-	float deltaY = toY - fromY;
-	float k = deltaY / deltaX;
-	float y = fromY;
+	int scanMin = INT_MAX;
+	int scanMax = INT_MIN;
 
-	for (int x = fromX; x <= toX; x++)
+	// Put edges in list; Select minimal point in vertex link
+	if (polygon->GetVertexNumber() < 3) return;
+	Polygon::Vertex* vertex = polygon->GetVertexHead();
+	do
 	{
-		MarkMappedPoint(grid, x, (int)y + 0.5f, fromX, fromY, section);
-		y = y + k;
-	}
-}
+		scanMin = std::min(scanMin, (int)floorf(vertex->vertex.y));
+		scanMax = std::max(scanMax, (int)ceilf(vertex->vertex.y));
 
-void Algorithm::BresenhamLine(class Grid* grid, int fromX, int toX, int fromY, int toY)
-{
-	int section = ConvertToSection(fromX, toX, fromY, toY);
+		Polygon::Edge* newEdge;
+		// The Y-coordinate of the FROM vertex should < that of the TO vertex
+		if (vertex->vertex.y < vertex->next->vertex.y)
+			newEdge = new Polygon::Edge{ vertex, vertex->next };
+		else newEdge = new Polygon::Edge{ vertex->next, vertex };
 
-	int x = fromX;
-	int y = fromY;
-	int deltaX = toX - fromX;
-	int deltaY = toY - fromY;
-
-	if (deltaX >= deltaY)
-	{
-		int e = -deltaX;
-		for (int i = 0; i <= deltaX; i++)
-		{
-			MarkMappedPoint(grid, x, y, fromX, fromY, section);
-			x++;
-			e += 2 * deltaY;
-			if (e >= 0)
-			{
-				y++;
-				e -= 2 * deltaX;
-			}
-		}
-	}
-}
-
-void Algorithm::MidPointCircle(class Grid* grid, int centerX, int centerY, int radius)
-{
-	int x = centerX;
-	int y = centerY + radius;
-
-	float d = 2 * x - 2 * centerX - y + centerY + 1.25;
-
-	MarkEightPoints(grid, centerX, centerY, x, y);
-
-	for (; x - centerX <= y - centerY; x++)
-	{
-		if (d < 0)
-		{
-			d += 2 * x - 2 * centerX + 3;
-		}
-		else
-		{
-			d += 2 * x - 2 * centerX - 2 * y + 2 * centerY + 5;
-			y--;
-		}
-		MarkEightPoints(grid, centerX, centerY, x, y);
-	}
-}
-
-int Algorithm::ConvertToSection(int& fromX, int& toX, int& fromY, int& toY)
-{
-	/* section:
-	 * 
-	 ******* deltaY ******
-	 *   \     ^     /   *
-	 *    \  7 | 1  /    *
-	 *     \   |   /     *
-	 *   6  \  |  /  0   *
-	 *---------+-------> deltaX
-	 *   4  /  |  \  2   *
-	 *     /   |   \     *
-	 *    /  5 | 3  \    *
-	 *   /     |     \   *
-	 ********************/
-
-	int section = 0x0;
-
-	int deltaX = toX - fromX;
-	int deltaY = toY - fromY;
-
-	// To.X < From.X
-	if (deltaX < 0)
-	{
-		section |= (1 << 2);
-		deltaX = -deltaX;
-		deltaY = -deltaY;
-	}
-
-	// Different positive and negative
-	if ((deltaX & NEG_INT_MIN) != (deltaY & NEG_INT_MIN))
-	{
-		section |= (1 << 1);
-		deltaY = -deltaY;
-	}
-
-	// Angle > 45
-	if (deltaY > deltaX)
-	{
-		section |= (1 << 0);
-		std::swap(deltaX, deltaY);
-	}
-
-	toX = fromX + deltaX;
-	toY = fromY + deltaY;
+		edgeList.push_back(newEdge);
+		vertex = vertex->next;
+	} while (vertex != polygon->GetVertexHead());
 	
-	return section;
+	std::sort(edgeList.begin(), edgeList.end(), EdgeYComparer);
+	int edgeListCnt = 0;
+
+	// Start line scanning
+	for (int scanY = scanMin; scanY <= scanMax; scanY++)
+	{
+		// Insert node into edgelist
+		while (edgeList[edgeListCnt]->from->vertex.y >= scanY)
+		{
+			EdgeLink* edgeLinkNode = new EdgeLink
+			{
+				edgeList[edgeListCnt]->from->vertex,
+				edgeList[edgeListCnt]->to->vertex,
+				// inverse slope
+				(edgeList[edgeListCnt]->to->vertex.x - edgeList[edgeListCnt]->from->vertex.x)
+					/ (edgeList[edgeListCnt]->to->vertex.y - edgeList[edgeListCnt]->from->vertex.y),
+				nullptr, nullptr
+			};
+			InsertNodeToEdgeLink(edgeLinkHead, edgeLinkNode);
+		}
+
+		OneTimeSortToEdgeLink(edgeLinkHead);
+
+		// Render row in scaning line
+		EdgeLink* edgeLinkNode = edgeLinkHead->next;
+		while (edgeLinkNode != nullptr)
+		{
+			if (edgeLinkNode->next == nullptr)
+			{
+				printf("[LOG]: Error: unpaired single node\n");
+				return;
+			}
+			MarkLine(grid, scanY, edgeLinkNode->now.x, edgeLinkNode->next->now.x);
+			edgeLinkNode = edgeLinkNode->next->next;
+		}
+
+		// Remove out-date nodes
+		RemoveNodeFromEdgeLink(edgeLinkHead);
+
+		// Update nodes
+		UpdateNodeInEdgeLink(edgeLinkHead);
+	}
 }
 
-void Algorithm::MarkMappedPoint(class Grid* grid, int x, int y, int fromX, int fromY, int section)
+// Compare Y-coordinate of smaller vertex of each edge
+bool Algorithm::EdgeYComparer(Polygon::Edge* a, Polygon::Edge* b)
 {
-	int deltaX = x - fromX;
-	int deltaY = y - fromY;
-
-	if (section & (1 << 0))
-	{
-		std::swap(deltaX, deltaY);
-	}
-
-	if (section & (1 << 1))
-	{
-		deltaY = -deltaY;
-	}
-
-	if (section & (1 << 2))
-	{
-		deltaX = -deltaX;
-		deltaY = -deltaY;
-	}
-
-	x = fromX + deltaX;
-	y = fromY + deltaY;
-
-	grid->MarkPoint(x, y);
+	return a->from->vertex.y < b->from->vertex.y;
 }
 
-void Algorithm::MarkEightPoints(Grid* grid, int centerX, int centerY, int x, int y)
+void Algorithm::InsertNodeToEdgeLink(EdgeLink* head, EdgeLink* node)
 {
-	int deltaX = x - centerX;
-	int deltaY = y - centerY;
+	EdgeLink* nowNode = head;
+	while (nowNode->next != nullptr)
+	{
+		nowNode = nowNode->next;
+		if (nowNode->now.x > node->now.x)
+		{
+			node->pre = nowNode->pre;
+			node->next = nowNode;
+			nowNode->pre->next = node;
+			nowNode->pre = node;
+			return;
+		}
+	}
+	nowNode->next = node;
+	node->pre = nowNode;
+}
 
-	grid->MarkPoint(centerX + deltaX, centerY + deltaY); grid->MarkPoint(centerX + deltaY, centerY + deltaX);
-	grid->MarkPoint(centerX - deltaX, centerY + deltaY); grid->MarkPoint(centerX - deltaY, centerY + deltaX);
-	grid->MarkPoint(centerX + deltaX, centerY - deltaY); grid->MarkPoint(centerX + deltaY, centerY - deltaX);
-	grid->MarkPoint(centerX - deltaX, centerY - deltaY); grid->MarkPoint(centerX - deltaY, centerY - deltaX);
+void Algorithm::OneTimeSortToEdgeLink(EdgeLink* head)
+{
+	EdgeLink* nowNode = head;
+	while (nowNode->next != nullptr && nowNode->next->next != nullptr)
+	{
+		nowNode = nowNode->next;
+		if (nowNode->now.x > nowNode->next->now.x)
+		{
+			// Swap nowNode and nowNode->next in link
+			nowNode->pre->next = nowNode->next;
+			nowNode->next->next->pre = nowNode;
+			nowNode->next->pre = nowNode->pre;
+			nowNode->next = nowNode->next->next;
+			nowNode->pre->next->next = nowNode;
+			nowNode->pre = nowNode->pre->next;
+		}
+	}
+}
+
+void Algorithm::UpdateNodeInEdgeLink(EdgeLink* head)
+{
+	EdgeLink* nowNode = head;
+	while (nowNode->next != nullptr)
+	{
+		nowNode = nowNode->next;
+		nowNode->now.x += nowNode->delta;
+		nowNode->now.y++;
+	}
+}
+
+void Algorithm::RemoveNodeFromEdgeLink(EdgeLink* head)
+{
+	EdgeLink* nowNode = head;
+	EdgeLink* nextNode = nowNode->next;
+	while (nextNode != nullptr)
+	{
+		nowNode = nextNode;
+		if (nowNode->now.y >= nowNode->end.y)
+		{
+			// Delete nowNode
+			nowNode->pre->next = nowNode->next;
+			nowNode->next->pre = nowNode->pre;
+			
+			nextNode = nowNode->next;
+			delete nowNode;
+			nowNode = nullptr;
+		}
+		else nextNode = nowNode->next;
+	}
+}
+
+void Algorithm::MarkLine(Grid* grid, int y, int fromX, int toX)
+{
+	for (int i = fromX; i <= toX; i++)
+		grid->MarkPoint(i, y);
 }

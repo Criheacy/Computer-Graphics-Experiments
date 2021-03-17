@@ -29,6 +29,8 @@ public:
 	void HandleMouseDrag(glm::vec2 position);
 	void HandleMouseMove(glm::vec2 position);
 
+	void ScanLineOnPolygon();
+
 	// Convert screen coordinate to point data in pointlist
 	glm::vec2 InPoint(glm::vec2 src);
 
@@ -75,4 +77,6 @@ private:
 	Polygon::Edge* hoveringEdge;
 
 	Polygon::Vertex* holdingVertex;
+
+	std::vector<glm::vec2> pointList;
 };

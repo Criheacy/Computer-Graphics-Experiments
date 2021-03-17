@@ -4,16 +4,27 @@
 class Algorithm
 {
 public:
-	static void DDALine(class Grid* grid, int fromX, int toX, int fromY, int toY);
+	struct EdgeLink
+	{
+		glm::vec2 now;
+		glm::vec2 end;
+		float delta;
+		EdgeLink* next;
+		EdgeLink* pre;
+	};
 
-	static void BresenhamLine(class Grid* grid, int fromX, int toX, int fromY, int toY);
-
-	static void MidPointCircle(class Grid* grid, int centerX, int centerY, int radius);
+	static void ScanLine(class Grid* grid, class Polygon* polygon);
 
 protected:
-	static void MarkMappedPoint(class Grid* grid, int x, int y, int fromX, int fromY, int section);
+	static bool EdgeYComparer(Polygon::Edge* a, Polygon::Edge* b);
 
-	static int ConvertToSection(int& fromX, int& toX, int& fromY, int& toY);
+	static void InsertNodeToEdgeLink(EdgeLink* head, EdgeLink* node);
 
-	static void MarkEightPoints(class Grid* grid, int centerX, int centerY, int x, int y);
+	static void OneTimeSortToEdgeLink(EdgeLink* head);
+
+	static void UpdateNodeInEdgeLink(EdgeLink* head);
+
+	static void RemoveNodeFromEdgeLink(EdgeLink* head);
+
+	static void MarkLine(Grid* grid, int y, int fromX, int toX);
 };

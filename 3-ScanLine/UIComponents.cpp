@@ -328,13 +328,13 @@ namespace UI
 
 	void Button::Select()
 	{
-		isSelected = true;
+
 		OnSelected();
 	}
 
 	void Button::Deselect()
 	{
-		isSelected = false;
+
 	}
 
 	void Button::Render()

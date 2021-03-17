@@ -83,8 +83,6 @@ void HandleMouseMotionEvent(int x, int y)
     if (leftPressed)
     {
         Grid::Instance().HandleMouseDrag(glm::vec2(x, y));
-        /*Grid::Instance().SetHoverPoint(Grid::Instance().InPoint(glm::vec2(x, y)));
-        Grid::Instance().SetEndPoint(Grid::Instance().InPoint(glm::vec2(x, y)));*/
     }
     if (middlePressed)
     {
@@ -122,6 +120,7 @@ int main(int argc, char* argv[])
     applyAlgorithm.SetText("SCAN LINE");
     applyAlgorithm.SetOnSelectListener([]() -> void {
         Grid::Instance().ClearPoints();
+        Grid::Instance().ScanLineOnPolygon();
     });
 
     UI::Canvas::Instance().AddComponent(&applyAlgorithm);

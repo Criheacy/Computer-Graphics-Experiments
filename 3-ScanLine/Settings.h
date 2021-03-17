@@ -3,6 +3,7 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include <glut.h>
 
