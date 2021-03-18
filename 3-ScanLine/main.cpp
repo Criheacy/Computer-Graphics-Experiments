@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     // Initialize and create window
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    glutCreateWindow("2 - Stroke and Line");
+    glutCreateWindow("3 - Scan Line");
 
     // Scaling grid background
     Grid::Instance().ScaleAt(18, glm::vec2(-20, -17));
@@ -115,8 +115,7 @@ int main(int argc, char* argv[])
     UI::Button applyAlgorithm = UI::Button(2, SCREEN_WIDTH - 130, 30, SCREEN_WIDTH - 30, 60);
     applyAlgorithm.SetText("SCAN LINE");
     applyAlgorithm.SetOnSelectListener([]() -> void {
-        Grid::Instance().ClearPoints();
-        Grid::Instance().ScanLineOnPolygon();
+        Grid::Instance().HandleButtonEvent();
     });
 
     UI::Canvas::Instance().AddComponent(&applyAlgorithm);

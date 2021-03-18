@@ -29,6 +29,7 @@ public:
 	void HandleMouseUp(glm::vec2 position);
 	void HandleMouseDrag(glm::vec2 position);
 	void HandleMouseMove(glm::vec2 position);
+	void HandleButtonEvent();
 
 	void ScanLineOnPolygon();
 

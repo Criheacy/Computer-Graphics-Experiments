@@ -12,6 +12,7 @@ public:
 	void StartAnimation();
 	void StopAnimation();
 	T GetValue();
+	bool IsRunning();
 
 protected:
 	int NowTime();
@@ -69,6 +70,12 @@ T Animator<T>::GetValue()
 
 	if (!enable) return defaultValue;
 	return static_cast<T>(fromValue * (1.0 - ratio) + toValue * ratio);
+}
+
+template<typename T>
+bool Animator<T>::IsRunning()
+{
+	return enable;
 }
 
 template<typename T>

@@ -77,6 +77,7 @@ void Grid::Reanchor(glm::vec2 anchor)
 
 void Grid::HandleLeftMouseDown(glm::vec2 position)
 {
+    if (animator.IsRunning()) return;
     if (hoveringEdge != nullptr)
     {
         position = InverseTransform(position);
@@ -94,6 +95,7 @@ void Grid::HandleLeftMouseDown(glm::vec2 position)
 
 void Grid::HandleRightMouseDown(glm::vec2 position)
 {
+    if (animator.IsRunning()) return;
     if (hoveringVertex != nullptr)
     {
         polygon.RemoveVertex(hoveringVertex);
@@ -105,11 +107,13 @@ void Grid::HandleRightMouseDown(glm::vec2 position)
 void Grid::HandleMouseUp(glm::vec2 position)
 {
     holdingVertex = nullptr;
+    if (animator.IsRunning()) return;
 }
 
 void Grid::HandleMouseDrag(glm::vec2 position)
 {
     if (holdingVertex == nullptr) return;
+    if (animator.IsRunning()) return;
 
     position = InverseTransform(position);
     position.x = (int)roundf(position.x);
@@ -148,6 +152,15 @@ void Grid::HandleMouseMove(glm::vec2 position)
     }
 }
 
+void Grid::HandleButtonEvent()
+{
+    if (!animator.IsRunning())
+    {
+        ClearPoints();
+        ScanLineOnPolygon();
+    }
+}
+
 void Grid::ScanLineOnPolygon()
 {
     Algorithm::ScanLine(this, &polygon);
@@ -179,9 +192,9 @@ void Grid::StartAnimation()
 {
     int pointNumber = waitingList.size();
     animator.SetValueRange(pointNumber, 0);
-    int duration = 8000;
-    if (pointNumber < 100)
-        duration = 80 * pointNumber;
+    int duration = 5000;
+    if (pointNumber < 500)
+        duration = 10 * pointNumber;
     animator.SetDuration(duration);
 
     showScanningLine = true;
@@ -197,7 +210,10 @@ void Grid::UpdateAnimation()
 
         glm::vec2 nextNode = waitingList.front();
         if (nextNode.y != scanningLine.y)
+        {
             scanningLine.y = nextNode.y;
+            showScanningLine = true;
+        }
 
         pointList.push_back(nextNode);
         waitingList.pop();
