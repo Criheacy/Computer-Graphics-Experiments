@@ -32,7 +32,6 @@ public:
 
     // Convert coordinate from vector to screen position
     glm::vec2 ProjectToScreen(glm::vec2 src);
-//    glm::vec2 ConvertToCoordinate(glm::vec2 src);
 
 protected:
     // Convert from origin to coordinate which has been transformed (such as translated or rotated ...)
