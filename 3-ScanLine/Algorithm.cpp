@@ -11,10 +11,11 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 	int scanMax = INT_MIN;
 
 	// Put edges in list; Select minimal point in vertex link
-	if (polygon->GetVertexNumber() < 3) return;
+	if (polygon->GetVertexNumber() < 3) return;	// Not a polygon
 	Polygon::Vertex* vertex = polygon->GetVertexHead();
-	do
+	do	// Enumerate each point in polygon
 	{
+		// 
 		scanMin = std::min(scanMin, (int)floorf(vertex->vertex.y));
 		scanMax = std::max(scanMax, (int)ceilf(vertex->vertex.y));
 
