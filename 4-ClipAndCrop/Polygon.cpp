@@ -37,6 +37,11 @@ Polygon::Polygon(const Polygon& polygon)
 	preVertex->next = this->vertexHead;
 }
 
+Polygon::~Polygon()
+{
+	ClearVertex();
+}
+
 Polygon& Polygon::operator=(const Polygon& polygon)
 {
 	Polygon* newPolygon = new Polygon(polygon);
@@ -60,6 +65,7 @@ void Polygon::InitialTriangle(float a)
 
 void Polygon::ClearVertex()
 {
+	vertexNumber = 0;
 	if (vertexHead == nullptr) return;
 	Vertex* nextVertex;
 	while (vertexHead->next != vertexHead)
@@ -167,7 +173,7 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 
 float Polygon::GetDistanceToEdge(glm::vec2 point, Polygon::Edge* edge)
 {
-	glm::vec2 vEdge = edge->to->vertex - edge->from->vertex;
+ 	glm::vec2 vEdge = edge->to->vertex - edge->from->vertex;
 	glm::vec2 oEdge = glm::vec2(-vEdge.y, vEdge.x);
 
 	glm::vec2 vTarget = point - edge->from->vertex;

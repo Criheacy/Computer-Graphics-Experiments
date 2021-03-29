@@ -41,6 +41,9 @@
 #define FRAME_LINE_WIDTH 4
 #define FRAME_LINE_COLOR glm::vec3(1.0f, 0.2f, 0.2f)
 
+#define RENDER_OUT_FRAME_BACKGROUND true
+#define OUT_FRAME_COLOR glm::vec3(1.0f, 0.9f, 0.9f)
+
 #define FRAME_GIZMO_OFFSET 7
 #define FRAME_GIZMO_LENGTH 20
 

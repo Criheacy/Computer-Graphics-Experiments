@@ -60,23 +60,16 @@ private:
 	glm::mat3x3 project;
 	glm::vec2 anchor;
 
-	Rect frame;
+	Rect* frame;
 	RD hoveringFrameVertex;
 	RD hoveringFrameEdge;
 	RD holdingFrameVertex;
 	RD holdingFrameEdge;
 
-	Polygon polygon;
+	Polygon* polygon;
 	Polygon::Vertex* hoveringVertex;
 	Polygon::Edge* hoveringEdge;
-
-	Polygon* clippedPolygon;
-
 	Polygon::Vertex* holdingVertex;
 
-	bool showScanningLine;
-	glm::vec2 scanningLine;	// usually render Y-coordinate
-	std::vector<glm::vec2> pointList;
-
-	std::queue<glm::vec2> waitingList;
+	Polygon* clippedPolygon;
 };

@@ -1,18 +1,18 @@
 #include "Algorithm.h"
 
-class Polygon* Algorithm::CropPolygon(const class Polygon* polygon, const class Rect& clipFrame)
+class Polygon* Algorithm::CropPolygon(const class Polygon* polygon, const class Rect* clipFrame)
 {
 	Polygon* result = new Polygon(*polygon);
 
-	printf("FLAG\n");
-	result = CropPolygonByLine(result, clipFrame.GetDir(Rect::LEFT | Rect::TOP), clipFrame.GetDir(Rect::TOP | Rect::RIGHT));
-	printf("FLAG\n");
-	result = CropPolygonByLine(result, clipFrame.GetDir(Rect::TOP | Rect::RIGHT), clipFrame.GetDir(Rect::RIGHT | Rect::BOTTOM));
-	printf("FLAG\n");
-	result = CropPolygonByLine(result, clipFrame.GetDir(Rect::RIGHT | Rect::BOTTOM), clipFrame.GetDir(Rect::BOTTOM | Rect::LEFT));
-	printf("FLAG\n");
-	result = CropPolygonByLine(result, clipFrame.GetDir(Rect::BOTTOM | Rect::LEFT), clipFrame.GetDir(Rect::LEFT | Rect::TOP));
-	printf("FLAG\n");
+	Polygon* temp = result;
+	result = CropPolygonByLine(temp, clipFrame->GetDir(Rect::LEFT | Rect::TOP), clipFrame->GetDir(Rect::TOP | Rect::RIGHT));
+	delete temp; temp = result;
+	result = CropPolygonByLine(temp, clipFrame->GetDir(Rect::TOP | Rect::RIGHT), clipFrame->GetDir(Rect::RIGHT | Rect::BOTTOM));
+	delete temp; temp = result;
+	result = CropPolygonByLine(temp, clipFrame->GetDir(Rect::RIGHT | Rect::BOTTOM), clipFrame->GetDir(Rect::BOTTOM | Rect::LEFT));
+	delete temp; temp = result;
+	result = CropPolygonByLine(temp, clipFrame->GetDir(Rect::BOTTOM | Rect::LEFT), clipFrame->GetDir(Rect::LEFT | Rect::TOP));
+	delete temp; temp = nullptr;
 
 	return result;
 }

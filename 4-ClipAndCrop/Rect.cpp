@@ -25,12 +25,12 @@ void Rect::MoveTo(RD dir, glm::vec2 dist)
 
 glm::vec2 Rect::GetDir(RD dir) const
 {
-	glm::vec2* result = new glm::vec2();
-	if (dir & TOP) result->y = topY;
-	if (dir & LEFT) result->x = leftX;
-	if (dir & BOTTOM) result->y = bottomY;
-	if (dir & RIGHT) result->x = rightX;
-	return *result;
+	glm::vec2 result = glm::vec2();
+	if (dir & TOP) result.y = topY;
+	if (dir & LEFT) result.x = leftX;
+	if (dir & BOTTOM) result.y = bottomY;
+	if (dir & RIGHT) result.x = rightX;
+	return result;
 }
 
 RD Rect::GetNearestEdge(glm::vec2 point)

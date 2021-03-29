@@ -20,6 +20,7 @@ public:
 	Polygon();
 	Polygon(std::vector<glm::vec2> vertexes);
 	Polygon(const Polygon& polygon);
+	~Polygon();
 
 	Polygon& operator= (const Polygon& polygon);
 

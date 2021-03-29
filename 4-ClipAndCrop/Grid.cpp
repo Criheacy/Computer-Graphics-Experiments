@@ -11,14 +11,18 @@ Grid::Grid()
 
 	anchor = glm::vec2(0.0f);
 
-	showScanningLine = false;
-	scanningLine = glm::vec2(0.0f, 0.0f);
-
 	hoveringEdge = nullptr;
 	hoveringVertex = nullptr;
 	holdingVertex = nullptr;
 
-	waitingList = std::queue<glm::vec2>();
+	polygon = new Polygon();
+	clippedPolygon = nullptr;
+	frame = new Rect();
+
+	hoveringFrameVertex = 0;
+	hoveringFrameEdge = 0;
+	holdingFrameVertex = 0;
+	holdingFrameEdge = 0;
 }
 
 Grid& Grid::Instance()
@@ -57,7 +61,7 @@ void Grid::HandleLeftMouseDown(glm::vec2 position)
 		position = InverseTransform(position);
 		position.x = (int)roundf(position.x);
 		position.y = (int)roundf(position.y);
-		holdingVertex = polygon.CreateNewVertexOn(position, hoveringEdge);
+		holdingVertex = polygon->CreateNewVertexOn(position, hoveringEdge);
 		hoveringEdge = nullptr;
 	}
 	else if (hoveringVertex != nullptr)
@@ -70,7 +74,7 @@ void Grid::HandleRightMouseDown(glm::vec2 position)
 {
 	if (hoveringVertex != nullptr)
 	{
-		polygon.RemoveVertex(hoveringVertex);
+		polygon->RemoveVertex(hoveringVertex);
 		hoveringVertex = nullptr;
 	}
 }
@@ -88,28 +92,14 @@ void Grid::HandleMouseDrag(glm::vec2 position)
 	position.x = (int)roundf(position.x);
 	position.y = (int)roundf(position.y);
 
-	if (holdingFrameVertex != 0)
-	{
-		if (position != frame.GetDir(holdingFrameVertex))
-		{
-			frame.MoveTo(holdingFrameVertex, position);
-		}
-	}
-	if (holdingFrameEdge != 0)
-	{
-		if (position != frame.GetDir(holdingFrameEdge))
-		{
-			frame.MoveTo(holdingFrameEdge, position);
-		}
-	}
+	if (holdingFrameVertex != 0 && position != frame->GetDir(holdingFrameVertex))
+		frame->MoveTo(holdingFrameVertex, position);
 
-	if (holdingVertex != nullptr)
-	{
-		if (position != holdingVertex->vertex)
-		{
-			holdingVertex->vertex = position;
-		}
-	}
+	if (holdingFrameEdge != 0 && position != frame->GetDir(holdingFrameEdge))
+		frame->MoveTo(holdingFrameEdge, position);
+
+	if (holdingVertex != nullptr && position != holdingVertex->vertex)
+		holdingVertex->vertex = position;
 }
 
 void Grid::HandleMouseMove(glm::vec2 position)
@@ -123,35 +113,36 @@ void Grid::HandleMouseMove(glm::vec2 position)
 	float distFix = (transform[0][0] + transform[1][1]) / 2 / 10;
 	position = InverseTransform(position);
 
-	RD frameNearestVertex = frame.GetNearestVertex(position);
-	dist = frame.GetDistanceToVertex(position, frameNearestVertex);
+	RD frameNearestVertex = frame->GetNearestVertex(position);
+	dist = frame->GetDistanceToVertex(position, frameNearestVertex);
 	if (dist <= VERTEX_SELECT_DIST / distFix)
 	{
 		hoveringFrameVertex = frameNearestVertex;
 		return;
 	}
 
-	RD frameNearestEdge = frame.GetNearestEdge(position);
-	dist = frame.GetDistanceToEdge(position, frameNearestEdge);
+	RD frameNearestEdge = frame->GetNearestEdge(position);
+	dist = frame->GetDistanceToEdge(position, frameNearestEdge);
 	if (dist <= EDGE_SELECT_DIST / distFix)
 	{
 		hoveringFrameEdge = frameNearestEdge;
 		return;
 	}
 
-	Polygon::Vertex* nearestVertex = polygon.GetNearestVertex(position);
-	dist = polygon.GetDistanceToVertex(position, nearestVertex);
+	Polygon::Vertex* nearestVertex = polygon->GetNearestVertex(position);
+	dist = polygon->GetDistanceToVertex(position, nearestVertex);
 	if (dist <= VERTEX_SELECT_DIST / distFix)
 	{
 		hoveringVertex = nearestVertex;
 		return;
 	}
 
-	Polygon::Edge* nearestEdge = polygon.GetNearestEdge(position);
-	dist = polygon.GetDistanceToEdge(position, nearestEdge);
+	Polygon::Edge* nearestEdge = polygon->GetNearestEdge(position);
+	dist = polygon->GetDistanceToEdge(position, nearestEdge);
 	if (dist <= EDGE_SELECT_DIST / distFix)
 	{
 		hoveringEdge = nearestEdge;
+		return;
 	}
 }
 
@@ -162,7 +153,8 @@ void Grid::HandleButtonEvent()
 
 void Grid::CropPolygon()
 {
-	clippedPolygon = (Algorithm::CropPolygon(&polygon, frame));
+	delete clippedPolygon;
+	clippedPolygon = (Algorithm::CropPolygon(polygon, frame));
 }
 
 glm::vec2 Grid::Transform(glm::vec2 src)
@@ -173,7 +165,6 @@ glm::vec2 Grid::Transform(glm::vec2 src)
 glm::vec2 Grid::InverseTransform(glm::vec2 src)
 {
 	glm::mat3x3 inverseTransform = glm::inverse(transform);
-
 	return inverseTransform * (glm::vec3(src.x, src.y, 1.0f) - glm::vec3(anchor, 0.0f));
 }
 
@@ -187,7 +178,8 @@ void Grid::Render()
 	glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	RenderPolygon(&polygon, POLYGON_COLOR);
+	if (polygon != nullptr)
+		RenderPolygon(polygon, POLYGON_COLOR);
 	if (clippedPolygon != nullptr)
 		RenderPolygon(clippedPolygon, CLIPPED_POLYGON_COLOR);
 	RenderFrame();
@@ -197,10 +189,10 @@ void Grid::RenderFrame()
 {
 	glColor3f(FRAME_LINE_COLOR.r, FRAME_LINE_COLOR.g, FRAME_LINE_COLOR.b);
 
-	RenderVerticalLine(FRAME_LINE_WIDTH, frame.GetDir(Rect::TOP | Rect::LEFT), frame.GetDir(Rect::LEFT | Rect::BOTTOM));
-	RenderHorizontalLine(FRAME_LINE_WIDTH, frame.GetDir(Rect::LEFT | Rect::BOTTOM), frame.GetDir(Rect::BOTTOM | Rect::RIGHT));
-	RenderVerticalLine(FRAME_LINE_WIDTH, frame.GetDir(Rect::RIGHT | Rect::TOP), frame.GetDir(Rect::BOTTOM | Rect::RIGHT));
-	RenderHorizontalLine(FRAME_LINE_WIDTH, frame.GetDir(Rect::TOP | Rect::LEFT), frame.GetDir(Rect::RIGHT | Rect::TOP));
+	RenderVerticalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::TOP | Rect::LEFT), frame->GetDir(Rect::LEFT | Rect::BOTTOM));
+	RenderHorizontalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::LEFT | Rect::BOTTOM), frame->GetDir(Rect::BOTTOM | Rect::RIGHT));
+	RenderVerticalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::RIGHT | Rect::TOP), frame->GetDir(Rect::BOTTOM | Rect::RIGHT));
+	RenderHorizontalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::TOP | Rect::LEFT), frame->GetDir(Rect::RIGHT | Rect::TOP));
 }
 
 void Grid::RenderVerticalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPos)
@@ -248,7 +240,7 @@ void CALLBACK errorCallback(GLenum errorCode)
 {
 	const GLubyte* estring;
 	estring = gluErrorString(errorCode);
-	fprintf(stderr, "Tessellation Error: %s\n", estring);
+//	fprintf(stderr, "Tessellation Error: %s\n", estring);
 	// exit(0);
 }
 
