@@ -24,23 +24,27 @@ class Polygon* Algorithm::CropPolygonByLine(class Polygon* polygon, const glm::v
 	std::vector<glm::vec2> vertexList;
 
 	Polygon::Vertex* nowVertex = polygon->GetVertexHead();
-	do
+
+	if (nowVertex != nullptr)
 	{
-		if (glm::cross(glm::vec3(nowVertex->vertex - clipLineFrom, 0.0f), glm::vec3(clipLine, 0.0f)).z < 0)
-			// Vertex in clipping area
-			vertexList.push_back(nowVertex->vertex);
-
-		glm::mat2x2 matrix = glm::mat2x2(nowVertex->next->vertex - nowVertex->vertex, -clipLine);
-		
-		if (glm::determinant(matrix) != 0)
+		do
 		{
-			glm::vec2 ans = glm::inverse(matrix) * glm::vec2(clipLineFrom - nowVertex->vertex);
-			if (ans.x > 0 && ans.x < 1)
-				vertexList.push_back(nowVertex->vertex + ans.x * (nowVertex->next->vertex - nowVertex->vertex));
-		}
+			if (glm::cross(glm::vec3(nowVertex->vertex - clipLineFrom, 0.0f), glm::vec3(clipLine, 0.0f)).z <= 0.001f) // fix accuracy error
+				// Vertex in clipping area
+				vertexList.push_back(nowVertex->vertex);
 
-		nowVertex = nowVertex->next;
-	} while (nowVertex != polygon->GetVertexHead());
+			glm::mat2x2 matrix = glm::mat2x2(nowVertex->next->vertex - nowVertex->vertex, -clipLine);
+
+			if (glm::determinant(matrix) != 0)
+			{
+				glm::vec2 ans = glm::inverse(matrix) * glm::vec2(clipLineFrom - nowVertex->vertex);
+				if (ans.x > 0 && ans.x < 1)
+					vertexList.push_back(nowVertex->vertex + ans.x * (nowVertex->next->vertex - nowVertex->vertex));
+			}
+
+			nowVertex = nowVertex->next;
+		} while (nowVertex != polygon->GetVertexHead());
+	}
 
 	Polygon* result = new Polygon(vertexList);
 	return result;

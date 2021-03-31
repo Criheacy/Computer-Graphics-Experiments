@@ -8,6 +8,12 @@ Polygon::Polygon()
 Polygon::Polygon(std::vector<glm::vec2> vertexes)
 {
 	vertexNumber = vertexes.size();
+	if (vertexNumber == 0)
+	{
+		vertexHead = nullptr;
+		return;
+	}
+
 	Vertex* nowVertex = new Vertex{ vertexes[0], nullptr };
 	vertexHead = nowVertex;
 

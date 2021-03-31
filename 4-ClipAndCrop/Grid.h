@@ -44,6 +44,7 @@ protected:
 
 private:
 	void RenderFrame();
+	void RenderBackground();
 	void RenderPolygon(const Polygon* polygon, glm::vec3 fillColor);
 
 	void RenderVerticalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPos);

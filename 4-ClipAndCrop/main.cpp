@@ -19,6 +19,7 @@ int lastTime;
 
 void RenderScene(void)
 {
+    Grid::Instance().CropPolygon();
     Grid::Instance().Render();
     UI::Canvas::Instance().Render();
     glutSwapBuffers();
@@ -104,23 +105,13 @@ int main(int argc, char* argv[])
     glutCreateWindow("4 - Clip and Crop");
 
     // Declear buttons on UI canvas
-    UI::Button lineButton = UI::Button(1, SCREEN_WIDTH - 110, 30, SCREEN_WIDTH - 30, 60);
-    lineButton.SetText("LINE");
-    lineButton.SetOnSelectListener([]() -> void {
-        // Grid::Instance().HandleButtonEvent();
-    });
-
-    UI::Button polygonButton = UI::Button(2, SCREEN_WIDTH - 110, 80, SCREEN_WIDTH - 30, 110);
-    polygonButton.SetText("POLYGON");
+    UI::Button polygonButton = UI::Button(1, SCREEN_WIDTH - 110, 30, SCREEN_WIDTH - 30, 60);
+    polygonButton.SetText("CLIP!");
     polygonButton.SetOnSelectListener([]() -> void {
         Grid::Instance().HandleButtonEvent();
     });
 
-    UI::RadioButton shapeSelector = UI::RadioButton(3);
-    shapeSelector.AddButton(lineButton);
-    shapeSelector.AddButton(polygonButton);
-
-    UI::Canvas::Instance().AddComponent(&shapeSelector);
+    UI::Canvas::Instance().AddComponent(&polygonButton);
 
     Grid::Instance().Translate(glm::vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50));
 

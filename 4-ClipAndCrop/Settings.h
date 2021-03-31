@@ -28,8 +28,8 @@
 #define POLYGON_HOVER_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
 #define POLYGON_PRESS_COLOR glm::vec3(0.0f, 0.0f, 0.0f)
 
-#define POLYGON_COLOR glm::vec3(0.9f, 0.9f, 0.9f)
-#define CLIPPED_POLYGON_COLOR glm::vec3(0.7f, 0.7f, 0.7f)
+#define POLYGON_COLOR glm::vec3(0.423f, 0.62f, 0.8f)
+#define CLIPPED_POLYGON_COLOR glm::vec3(0.53f, 0.77f, 1.0f)
 
 #define ENABLE_HOVERING_HINT true
 
@@ -39,10 +39,10 @@
 #define HOVERING_VERTEX_RADIUS 1
 
 #define FRAME_LINE_WIDTH 4
-#define FRAME_LINE_COLOR glm::vec3(1.0f, 0.2f, 0.2f)
+#define FRAME_LINE_COLOR glm::vec3(0.067f, 0.423f, 0.757f)
 
 #define RENDER_OUT_FRAME_BACKGROUND true
-#define OUT_FRAME_COLOR glm::vec3(1.0f, 0.9f, 0.9f)
+#define OUT_FRAME_COLOR glm::vec3(0.8f, 0.8f, 0.8f)
 
 #define FRAME_GIZMO_OFFSET 7
 #define FRAME_GIZMO_LENGTH 20

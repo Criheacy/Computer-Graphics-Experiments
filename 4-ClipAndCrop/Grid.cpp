@@ -148,7 +148,10 @@ void Grid::HandleMouseMove(glm::vec2 position)
 
 void Grid::HandleButtonEvent()
 {
-	CropPolygon();
+//	CropPolygon();
+	Polygon* temp = polygon;
+	polygon = new Polygon(*clippedPolygon);
+	delete temp;
 }
 
 void Grid::CropPolygon()
@@ -178,6 +181,9 @@ void Grid::Render()
 	glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	if (RENDER_OUT_FRAME_BACKGROUND)
+		RenderBackground();
+
 	if (polygon != nullptr)
 		RenderPolygon(polygon, POLYGON_COLOR);
 	if (clippedPolygon != nullptr)
@@ -193,6 +199,32 @@ void Grid::RenderFrame()
 	RenderHorizontalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::LEFT | Rect::BOTTOM), frame->GetDir(Rect::BOTTOM | Rect::RIGHT));
 	RenderVerticalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::RIGHT | Rect::TOP), frame->GetDir(Rect::BOTTOM | Rect::RIGHT));
 	RenderHorizontalLine(FRAME_LINE_WIDTH, frame->GetDir(Rect::TOP | Rect::LEFT), frame->GetDir(Rect::RIGHT | Rect::TOP));
+}
+
+void Grid::RenderBackground()
+{
+	glm::vec2 leftTop = frame->GetDir(Rect::TOP | Rect::LEFT);
+	glm::vec2 rightBottom = frame->GetDir(Rect::BOTTOM | Rect::RIGHT);
+
+	leftTop = ProjectToScreen(Transform(leftTop));
+	rightBottom = ProjectToScreen(Transform(rightBottom));
+
+	glColor3f(OUT_FRAME_COLOR.r, OUT_FRAME_COLOR.g, OUT_FRAME_COLOR.b);
+	glBegin(GL_QUADS);
+	glVertex2f(-1.0f, -1.0f); glVertex2f(leftTop.x, -1.0f); glVertex2f(leftTop.x, 1.0f); glVertex2f(-1.0f, 1.0f);
+	glEnd();
+
+	glBegin(GL_QUADS);
+	glVertex2f(-1.0f, -1.0f); glVertex2f(1.0f, -1.0f); glVertex2f(1.0f, rightBottom.y); glVertex2f(-1.0f, rightBottom.y);
+	glEnd();
+
+	glBegin(GL_QUADS);
+	glVertex2f(-1.0f, leftTop.y); glVertex2f(1.0f, leftTop.y); glVertex2f(1.0f, 1.0f); glVertex2f(-1.0f, 1.0f);
+	glEnd();
+
+	glBegin(GL_QUADS);
+	glVertex2f(rightBottom.x, -1.0f); glVertex2f(1.0f, -1.0f); glVertex2f(1.0f, 1.0f); glVertex2f(rightBottom.x, 1.0f);
+	glEnd();
 }
 
 void Grid::RenderVerticalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPos)
@@ -228,7 +260,6 @@ void CALLBACK vertexCallback(GLvoid* vertex)
 void CALLBACK beginCallback(GLenum type)
 {
 	glBegin(type);
-	glColor3f(POLYGON_COLOR.r, POLYGON_COLOR.g, POLYGON_COLOR.b);
 }
 
 void CALLBACK endCallback()
