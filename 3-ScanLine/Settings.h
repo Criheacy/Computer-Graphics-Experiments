@@ -24,7 +24,7 @@
 #define MARK_COLOR glm::vec3(0.95f, 0.2f, 0.0f)
 #define GRID_COLOR glm::vec3(0.9f, 0.9f, 0.9f)
 
-#define SHOW_SCANNING_ANIMATION false
+#define SHOW_SCANNING_ANIMATION true
 
 #define SCANNING_LINE_COLOR glm::vec3(0.12f, 0.27f, 0.95f)
 #define POINT_ON_SCANNING_LINE_COLOR glm::vec3(0.0f, 0.0f, 0.0f)

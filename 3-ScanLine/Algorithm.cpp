@@ -15,7 +15,6 @@ void Algorithm::ScanLine(class Grid* grid, class Polygon* polygon)
 	Polygon::Vertex* vertex = polygon->GetVertexHead();
 	do	// Enumerate each point in polygon
 	{
-		// 
 		scanMin = std::min(scanMin, (int)floorf(vertex->vertex.y));
 		scanMax = std::max(scanMax, (int)ceilf(vertex->vertex.y));
 
