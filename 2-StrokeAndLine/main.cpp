@@ -1,4 +1,4 @@
-#include <glut.h>
+#include <GL/glut.h>
 
 #include "UIComponents.h"
 #include "Settings.h"
@@ -16,7 +16,7 @@ int mouseDragFromY;
 int frameCount;
 int lastTime;
 
-void RenderScene(void)
+void RenderScene()
 {
     Grid::Instance().Render();
     UI::Canvas::Instance().Render();
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
     // Scaling grid background
     Grid::Instance().Scale(30);
 
-    // Declear buttons on UI canvas
+    // Declare buttons on UI canvas
     UI::Button lineButton = UI::Button(2, SCREEN_WIDTH - 100, 30, SCREEN_WIDTH - 30, 60);
     lineButton.SetText("LINE");
     lineButton.SetOnSelectListener([]() -> void {

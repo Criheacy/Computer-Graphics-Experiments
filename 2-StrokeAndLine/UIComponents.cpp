@@ -17,12 +17,12 @@ namespace UI
 		componentList.push_back(component);
 	}
 
-	void Canvas::RemoveComponent(Component* component)
+	/*void Canvas::RemoveComponent(Component* component)
 	{
 		auto it = std::find(componentList.begin(), componentList.end(), component);
 		if (it != componentList.end())
 			componentList.erase(it);
-	}
+	}*/
 
 	Component* Canvas::GetComponentByID(unsigned int id)
 	{
@@ -88,7 +88,7 @@ namespace UI
 		this->id = id;
 	}
 
-	unsigned int Component::GetID()
+	unsigned int Component::GetID() const
 	{
 		return id;
 	}

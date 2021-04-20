@@ -35,7 +35,7 @@ namespace UI
 	public:
 		Component(unsigned int id);
 
-		unsigned int GetID();
+		unsigned int GetID() const;
 
 		virtual bool InComponent(glm::vec2 src);
 		virtual bool HandleMotion(glm::vec2 src);
