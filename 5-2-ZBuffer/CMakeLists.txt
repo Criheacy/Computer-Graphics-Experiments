@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.19)
+project(5-2-ZBuffer)
+
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "-g -Wall")
+
+add_executable(OpenGL main.cpp glad.c shader.cpp shader.h)
+target_link_libraries(OpenGL ${OPENGL_LIBRARY} glfw3 GL m Xrandr Xi X11 Xxf86vm pthread dl Xinerama Xcursor)
