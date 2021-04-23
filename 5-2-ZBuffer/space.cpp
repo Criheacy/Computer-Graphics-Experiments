@@ -102,9 +102,9 @@ void Space::UpdateGraphicsVerticesArray()
 		for (unsigned int i = 0; i < graphicsIndicesNumber; i++)
 		{
 			// Indices number needs to add vertex-cnt to match origin vertex in space group
-			serializedIndicesArray[indexCnt * 3] = graphicsIndices[i + vertexCnt].x;
-			serializedIndicesArray[indexCnt * 3 + 1] = graphicsIndices[i + vertexCnt].y;
-			serializedIndicesArray[indexCnt * 3 + 2] = graphicsIndices[i + vertexCnt].z;
+			serializedIndicesArray[indexCnt * 3] = (int)graphicsIndices[i].x + vertexCnt;
+			serializedIndicesArray[indexCnt * 3 + 1] = (int)graphicsIndices[i].y + vertexCnt;
+			serializedIndicesArray[indexCnt * 3 + 2] = (int)graphicsIndices[i].z + vertexCnt;
 			indexCnt++;
 		}
 

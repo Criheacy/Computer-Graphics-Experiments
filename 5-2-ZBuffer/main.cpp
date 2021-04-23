@@ -12,7 +12,7 @@ void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_HEIGHT = 800;
 
 int main()
 {
@@ -48,12 +48,9 @@ int main()
 	Shader shader("../shader.vs", "../shader.fs");
 	// you can name your shader files however you like
 
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
+	Cube cube = Cube(glm::vec3(0.0f), 0.5f, 0.5f, 0.5f);
 
-
-	Cube cube = Cube(glm::vec3(0.0f, 0.0f, 0.0f), 0.4f, 0.5f, 0.7f);
-	cube.LogTest();
+	//	cube.LogTest();
 	Space::GetInstance().LogTest();
 
 	unsigned int vertexNumber = Space::GetInstance().GetSerializedVerticesArraySize();
@@ -81,14 +78,21 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	/*glm::mat4 proj
-	    = glm::perspective(glm::radians(45.0f),
-	                     1.0f, 0.1f, 100.0f);
+	glm::mat4 proj = glm::mat4(1.0);
+	proj = glm::perspective(glm::radians(45.0f),
+	                     1.0f, 0.01f, 10.0f);
 
-	glm::mat4 model
-	    = glm::rotate(model, glm::radians(-55.0f),
-	                  glm::vec3(1.0f, 0.0f, 0.0f));*/
+	/*for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			printf("| %4.1f ", proj[i][j]);
+		}
+		printf("|\n");
+	}*/
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_DEPTH_TEST);
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -100,11 +104,19 @@ int main()
 		// render
 		// ------
 		glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// shader.SetFloat("aOffset", mOffset);
 //		shader.SetMat4("projection", proj);
-//		shader.SetMat4("model", model);
+
+
+		float timeValue = (float)glfwGetTime();
+
+		glm::mat4 model = glm::mat4(1.0);
+		model = glm::rotate(model, glm::radians(timeValue * 10), glm::vec3(1.0f, 1.0f, 1.0f));
+
 		shader.Activate();
+		shader.SetMat4("model", model);
+		// shader.SetMat4("projection", proj);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indicesNumber * 3, GL_UNSIGNED_INT, 0);
@@ -122,6 +134,7 @@ int main()
 	// ------------------------------------------------------------------------
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------

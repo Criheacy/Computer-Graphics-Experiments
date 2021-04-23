@@ -2,27 +2,29 @@
 
 Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath)
 {
-    // 1. 从文件路径中获取顶点/片段着色器
+    // Read shader source code as string from files
     std::string vertexCode;
     std::string fragmentCode;
     std::ifstream vShaderFile;
     std::ifstream fShaderFile;
-    // 保证ifstream对象可以抛出异常：
+
+	// Make sure 'ifstream' object can raise exceptions
     vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
     try
     {
-        // 打开文件
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
         std::stringstream vShaderStream, fShaderStream;
-        // 读取文件的缓冲内容到数据流中
+
+		// Read file buffer into stream
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
-        // 关闭文件处理器
+
         vShaderFile.close();
         fShaderFile.close();
-        // 转换数据流到string
+
+        // Convert stream to string
         vertexCode   = vShaderStream.str();
         fragmentCode = fShaderStream.str();
     }
@@ -33,12 +35,12 @@ Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath)
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
 
-// 2. 编译着色器
+	// Compile shader codes
     unsigned int vertex, fragment;
     int success;
     char infoLog[512];
 
-	// Vertex shader
+	// 1. Vertex shader
     vertex = glCreateShader(GL_VERTEX_SHADER);
     // 1 is the number of string of the source code
     glShaderSource(vertex, 1, &vShaderCode, nullptr);
@@ -51,7 +53,7 @@ Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath)
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     };
 
-	// Fragment Shader
+	// 2. Fragment shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, nullptr);
     glCompileShader(fragment);
@@ -62,20 +64,19 @@ Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath)
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-// 着色器程序
+	// Create shader program
     ID = glCreateProgram();
     glAttachShader(ID, vertex);
     glAttachShader(ID, fragment);
     glLinkProgram(ID);
-// 打印连接错误（如果有的话）
     glGetProgramiv(ID, GL_LINK_STATUS, &success);
     if(!success)
     {
-      glGetProgramInfoLog(ID, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		glGetProgramInfoLog(ID, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-// 删除着色器，它们已经链接到我们的程序中了，已经不再需要了
+	// Delete shader when it's already linked to program
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }

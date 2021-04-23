@@ -9,7 +9,13 @@ class Graphics
 {
 public:
 	Graphics();
+
+	Graphics(Graphics const& origin);
+	Graphics& operator=(Graphics const& origin);
+
 	~Graphics();
+
+	void Destroy();
 
 	unsigned int GetVertexArraySize() const;
 	glm::vec3* GetVertexArrayPtr();

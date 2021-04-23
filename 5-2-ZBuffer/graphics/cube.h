@@ -14,12 +14,6 @@ public:
 	// Initial with given edge length and given center point
 	Cube(glm::vec3 centerPoint, float xLength, float yLength, float zLength);
 
-	// Clone cube from origin
-	Cube(Cube const& origin);
-
-	// Generate a cube with same attribute as the origin
-	Cube& operator=(Cube const& origin);
-
 	~Cube();
 
 private:
