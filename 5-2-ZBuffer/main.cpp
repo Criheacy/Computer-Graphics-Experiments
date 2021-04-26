@@ -1,9 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "shader.h"
 #include "graphics.h"
 #include "graphics/cube.h"
+#include "graphics/tetrahedron.h"
+#include "shader.h"
 
 #include <iostream>
 
@@ -48,7 +49,8 @@ int main()
 	Shader shader("../shader.vs", "../shader.fs");
 	// you can name your shader files however you like
 
-	Cube cube = Cube(glm::vec3(0.0f), 0.5f, 0.5f, 0.5f);
+	Cube cube = Cube(0.5f);
+	// Tetrahedron tet = Tetrahedron(0.5f);
 
 	//	cube.LogTest();
 	Space::GetInstance().LogTest();
@@ -78,10 +80,6 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glm::mat4 proj = glm::mat4(1.0);
-	proj = glm::perspective(glm::radians(45.0f),
-	                     1.0f, 0.01f, 10.0f);
-
 	/*for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
@@ -108,15 +106,13 @@ int main()
 		// shader.SetFloat("aOffset", mOffset);
 //		shader.SetMat4("projection", proj);
 
-
 		float timeValue = (float)glfwGetTime();
 
-		glm::mat4 model = glm::mat4(1.0);
-		model = glm::rotate(model, glm::radians(timeValue * 10), glm::vec3(1.0f, 1.0f, 1.0f));
+		glm::mat4 view = glm::mat4(1.0);
+		view = glm::rotate(view, glm::radians(timeValue * 10), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
-		shader.SetMat4("model", model);
-		// shader.SetMat4("projection", proj);
+		shader.SetMat4("view", view);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indicesNumber * 3, GL_UNSIGNED_INT, 0);

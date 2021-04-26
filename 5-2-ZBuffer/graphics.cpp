@@ -8,7 +8,7 @@ Graphics::Graphics()
 	vertexIndices = nullptr;
 	vertexArray = nullptr;
 
-	transform = glm::mat4();
+	transform = glm::mat4(1.0f);
 }
 
 Graphics& Graphics::operator=(const Graphics& origin)

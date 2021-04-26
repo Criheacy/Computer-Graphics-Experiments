@@ -73,9 +73,3 @@ void Cube::GenerateDefaultIndices()
 	vertexIndices[10] = glm::vec3(7, 5, 4);
 	vertexIndices[11] = glm::vec3(7, 6, 4);
 }
-
-Cube::~Cube()
-{
-	delete[] vertexIndices;
-	delete[] vertexArray;
-}

@@ -14,8 +14,6 @@ public:
 	// Initial with given edge length and given center point
 	Cube(glm::vec3 centerPoint, float xLength, float yLength, float zLength);
 
-	~Cube();
-
 private:
 	Cube();
 	void SetCubeVertices(glm::vec3 centerPoint, float xLength, float yLength, float zLength);
