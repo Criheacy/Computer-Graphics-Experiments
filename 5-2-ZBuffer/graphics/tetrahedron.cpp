@@ -38,7 +38,7 @@ void Tetrahedron::SetTetrahedronVertices(glm::vec3 point1, glm::vec3 point2, glm
 	 *        / | \
 	 *       /  |  \
 	 *      /   |   \
-	 *   [2]--- |----[3]
+	 *   [3]--- |----[2]
 	 *      \   |   /
 	 *        \ | /
 	 *         [1]
@@ -62,8 +62,8 @@ void Tetrahedron::GenerateDefaultIndices()
 	 * 0 3 2
 	 * 1 2 3
 	 */
-	vertexIndices[0] = glm::vec3(0, 1, 3);
-	vertexIndices[1] = glm::vec3(0, 2, 1);
-	vertexIndices[2] = glm::vec3(0, 3, 2);
-	vertexIndices[3] = glm::vec3(1, 2, 3);
+	vertexIndices[0] = glm::vec3(0, 3, 1);
+	vertexIndices[1] = glm::vec3(0, 1, 2);
+	vertexIndices[2] = glm::vec3(0, 2, 3);
+	vertexIndices[3] = glm::vec3(1, 3, 2);
 }

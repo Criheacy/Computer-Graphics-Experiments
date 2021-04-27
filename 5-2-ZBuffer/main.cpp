@@ -12,8 +12,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCREEN_WIDTH = 800;
+const unsigned int SCREEN_HEIGHT = 800;
 
 int main()
 {
@@ -26,7 +26,7 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -46,11 +46,12 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-	Shader shader("../shader.vs", "../shader.fs");
-	// you can name your shader files however you like
+	Shader shader("../shader/shader.vs",
+	              "../shader/shader.gs",
+	              "../shader/phong.fs");
 
-	Cube cube = Cube(0.5f);
-	// Tetrahedron tet = Tetrahedron(0.5f);
+	Cube cube = Cube(1.0f);
+	// Tetrahedron tet = Tetrahedron(0.7f);
 
 	//	cube.LogTest();
 	Space::GetInstance().LogTest();
@@ -80,16 +81,7 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	/*for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			printf("| %4.1f ", proj[i][j]);
-		}
-		printf("|\n");
-	}*/
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_DEPTH_TEST);
 	// render loop
 	// -----------
@@ -101,7 +93,7 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// shader.SetFloat("aOffset", mOffset);
 //		shader.SetMat4("projection", proj);
@@ -109,10 +101,17 @@ int main()
 		float timeValue = (float)glfwGetTime();
 
 		glm::mat4 view = glm::mat4(1.0);
-		view = glm::rotate(view, glm::radians(timeValue * 10), glm::vec3(1.0f, 1.0f, 1.0f));
+		view = glm::rotate(view, glm::radians(timeValue * 20), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
 		shader.SetMat4("view", view);
+
+		shader.SetVec4("mainColor", glm::vec4(0.0f, 0.3f, 0.8f, 1.0f));
+		shader.SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		shader.SetVec3("lightDirection", glm::normalize(glm::vec3(0.2f, 0.1f, 1.0f)));
+		shader.SetVec3("viewPosition", glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
+		shader.SetFloat("screenWidth", SCREEN_WIDTH);
+		shader.SetFloat("screenHeight", SCREEN_HEIGHT);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indicesNumber * 3, GL_UNSIGNED_INT, 0);
