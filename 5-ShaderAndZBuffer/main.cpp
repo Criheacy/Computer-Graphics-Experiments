@@ -3,6 +3,7 @@
 
 #include "graphics.h"
 #include "graphics/cube.h"
+#include "graphics/sphere.h"
 #include "graphics/tetrahedron.h"
 #include "shader.h"
 
@@ -50,8 +51,9 @@ int main()
 	              "../shader/shader.gs",
 	              "../shader/phong.fs");
 
-	Cube cube = Cube(1.0f);
+	// Cube cube = Cube(0.8f);
 	// Tetrahedron tet = Tetrahedron(0.7f);
+	Sphere sphere = Sphere(0.7f);
 
 	//	cube.LogTest();
 	Space::GetInstance().LogTest();
@@ -83,6 +85,17 @@ int main()
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_DEPTH_TEST);
+
+	glm::mat4 proj = glm::mat4(1.0);
+	// proj = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
+
+	for(int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			printf("%.2f ", proj[i][j]);
+		}
+		printf("\n");
+	}
+
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -99,14 +112,13 @@ int main()
 //		shader.SetMat4("projection", proj);
 
 		float timeValue = (float)glfwGetTime();
-
 		glm::mat4 view = glm::mat4(1.0);
 		view = glm::rotate(view, glm::radians(timeValue * 20), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
-		shader.SetMat4("view", view);
+		shader.SetMat4("view", proj * view);
 
-		shader.SetVec4("mainColor", glm::vec4(0.0f, 0.3f, 0.8f, 1.0f));
+		shader.SetVec4("mainColor", glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
 		shader.SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		shader.SetVec3("lightDirection", glm::normalize(glm::vec3(0.2f, 0.1f, 1.0f)));
 		shader.SetVec3("viewPosition", glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
