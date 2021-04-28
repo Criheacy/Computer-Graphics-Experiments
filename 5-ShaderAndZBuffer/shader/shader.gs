@@ -7,7 +7,7 @@ out vec3 normalVector;
 vec3 getNormal(vec3 a, vec3 b, vec3 c) {
 	vec3 ab = b - a;
 	vec3 bc = c - b;
-	return normalize(cross(ab, bc));
+	return normalize(cross(bc, ab));
 }
 
 void main() {
