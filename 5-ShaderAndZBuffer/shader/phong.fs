@@ -22,8 +22,8 @@ void main() {
     vec4 diffuseColor;
     vec4 specularColor;
 
-    float ambientStrength = 0.2;
-    float diffuseStrength = 0.4;
+    float ambientStrength = 0.1;
+    float diffuseStrength = 0.5;
     float specularStrength = 0.4;
     float specularShininess = 8;
 

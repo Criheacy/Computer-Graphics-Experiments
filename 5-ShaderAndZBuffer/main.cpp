@@ -18,16 +18,19 @@ const unsigned int SCREEN_HEIGHT = 800;
 
 int main()
 {
-	// glfw: initialize and configure
-	// ------------------------------
+	// initialize
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	glfwWindowHint(GLFW_SAMPLES, 8);
+
 	// glfw window creation
-	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT,
+	                                      "Shader Test",
+	                                      nullptr,
+	                                      nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -38,7 +41,6 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// glad: load all OpenGL function pointers
-	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -46,16 +48,14 @@ int main()
 	}
 
 	// build and compile our shader program
-	// ------------------------------------
 	Shader shader("../shader/shader.vs",
 	              "../shader/shader.gs",
 	              "../shader/phong.fs");
 
-	// Cube cube = Cube(0.8f);
-	// Tetrahedron tet = Tetrahedron(0.7f);
-	Sphere sphere = Sphere(0.7f);
+	// Cube cube = Cube(0.5f);
+	Tetrahedron tet = Tetrahedron(0.7f);
+	// Sphere sphere = Sphere(0.7f);
 
-	//	cube.LogTest();
 	Space::GetInstance().LogTest();
 
 	unsigned int vertexNumber = Space::GetInstance().GetSerializedVerticesArraySize();
@@ -85,38 +85,23 @@ int main()
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_DEPTH_TEST);
-
-	glm::mat4 proj = glm::mat4(1.0);
-	// proj = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
-
-	for(int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			printf("%.2f ", proj[i][j]);
-		}
-		printf("\n");
-	}
+	glEnable(GL_MULTISAMPLE);
 
 	// render loop
-	// -----------
 	while (!glfwWindowShouldClose(window))
 	{
-		// input
-		// -----
 		processInput(window);
 
 		// render
-		// ------
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// shader.SetFloat("aOffset", mOffset);
-//		shader.SetMat4("projection", proj);
 
 		float timeValue = (float)glfwGetTime();
 		glm::mat4 view = glm::mat4(1.0);
 		view = glm::rotate(view, glm::radians(timeValue * 20), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
-		shader.SetMat4("view", proj * view);
+		shader.SetMat4("view", view);
 
 		shader.SetVec4("mainColor", glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
 		shader.SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -128,37 +113,25 @@ int main()
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, indicesNumber * 3, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-
-		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	// optional: de-allocate all resources once they've outlived their purpose:
-	// ------------------------------------------------------------------------
+	// delete data array and buffers, clear all previous allocated resources
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	// glfw: terminate, clearing all previously allocated GLFW resources.
-	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// make sure the viewport matches the new window dimensions; note that width and
