@@ -3,7 +3,6 @@
 #include "Grid.h"
 #include "Settings.h"
 #include "Animator.hpp"
-#include "Algorithm.h"
 #include "UIComponents.h"
 
 int mouseX;
@@ -19,9 +18,8 @@ int lastTime;
 
 void RenderScene(void)
 {
-    // Grid::Instance().CropPolygon();
     Grid::Instance().Render();
-    // UI::Canvas::Instance().Render();
+    UI::Canvas::Instance().Render();
     glutSwapBuffers();
 
     glutPostRedisplay();
@@ -36,7 +34,7 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN)
     {
-        // if (UI::Canvas::Instance().HandleMouseDown(glm::vec2(x, y))) return;
+        if (UI::Canvas::Instance().HandleMouseDown(glm::vec2(x, y))) return;
 
         mouseX = x, mouseY = y;
         mouseDragFromX = x, mouseDragFromY = y;
@@ -56,7 +54,7 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
     }
     else if (state == GLUT_UP)
     {
-        // if (UI::Canvas::Instance().HandleMouseUp(glm::vec2(x, y))) return;
+        if (UI::Canvas::Instance().HandleMouseUp(glm::vec2(x, y))) return;
 
         if (button == GLUT_LEFT_BUTTON)
         {
@@ -72,7 +70,7 @@ void HandleMouseButtonEvent(int button, int state, int x, int y)
 
 void HandleMouseMotionEvent(int x, int y)
 {
-    // if (UI::Canvas::Instance().HandleMotion(glm::vec2(x, y))) return;
+    if (UI::Canvas::Instance().HandleMotion(glm::vec2(x, y))) return;
 
     if (leftPressed)
     {
@@ -91,7 +89,7 @@ void HandleMouseMotionEvent(int x, int y)
 
 void HandleMousePassiveMotionEvent(int x, int y)
 {
-    // UI::Canvas::Instance().HandleMotion(glm::vec2(x, y));
+    UI::Canvas::Instance().HandleMotion(glm::vec2(x, y));
     Grid::Instance().HandleMouseMove(glm::vec2(x, y));
 }
 

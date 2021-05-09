@@ -15,7 +15,10 @@ Grid::Grid()
 	hoveringVertex = nullptr;
 	holdingVertex = nullptr;
 
-	polygon = new Polygon();
+	polyline = new Polyline();
+	polyline->InitialLine(300);
+
+	curve = nullptr;
 }
 
 Grid& Grid::Instance()
@@ -46,22 +49,26 @@ void Grid::HandleLeftMouseDown(glm::vec2 position)
 		position = InverseTransform(position);
 		position.x = (int)roundf(position.x);
 		position.y = (int)roundf(position.y);
-		holdingVertex = polygon->CreateNewVertexOn(position, hoveringEdge);
+		holdingVertex = polyline->CreateNewVertexOn(position, hoveringEdge);
 		hoveringEdge = nullptr;
 	}
 	else if (hoveringVertex != nullptr)
 	{
 		holdingVertex = hoveringVertex;
 	}
+
+	OnMouseEventUpdate();
 }
 
 void Grid::HandleRightMouseDown(glm::vec2 position)
 {
 	if (hoveringVertex != nullptr)
 	{
-		polygon->RemoveVertex(hoveringVertex);
+		polyline->RemoveVertex(hoveringVertex);
 		hoveringVertex = nullptr;
 	}
+
+	OnMouseEventUpdate();
 }
 
 void Grid::HandleMouseUp(glm::vec2 position)
@@ -77,6 +84,8 @@ void Grid::HandleMouseDrag(glm::vec2 position)
 
 	if (holdingVertex != nullptr && position != holdingVertex->vertex)
 		holdingVertex->vertex = position;
+
+	OnMouseEventUpdate();
 }
 
 void Grid::HandleMouseMove(glm::vec2 position)
@@ -88,16 +97,16 @@ void Grid::HandleMouseMove(glm::vec2 position)
 	float distFix = (transform[0][0] + transform[1][1]) / 2 / 10;
 	position = InverseTransform(position);
 
-	Polygon::Vertex* nearestVertex = polygon->GetNearestVertex(position);
-	dist = polygon->GetDistanceToVertex(position, nearestVertex);
+	Polyline::Vertex* nearestVertex = polyline->GetNearestVertex(position);
+	dist = polyline->GetDistanceToVertex(position, nearestVertex);
 	if (dist <= VERTEX_SELECT_DIST / distFix)
 	{
 		hoveringVertex = nearestVertex;
 		return;
 	}
 
-	Polygon::Edge* nearestEdge = polygon->GetNearestEdge(position);
-	dist = polygon->GetDistanceToEdge(position, nearestEdge);
+	Polyline::Edge* nearestEdge = polyline->GetNearestEdge(position);
+	dist = polyline->GetDistanceToEdge(position, nearestEdge);
 	if (dist <= EDGE_SELECT_DIST / distFix)
 	{
 		hoveringEdge = nearestEdge;
@@ -108,6 +117,11 @@ void Grid::HandleMouseMove(glm::vec2 position)
 void Grid::HandleButtonEvent()
 {
 
+}
+
+void Grid::OnMouseEventUpdate()
+{
+	curve = new BezierCurve(polyline, BEZIER_CURVE_PRECISION);
 }
 
 glm::vec2 Grid::Transform(glm::vec2 src)
@@ -131,7 +145,12 @@ void Grid::Render()
 	glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	RenderPolyline(polygon);
+	if (curve != nullptr)
+	{
+		RenderLine(curve, CURVE_LINE_WIDTH, CURVE_COLOR);
+	}
+
+	RenderPolyline(polyline);
 }
 
 void Grid::RenderVerticalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPos)
@@ -156,119 +175,34 @@ void Grid::RenderHorizontalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPo
 	glEnd();
 }
 
-/*********** CALLBACK FUNCTIONS ***********/
-
-void CALLBACK vertexCallback(GLvoid* vertex)
+void Grid::RenderPolyline(const Polyline* polyline, bool closed)
 {
-	GLdouble* pt = (GLdouble*)vertex;
-	glVertex3d(pt[0], pt[1], pt[2]);
-}
-
-void CALLBACK beginCallback(GLenum type)
-{
-	glBegin(type);
-}
-
-void CALLBACK endCallback()
-{
-	glEnd();
-}
-
-void CALLBACK errorCallback(GLenum errorCode)
-{
-	const GLubyte* estring;
-	estring = gluErrorString(errorCode);
-//	fprintf(stderr, "Tessellation Error: %s\n", estring);
-	// exit(0);
-}
-
-void Grid::RenderPolygon(const Polygon* polygon, glm::vec3 fillColor)
-{
-	glColor3f(fillColor.r, fillColor.g, fillColor.b);
-	glLineWidth(LINE_WIDTH);
-
-	int cnt = 0;
-	glBegin(GL_POLYGON);
-	glEnd();
-
-	GLUtesselator* tess = gluNewTess();
-
-	gluTessCallback(tess, GLU_TESS_BEGIN, (void (CALLBACK*)())beginCallback);
-	gluTessCallback(tess, GLU_TESS_END, (void (CALLBACK*)())endCallback);
-	gluTessCallback(tess, GLU_TESS_VERTEX, (void (CALLBACK*)())vertexCallback);
-	gluTessCallback(tess, GLU_TESS_ERROR, (void (CALLBACK*)())errorCallback);
-
-	Polygon::Vertex* vertex = polygon->GetVertexHead();
-	std::unique_ptr<double*> vertexList(new double* [polygon->GetVertexNumber() + 1]);
-	int vertexCnt = 0;
-
-	gluTessBeginPolygon(tess, nullptr);
-	gluTessBeginContour(tess);
-
-	if (vertex != nullptr)
-	{
-		do
-		{
-			glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
-			double* vertexValue = new double[3];
-			vertexValue[0] = point.x;
-			vertexValue[1] = point.y;
-			vertexValue[2] = 0;
-			vertexList.get()[cnt++] = vertexValue;
-
-				gluTessVertex(tess, vertexValue, vertexValue);
-			vertex = vertex->next;
-		} while (vertex != polygon->GetVertexHead());
-	}
-
-	gluTessEndContour(tess);
-	gluTessEndPolygon(tess);
-
-	for (int i = 0; i < polygon->GetVertexNumber(); i++)
-		delete[] vertexList.get()[i];
-
-	glColor3f(POLYGON_EDGE_COLOR.r, POLYGON_EDGE_COLOR.g, POLYGON_EDGE_COLOR.b);
-	glBegin(GL_LINE_LOOP);
-	vertex = polygon->GetVertexHead();
-	if (vertex != nullptr)
-	{
-		do
-		{
-			glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
-			glVertex2f(point.x, point.y);
-			vertex = vertex->next;
-		} while (vertex != polygon->GetVertexHead());
-	}
-	glEnd();
+	RenderLine(polyline, LINE_WIDTH, POLYGON_EDGE_COLOR);
 
 	RenderHoveringEdge();
 
 	RenderHoveringVertex();
 }
 
-void Grid::RenderPolyline(const Polygon* polygon, bool closed)
+void Grid::RenderLine(const Polyline* polyline, float width, glm::vec3 color, bool closed)
 {
-	glLineWidth(LINE_WIDTH);
-	glColor3f(POLYGON_EDGE_COLOR.r, POLYGON_EDGE_COLOR.g, POLYGON_EDGE_COLOR.b);
+	glLineWidth(width);
+	glColor3f(color.r, color.g, color.b);
 
 	if (closed) glBegin(GL_LINE_LOOP);
 	else glBegin(GL_LINE_STRIP);
 
-	Polygon::Vertex* vertex = polygon->GetVertexHead();
+	Polyline::Vertex* vertex = polyline->GetVertexHead();
 	if (vertex != nullptr)
 	{
-		do
+		while (vertex != nullptr)
 		{
 			glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
 			glVertex2f(point.x, point.y);
 			vertex = vertex->next;
-		} while (vertex != polygon->GetVertexHead());
+		}
 	}
 	glEnd();
-
-	RenderHoveringEdge();
-
-	RenderHoveringVertex();
 }
 
 void Grid::RenderHoveringEdge()

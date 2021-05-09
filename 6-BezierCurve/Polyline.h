@@ -1,7 +1,7 @@
 #pragma once
 #include "Settings.h"
 
-class Polygon
+class Polyline
 {
 public:
 	struct Vertex
@@ -17,14 +17,14 @@ public:
 	};
 
 public:
-	Polygon();
-	Polygon(std::vector<glm::vec2> vertexes);
-	Polygon(const Polygon& polygon);
-	~Polygon();
+	Polyline();
+	Polyline(const Polyline& polyline);
+	~Polyline();
 
-	Polygon& operator= (const Polygon& polygon);
+	Polyline& operator= (const Polyline& polyline);
 
-	void InitialTriangle(float a);
+	void InitialLine(float a);
+	void InitialVerticesList(std::vector<glm::vec2> vertexes);
 	void ClearVertex();
 
 	Vertex* GetVertexHead() const;

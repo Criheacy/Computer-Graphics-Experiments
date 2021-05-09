@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Rect.h"
-#include "Polygon.h"
+#include "Polyline.h"
+#include "BezierCurve.h"
 #include "Settings.h"
-#include "Algorithm.h"
 #include "Animator.hpp"
 
 #define VERTEX_SELECT_DIST 1
@@ -41,8 +40,10 @@ protected:
 	Grid();
 
 private:
-	void RenderPolygon(const Polygon* polygon, glm::vec3 fillColor);
-	void RenderPolyline(const Polygon* polygon, bool closed = false);
+	void OnMouseEventUpdate();
+
+	void RenderPolyline(const Polyline* polyline, bool closed = false);
+	void RenderLine(const Polyline* polyline, float width, glm::vec3 color, bool closed = false);
 
 	void RenderVerticalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPos);
 	void RenderHorizontalLine(int lineWidth, glm::vec2 fromPos, glm::vec2 toPos);
@@ -58,8 +59,10 @@ private:
 	glm::mat3x3 project;
 	glm::vec2 anchor;
 
-	Polygon* polygon;
-	Polygon::Vertex* hoveringVertex;
-	Polygon::Edge* hoveringEdge;
-	Polygon::Vertex* holdingVertex;
+	Polyline* polyline;
+	Polyline::Vertex* hoveringVertex;
+	Polyline::Edge* hoveringEdge;
+	Polyline::Vertex* holdingVertex;
+
+	Polyline* curve;
 };

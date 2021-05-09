@@ -1,102 +1,104 @@
-#include "Polygon.h"
+#include "Polyline.h"
 
-Polygon::Polygon()
+Polyline::Polyline()
 {
 	vertexHead = nullptr;
-	InitialTriangle(300);
+	vertexNumber = 0;
 }
 
-Polygon::Polygon(std::vector<glm::vec2> vertexes)
+Polyline::Polyline(const Polyline& polyline)
 {
-	vertexHead = nullptr;
-	vertexNumber = vertexes.size();
-	if (vertexNumber == 0)
-	{
-		vertexHead = nullptr;
-		return;
-	}
+	this->vertexNumber = polyline.GetVertexNumber();
+	this->vertexHead = new Vertex{ polyline.GetVertexHead()->vertex, nullptr };
 
-	Vertex* nowVertex = new Vertex{ vertexes[0], nullptr };
-	vertexHead = nowVertex;
-
-	for (int i = 1; i < vertexNumber; i++)
-	{
-		nowVertex->next = new Vertex{ vertexes[i], nullptr };
-		nowVertex = nowVertex->next;
-	}
-	nowVertex->next = vertexHead;
-}
-
-Polygon::Polygon(const Polygon& polygon)
-{
-	this->ClearVertex();
-	this->vertexNumber = polygon.GetVertexNumber();
-
-	this->vertexHead = new Vertex{ polygon.GetVertexHead()->vertex, nullptr };
 	Vertex* preVertex = this->vertexHead;
-	Vertex* vertex = polygon.GetVertexHead()->next;
-	while (vertex != polygon.GetVertexHead())
+	Vertex* vertex = polyline.GetVertexHead()->next;
+
+	while (vertex != nullptr)
 	{
 		Vertex* newVertex = new Vertex{ vertex->vertex, nullptr };
 		preVertex->next = newVertex;
 		preVertex = newVertex;
 		vertex = vertex->next;
 	};
-	preVertex->next = this->vertexHead;
+
+	preVertex->next = nullptr;
 }
 
-Polygon::~Polygon()
+Polyline::~Polyline()
 {
 	ClearVertex();
 }
 
-Polygon& Polygon::operator=(const Polygon& polygon)
+Polyline& Polyline::operator=(const Polyline& polyline)
 {
-	Polygon* newPolygon = new Polygon(polygon);
-	return *newPolygon;
+	Polyline* newPolyline = new Polyline(polyline);
+	return *newPolyline;
 }
 
-void Polygon::InitialTriangle(float a)
+void Polyline::InitialLine(float a)
 {
 	ClearVertex();
-	float sq3 = sqrtf(3);
-	Vertex* top = new Vertex{ glm::vec2((int)roundf(a / 2), (int)roundf(-sq3 * a / 6)), nullptr };
-	Vertex* left = new Vertex{ glm::vec2((int)roundf(-a / 2), (int)roundf(-sq3 * a / 6)), nullptr };
-	Vertex* right = new Vertex{ glm::vec2(0, (int)roundf(sq3 * a / 3)), nullptr };
-	top->next = left;
+	Vertex* left = new Vertex{ glm::vec2(-a / 2, 0), nullptr };
+	Vertex* right = new Vertex{ glm::vec2(a / 2, 0), nullptr };
 	left->next = right;
-	right->next = top;
+	right->next = nullptr;
 
-	vertexHead = top;
-	vertexNumber = 3;
+	vertexHead = left;
+	vertexNumber = 2;
 }
 
-void Polygon::ClearVertex()
+void Polyline::InitialVerticesList(std::vector<glm::vec2> vertices)
+{
+	ClearVertex();
+	vertexHead = nullptr;
+	vertexNumber = vertices.size();
+	if (vertexNumber == 0)
+	{
+		vertexHead = nullptr;
+		return;
+	}
+
+	Vertex* nowVertex = new Vertex{ vertices[0], nullptr };
+	vertexHead = nowVertex;
+
+	for (int i = 1; i < vertexNumber; i++)
+	{
+		nowVertex->next = new Vertex{ vertices[i], nullptr };
+		nowVertex = nowVertex->next;
+	}
+	nowVertex->next = nullptr;
+}
+
+void Polyline::ClearVertex()
 {
 	vertexNumber = 0;
 	if (vertexHead == nullptr) return;
-	Vertex* nextVertex;
-	while (vertexHead->next != vertexHead)
+
+	Vertex* nowVertex = vertexHead;
+	Vertex* nextVertex = NULL;
+
+	while (nowVertex != NULL)
 	{
-		nextVertex = vertexHead->next->next;
-		delete vertexHead->next;
-		vertexHead->next = nextVertex;
+		nextVertex = nowVertex->next;
+		free(nowVertex);
+		nowVertex = nextVertex;
 	}
-	delete vertexHead;
+
 	vertexHead = nullptr;
 }
 
-Polygon::Vertex* Polygon::GetVertexHead() const
+Polyline::Vertex* Polyline::GetVertexHead() const
 {
 	return vertexHead;
 }
 
-int Polygon::GetVertexNumber() const
+int Polyline::GetVertexNumber() const
 {
 	return vertexNumber;
 }
 
-Polygon::Vertex* Polygon::CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge)
+Polyline::Vertex* Polyline::CreateNewVertexOn(glm::vec2 position, Edge* attachedEdge)
 {
 	Vertex* fromVertex = attachedEdge->from;
 	Vertex* toVertex = attachedEdge->to;
@@ -114,7 +116,7 @@ Polygon::Vertex* Polygon::CreateNewVertexOn(glm::vec2 position, Edge* attachedEd
 	return newVertex;
 }
 
-Polygon::Vertex* Polygon::CreateNewVertexAfter(glm::vec2 position, Vertex* preVertex)
+Polyline::Vertex* Polyline::CreateNewVertexAfter(glm::vec2 position, Vertex* preVertex)
 {
 	Vertex* newVertex = new Vertex{ position, preVertex->next };
 	preVertex->next = newVertex;
@@ -122,15 +124,29 @@ Polygon::Vertex* Polygon::CreateNewVertexAfter(glm::vec2 position, Vertex* preVe
 	return newVertex;
 }
 
-void Polygon::RemoveVertex(Vertex* vertex, bool force)
+void Polyline::RemoveVertex(Vertex* vertex, bool force)
 {
 	if (GetVertexNumber() == 0) return;
-	if ((GetVertexNumber() <= 3) && !force) return;
+	if ((GetVertexNumber() <= 2) && !force) return;
+
+	// check to delete head vertex on force mode
+	if (force && vertex == vertexHead)
+	{
+		Vertex* nextVertex = vertexHead->next;
+		delete vertexHead;
+		vertexHead = nextVertex;
+		vertexNumber--;
+		return;
+	}
 	
 	Vertex* preVertex = vertexHead;
 	Vertex* nowVertex = vertexHead->next;
-	do
+
+	while (nowVertex != nullptr)
 	{
+		// prevent deleting last vertex on non-force mode
+		if (!force && nowVertex->next == nullptr) return;
+
 		if (nowVertex == vertex)
 		{
 			preVertex->next = nowVertex->next;
@@ -147,10 +163,10 @@ void Polygon::RemoveVertex(Vertex* vertex, bool force)
 		}
 		preVertex = nowVertex;
 		nowVertex = nowVertex->next;
-	} while (nowVertex != vertexHead->next);
+	}
 }
 
-Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
+Polyline::Edge* Polyline::GetNearestEdge(glm::vec2 point)
 {
 	float minDistance = (1 << 30);
 	Edge* minEdge = new Edge{ nullptr, nullptr };
@@ -160,7 +176,7 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 		return nullptr;
 
 	Vertex* nowVertex = vertexHead;
-	do
+	while (nowVertex != nullptr && nowVertex->next != nullptr)
 	{
 		nowEdge->from = nowVertex;
 		nowEdge->to = nowVertex->next;
@@ -172,7 +188,7 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 			minEdge->to = nowEdge->to;
 		}
 		nowVertex = nowVertex->next;
-	} while (nowVertex != vertexHead);
+	}
 
 	delete nowEdge;
 	nowEdge = nullptr;
@@ -180,7 +196,7 @@ Polygon::Edge* Polygon::GetNearestEdge(glm::vec2 point)
 	return minEdge;
 }
 
-float Polygon::GetDistanceToEdge(glm::vec2 point, Polygon::Edge* edge)
+float Polyline::GetDistanceToEdge(glm::vec2 point, Polyline::Edge* edge)
 {
  	glm::vec2 vEdge = edge->to->vertex - edge->from->vertex;
 	glm::vec2 oEdge = glm::vec2(-vEdge.y, vEdge.x);
@@ -198,13 +214,13 @@ float Polygon::GetDistanceToEdge(glm::vec2 point, Polygon::Edge* edge)
 	return fabs(vResult.y) * glm::length(oEdge);
 }
 
-Polygon::Vertex* Polygon::GetNearestVertex(glm::vec2 point)
+Polyline::Vertex* Polyline::GetNearestVertex(glm::vec2 point)
 {
 	float minDistance = (1 << 30);
 	Vertex* minVertex = nullptr;
 
 	Vertex* nowVertex = vertexHead;
-	do
+	while (nowVertex != nullptr)
 	{
 		if (glm::length(point - nowVertex->vertex) < minDistance)
 		{
@@ -212,11 +228,11 @@ Polygon::Vertex* Polygon::GetNearestVertex(glm::vec2 point)
 			minVertex = nowVertex;
 		}
 		nowVertex = nowVertex->next;
-	} while (nowVertex != vertexHead);
+	}
 	return minVertex;
 }
 
-float Polygon::GetDistanceToVertex(glm::vec2 point, Polygon::Vertex* vertex)
+float Polyline::GetDistanceToVertex(glm::vec2 point, Polyline::Vertex* vertex)
 {
 	return glm::length(point - vertex->vertex);
 }
