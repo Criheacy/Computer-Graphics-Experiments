@@ -106,6 +106,14 @@ int main(int argc, char* argv[])
 
     lastTime = glutGet(GLUT_ELAPSED_TIME);
 
+    UI::Button test = UI::Button(1, SCREEN_WIDTH - 80, 30, SCREEN_WIDTH - 20, 60);
+    test.SetText("TEST");
+    test.SetOnSelectListener([]() -> void {
+        Grid::Instance().HandleButtonEvent();
+    });
+
+    UI::Canvas::Instance().AddComponent(&test);
+
     // Add callback functions
     glutReshapeFunc(Resize);
     glutDisplayFunc(RenderScene);

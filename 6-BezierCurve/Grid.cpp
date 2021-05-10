@@ -116,12 +116,14 @@ void Grid::HandleMouseMove(glm::vec2 position)
 
 void Grid::HandleButtonEvent()
 {
-
+	curve = new B_Spline(polyline, 3, BEZIER_CURVE_PRECISION);
 }
 
 void Grid::OnMouseEventUpdate()
 {
-	curve = new BezierCurve(polyline, BEZIER_CURVE_PRECISION);
+	delete curve;
+	curve = new B_Spline(polyline, 3, BEZIER_CURVE_PRECISION);
+	// curve = new BezierCurve(polyline, BEZIER_CURVE_PRECISION);
 }
 
 glm::vec2 Grid::Transform(glm::vec2 src)
@@ -193,14 +195,11 @@ void Grid::RenderLine(const Polyline* polyline, float width, glm::vec3 color, bo
 	else glBegin(GL_LINE_STRIP);
 
 	Polyline::Vertex* vertex = polyline->GetVertexHead();
-	if (vertex != nullptr)
+	while (vertex != nullptr)
 	{
-		while (vertex != nullptr)
-		{
-			glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
-			glVertex2f(point.x, point.y);
-			vertex = vertex->next;
-		}
+		glm::vec2 point = ProjectToScreen(Transform(vertex->vertex));
+		glVertex2f(point.x, point.y);
+		vertex = vertex->next;
 	}
 	glEnd();
 }

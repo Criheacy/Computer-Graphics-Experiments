@@ -2,6 +2,7 @@
 
 #include "Polyline.h"
 #include "BezierCurve.h"
+#include "B_Spline.h"
 #include "Settings.h"
 #include "Animator.hpp"
 
