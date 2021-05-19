@@ -52,9 +52,9 @@ int main()
 	              "../shader/shader.gs",
 	              "../shader/phong.fs");
 
-	// Cube cube = Cube(0.5f);
-	Tetrahedron tet = Tetrahedron(0.7f);
-	// Sphere sphere = Sphere(0.7f);
+	// Cube cube = Cube(0.8f);
+	// Tetrahedron tet = Tetrahedron(0.7f);
+	Sphere sphere = Sphere(0.7f);
 
 	Space::GetInstance().LogTest();
 
@@ -101,7 +101,14 @@ int main()
 		view = glm::rotate(view, glm::radians(timeValue * 20), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
-		shader.SetMat4("view", view);
+		shader.SetMat4("view", proj * view);
+
+		shader.SetVec4("mainColor", glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
+		shader.SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		shader.SetVec3("lightDirection", glm::normalize(glm::vec3(0.2f, 0.1f, 1.0f)));
+		shader.SetVec3("viewPosition", glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
+		shader.SetFloat("screenWidth", SCREEN_WIDTH);
+		shader.SetFloat("screenHeight", SCREEN_HEIGHT);
 
 		shader.SetVec4("mainColor", glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
 		shader.SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
