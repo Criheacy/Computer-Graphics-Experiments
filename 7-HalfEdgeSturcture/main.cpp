@@ -3,6 +3,7 @@
 
 #include "graphics.h"
 #include "graphics/cube.h"
+#include "graphics/offgraphic.h"
 #include "graphics/sphere.h"
 #include "graphics/tetrahedron.h"
 #include "shader.h"
@@ -54,9 +55,11 @@ int main()
 
 	// Cube cube = Cube(0.8f);
 	// Tetrahedron tet = Tetrahedron(0.7f);
-	Sphere sphere = Sphere(0.7f);
+	// Sphere sphere = Sphere(0.7f);
+	OFFGraphics* offGraphics = new OFFGraphics("../res/bumpy.off");
 
 	Space::GetInstance().LogTest();
+
 
 	unsigned int vertexNumber = Space::GetInstance().GetSerializedVerticesArraySize();
 	float* vertex = Space::GetInstance().GetSerializedVerticesArrayPtr();
@@ -85,6 +88,7 @@ int main()
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 
 	// render loop
@@ -98,6 +102,8 @@ int main()
 
 		float timeValue = (float)glfwGetTime();
 		glm::mat4 view = glm::mat4(1.0);
+		// view = glm::scale(view, glm::vec3(5.0f, 5.0f, 5.0f));
+		view = glm::scale(view, glm::vec3(0.1f, 0.1f, 0.1f));
 		view = glm::rotate(view, glm::radians(timeValue * 20), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
