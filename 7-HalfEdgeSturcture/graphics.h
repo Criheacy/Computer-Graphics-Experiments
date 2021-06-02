@@ -3,8 +3,10 @@
 #define GRAPHICS_H
 
 #include "space.h"
+#include "graphics_component.h"
 #include <cstdio>
 #include <glm/mat4x4.hpp>
+
 class Graphics
 {
 public:
@@ -21,6 +23,12 @@ public:
 	glm::vec3* GetVertexArrayPtr();
 	unsigned int GetVertexIndicesSize() const;
 	glm::vec3* GetVertexIndicesPtr();
+
+	GraphicsIterator* VertexBegin();
+	GraphicsIterator* VertexEnd();
+
+	GraphicsIterator* FaceBegin();
+	GraphicsIterator* FaceEnd();
 
 	void LogTest();
 
