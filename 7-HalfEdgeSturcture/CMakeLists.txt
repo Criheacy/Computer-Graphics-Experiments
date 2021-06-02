@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(5-2-ZBuffer)
+project(7-HalfEdgeStructure)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
