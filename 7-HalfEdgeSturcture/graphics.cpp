@@ -102,13 +102,13 @@ void Graphics::LogTest()
 	printf(" -> vertex list:\n");
 	for (int i = 0; i < vertexArraySize; i++)
 	{
-		printf("\t(%.1f, %.1f, %.1f)\n", vertexArray[i].x, vertexArray[i].y, vertexArray[i].z);
+		printf("\t#%d (%.1f, %.1f, %.1f)\n", i, vertexArray[i].x, vertexArray[i].y, vertexArray[i].z);
 	}
 
 	printf(" -> index: %d\n", vertexIndicesSize);
 	for (int i = 0; i < vertexIndicesSize; i++)
 	{
-		printf("\t[%d -> %d -> %d]\n", (int)vertexIndices[i].x, (int)vertexIndices[i].y, (int)vertexIndices[i].z);
+		printf("\t#%d [%d -> %d -> %d]\n", i, (int)vertexIndices[i].x, (int)vertexIndices[i].y, (int)vertexIndices[i].z);
 	}
 	printf("===================================\n\n");
 }
