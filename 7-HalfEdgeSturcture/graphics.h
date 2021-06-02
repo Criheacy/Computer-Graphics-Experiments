@@ -24,11 +24,11 @@ public:
 	unsigned int GetVertexIndicesSize() const;
 	glm::vec3* GetVertexIndicesPtr();
 
-	GraphicsIterator* VertexBegin();
-	GraphicsIterator* VertexEnd();
+	GraphicsIterator VertexBegin();
+	static GraphicsIterator VertexEnd();
 
-	GraphicsIterator* FaceBegin();
-	GraphicsIterator* FaceEnd();
+	GraphicsIterator FaceBegin();
+	static GraphicsIterator FaceEnd();
 
 	void LogTest();
 
@@ -42,6 +42,9 @@ protected:
 	glm::mat4x4 transform;
 
 	struct GraphicsLinkNode* graphicsIndex;
+
+private:
+	Vertex* headVertex;
 };
 
 #endif  //GRAPHICS_H

@@ -78,6 +78,27 @@ glm::vec3* Graphics::GetVertexIndicesPtr()
 	return vertexIndices;
 }
 
+GraphicsIterator Graphics::VertexBegin()
+{
+	return GraphicsIterator(headVertex);
+}
+
+GraphicsIterator Graphics::VertexEnd()
+{
+	return GraphicsIterator::end;
+}
+
+GraphicsIterator Graphics::FaceBegin()
+{
+	Face* headFace = new Face(headVertex->headEdge);
+	return GraphicsIterator(headFace);
+}
+
+GraphicsIterator Graphics::FaceEnd()
+{
+	return GraphicsIterator::end;
+}
+
 // Detach this graphics from space
 // Clear all vertices and indices data
 void Graphics::Destroy()

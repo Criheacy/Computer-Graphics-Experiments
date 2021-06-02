@@ -125,8 +125,10 @@ bool Face::operator<(const GraphicsComponent &rhs) const {
 /******************** Graphics Iterator Implementation ********************/
 
 GraphicsIterator::GraphicsIterator(GraphicsComponent *beginComponent) {
-	nextQueue.push(beginComponent);
-	UpdateComponent(beginComponent);
+	if (beginComponent != nullptr) {
+		nextQueue.push(beginComponent);
+		UpdateComponent(beginComponent);
+	}
 }
 
 GraphicsIterator &GraphicsIterator::operator=(const GraphicsIterator &rhs) {
@@ -134,12 +136,24 @@ GraphicsIterator &GraphicsIterator::operator=(const GraphicsIterator &rhs) {
 	this->nextQueue = rhs.nextQueue;    // deep copy the queue
 }
 
+bool GraphicsIterator::operator==(const GraphicsIterator &rhs) const {
+	if (nextQueue.empty() && rhs.nextQueue.empty())
+	{
+		return true;
+	}
+	return false;
+}
+
+bool GraphicsIterator::operator!=(const GraphicsIterator &rhs) const {
+	return !(*this == rhs);
+}
+
 GraphicsIterator::GraphicsIterator(const GraphicsIterator &rhs) {
 	// Use assignment operator
 	*this = rhs;
 }
 
-GraphicsComponent* GraphicsIterator::operator*() {
+GraphicsComponent* GraphicsIterator::operator*() const {
 	if (nextQueue.empty())
 	{
 		throw "End iterator cannot be dereferenced";
@@ -152,6 +166,8 @@ GraphicsIterator &GraphicsIterator::operator++() {
 	nextQueue.pop();
 	return *this;
 }
+
+const GraphicsIterator GraphicsIterator::end = GraphicsIterator(nullptr);
 
 void GraphicsIterator::UpdateComponent(GraphicsComponent *component) {
 	 std::vector<GraphicsComponent*> adjacentComponents = component->GetAdjacentComponent();

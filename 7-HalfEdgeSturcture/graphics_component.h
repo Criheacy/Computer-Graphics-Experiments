@@ -63,8 +63,10 @@ class GraphicsIterator
 public:
 	GraphicsIterator(const GraphicsIterator& rhs);
 	GraphicsIterator& operator=(const GraphicsIterator& rhs);
-	virtual GraphicsComponent* operator*();
-	virtual GraphicsIterator& operator++();     // ++i
+	bool operator==(const GraphicsIterator& rhs) const;
+	bool operator!=(const GraphicsIterator& rhs) const;
+	GraphicsComponent* operator*() const;
+	GraphicsIterator& operator++();     // ++i
 
 	// [Deprecated] virtual GraphicsIterator& operator++(int);     // i++
 	// since operator++ of this iterator always returns itself, back-side
