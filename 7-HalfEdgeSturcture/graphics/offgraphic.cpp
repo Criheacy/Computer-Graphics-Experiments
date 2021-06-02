@@ -65,9 +65,12 @@ void OFFGraphics::DecodeOFF(std::string OFFString) {
 	vertexIndices = new glm::vec3[vertexIndicesSize];
 	int indexListSize;
 	int* indexList;
-	for (int i = 0; i < vertexNumber; ++i) {
+	for (int i = 0; i < faceNumber; ++i) {
 		try {
 			stringStream >> word; indexListSize = std::stoi(word);
+			if (indexListSize != 3) {
+				printf("WARNING: %d index size not support\n", indexListSize);
+			}
 			indexList = new int[indexListSize];
 			for (int j = 0; j < indexListSize; ++j) {
 				stringStream >> word; indexList[j] = std::stoi(word);
