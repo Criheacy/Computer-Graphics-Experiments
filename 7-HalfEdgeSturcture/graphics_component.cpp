@@ -23,7 +23,7 @@ void Vertex::RemoveEdge(Edge *edgeToRemove) {
 	else
 	{
 		Edge* prevEdge = headEdge;
-		for (Edge* edge = headEdge->follow; edge != headEdge; edge = edge->follow)
+		for (Edge* edge = headEdge->follow; edge != nullptr; edge = edge->follow)
 		{
 			if (edge == edgeToRemove)
 			{
@@ -45,7 +45,7 @@ Edge* Vertex::GetEdgeTo(Vertex *toVertex) const {
 	{
 		return headEdge;
 	}
-	for (Edge* edge = headEdge->follow; edge != headEdge; edge = edge->follow)
+	for (Edge* edge = headEdge->follow; edge != nullptr; edge = edge->follow)
 	{
 		if (edge->to == toVertex)
 		{
