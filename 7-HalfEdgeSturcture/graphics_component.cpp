@@ -11,19 +11,19 @@ Vertex::Vertex(int index, glm::vec3 position, Edge *headEdge) {
 }
 
 void Vertex::AddEdge(Edge *newEdge) {
-	newEdge->next = headEdge;
+	newEdge->follow = headEdge;
 	headEdge = newEdge;
 }
 
 void Vertex::RemoveEdge(Edge *edgeToRemove) {
 	if (edgeToRemove == headEdge)
 	{
-		headEdge = edgeToRemove->next;
+		headEdge = edgeToRemove->follow;
 	}
 	else
 	{
 		Edge* prevEdge = headEdge;
-		for (Edge* edge = headEdge->next; edge != headEdge; edge = edge->next)
+		for (Edge* edge = headEdge->follow; edge != headEdge; edge = edge->follow)
 		{
 			if (edge == edgeToRemove)
 			{
@@ -45,7 +45,7 @@ Edge* Vertex::GetEdgeTo(Vertex *toVertex) const {
 	{
 		return headEdge;
 	}
-	for (Edge* edge = headEdge->next; edge != headEdge; edge = edge->next)
+	for (Edge* edge = headEdge->follow; edge != headEdge; edge = edge->follow)
 	{
 		if (edge->to == toVertex)
 		{
@@ -80,11 +80,12 @@ std::vector<GraphicsComponent*> Vertex::GetAdjacentComponent() {
 	return res;
 }
 
-Edge::Edge(Vertex *from, Vertex *to, Edge *opposite, Edge *next) {
+Edge::Edge(Vertex *from, Vertex *to, Edge *opposite, Edge *next, Edge* follow) {
 	this->from = from;
 	this->to = to;
 	this->opposite = opposite;
 	this->next = next;
+	this->follow = follow;
 }
 
 bool Edge::operator==(const GraphicsComponent &rhs) const {
@@ -176,9 +177,10 @@ GraphicsIterator::GraphicsIterator(GraphicsComponent *beginComponent) {
 	}
 }
 
-GraphicsIterator &GraphicsIterator::operator=(const GraphicsIterator &rhs) {
+GraphicsIterator& GraphicsIterator::operator=(const GraphicsIterator &rhs) {
 	this->inQueueMap = rhs.inQueueMap;
 	this->nextQueue = rhs.nextQueue;    // deep copy the queue
+	return *this;
 }
 
 bool GraphicsIterator::operator==(const GraphicsIterator &rhs) const {
@@ -208,6 +210,10 @@ GraphicsComponent* GraphicsIterator::operator*() const {
 
 GraphicsIterator &GraphicsIterator::operator++() {
     UpdateComponent(nextQueue.front());
+	if (nextQueue.empty())
+	{
+		throw "End iterator cannot be increased";
+	}
 	nextQueue.pop();
 	return *this;
 }

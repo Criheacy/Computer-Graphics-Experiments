@@ -45,11 +45,12 @@ struct Vertex : public GraphicsComponent
 struct Edge : public GraphicsComponent
 {
 	Edge() = default;
-	Edge(Vertex* from, Vertex* to, Edge* opposite, Edge* next);
+	Edge(Vertex* from, Vertex* to, Edge* opposite = nullptr, Edge* next = nullptr, Edge* follow = nullptr);
 	Vertex* from;
 	Vertex* to;
 	Edge* opposite;
 	Edge* next;
+	Edge* follow;
 	bool operator==(const GraphicsComponent& rhs) const override;
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
