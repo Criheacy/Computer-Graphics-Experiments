@@ -12,9 +12,8 @@ public:
 
 private:
 	Tetrahedron();
-	void SetTetrahedronVertices(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4);
-	void GenerateDefaultIndices();
-
+	std::vector<glm::vec3>* GenerateVertices(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4);
+	std::vector<std::vector<int>>* GenerateDefaultIndices();
 };
 
 

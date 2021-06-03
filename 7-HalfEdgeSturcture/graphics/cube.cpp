@@ -4,20 +4,23 @@ Cube::Cube() = default;
 
 Cube::Cube(float length) : Graphics()
 {
-	SetCubeVertices(glm::vec3(), length, length, length);
-	GenerateDefaultIndices();
+	auto vertexArray = GenerateVertices(glm::vec3(), length, length, length);
+	auto indexArray = GenerateDefaultIndices();
+	SetGraphicsArray(*vertexArray, *indexArray);
 }
 
 Cube::Cube(glm::vec3 centerPoint, float xLength, float yLength, float zLength)
 {
-	SetCubeVertices(centerPoint, xLength, yLength, zLength);
-	GenerateDefaultIndices();
+	auto vertexArray = GenerateVertices(centerPoint, xLength, yLength, zLength);
+	auto indexArray = GenerateDefaultIndices();
+	SetGraphicsArray(*vertexArray, *indexArray);
 }
 
-void Cube::SetCubeVertices(glm::vec3 centerPoint, float xLength, float yLength, float zLength)
+std::vector<glm::vec3>* Cube::GenerateVertices(glm::vec3 centerPoint, float xLength, float yLength, float zLength)
 {
-	vertexArraySize = 8;
-	vertexArray = new glm::vec3[vertexArraySize];
+	vertexCount = 8;
+	auto vertexArray = new std::vector<glm::vec3>();
+	vertexArray->resize(8);
 
 	for (int i=0; i<8; i++)
 	{
@@ -33,16 +36,19 @@ void Cube::SetCubeVertices(glm::vec3 centerPoint, float xLength, float yLength, 
 		 *    |/        |/
 		 *   [0]-------[1]
 		 */
-		vertexArray[i] = glm::vec3(centerPoint.x + ((float)((i >> 0) & 1) - 0.5f) * xLength,
-		                           centerPoint.y + ((float)((i >> 1) & 1) - 0.5f) * yLength,
-		                           centerPoint.z + ((float)((i >> 2) & 1) - 0.5f) * zLength);
+		(*vertexArray)[i] = glm::vec3(centerPoint.x + ((float)((i >> 0) & 1) - 0.5f) * xLength,
+		                              centerPoint.y + ((float)((i >> 1) & 1) - 0.5f) * yLength,
+		                              centerPoint.z + ((float)((i >> 2) & 1) - 0.5f) * zLength);
 	}
+	return vertexArray;
 }
 
-void Cube::GenerateDefaultIndices()
+std::vector<std::vector<int>>* Cube::GenerateDefaultIndices()
 {
-	vertexIndicesSize = 12;
-	vertexIndices = new glm::vec3[vertexIndicesSize];
+	edgeCount = 18;
+	faceCount = 12;
+	auto indexArray = new std::vector<std::vector<int>>();
+	indexArray->resize(12);
 
 	// the default cube indices
 	// orders are followed by right-hand system
@@ -60,16 +66,17 @@ void Cube::GenerateDefaultIndices()
 	 * 7 4 5
 	 * 7 6 4
 	 */
-	vertexIndices[0] = glm::vec3(0, 3, 1);
-	vertexIndices[1] = glm::vec3(0, 2, 3);
-	vertexIndices[2] = glm::vec3(0, 1, 5);
-	vertexIndices[3] = glm::vec3(0, 5, 4);
-	vertexIndices[4] = glm::vec3(0, 6, 2);
-	vertexIndices[5] = glm::vec3(0, 4, 6);
-	vertexIndices[6] = glm::vec3(7, 1, 3);
-	vertexIndices[7] = glm::vec3(7, 5, 1);
-	vertexIndices[8] = glm::vec3(7, 3, 2);
-	vertexIndices[9] = glm::vec3(7, 2, 6);
-	vertexIndices[10] = glm::vec3(7, 4, 5);
-	vertexIndices[11] = glm::vec3(7, 6, 4);
+	(*indexArray)[0] = {0, 3, 1};
+	(*indexArray)[1] = {0, 2, 3};
+	(*indexArray)[2] = {0, 1, 5};
+	(*indexArray)[3] = {0, 5, 4};
+	(*indexArray)[4] = {0, 6, 2};
+	(*indexArray)[5] = {0, 4, 6};
+	(*indexArray)[6] = {7, 1, 3};
+	(*indexArray)[7] = {7, 5, 1};
+	(*indexArray)[8] = {7, 3, 2};
+	(*indexArray)[9] = {7, 2, 6};
+	(*indexArray)[10] = {7, 4, 5};
+	(*indexArray)[11] = {7, 6, 4};
+	return indexArray;
 }

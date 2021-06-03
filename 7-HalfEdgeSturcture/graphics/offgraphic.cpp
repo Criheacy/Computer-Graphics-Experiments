@@ -32,24 +32,21 @@ void OFFGraphics::DecodeOFF(std::string OFFString) {
 	std::stringstream stringStream(OFFString);
 	std::string word;
 
-	int vertexNumber = 0;
-	int faceNumber = 0;
-	int edgeNumber = 0;
-
 	stringStream >> word;   // ignore "OFF" at first line
 	try {
-		stringStream >> word; vertexNumber = std::stoi(word);
-		stringStream >> word; faceNumber = std::stoi(word);
-		stringStream >> word; edgeNumber = std::stoi(word);
+		stringStream >> word; vertexCount = std::stoi(word);
+		stringStream >> word; faceCount = std::stoi(word);
+		stringStream >> word; edgeCount = std::stoi(word);
 	} catch (std::invalid_argument& argument) {
 		std::cout << "ERROR::OFF_GRAPHICS::DECODE_ERROR" << std::endl;
 		std::cout << " - Declaration of item numbers not found." << std::endl;
 	}
 
-	vertexArraySize = vertexNumber;
-	vertexArray = new glm::vec3[vertexArraySize];
+	auto* vertexArray = new std::vector<glm::vec3>();
+	vertexArray->resize(vertexCount);
+
 	float x, y, z;
-	for (int i = 0; i < vertexNumber; ++i) {
+	for (int i = 0; i < vertexCount; ++i) {
 		try {
 			stringStream >> word; x = std::stof(word);
 			stringStream >> word; y = std::stof(word);
@@ -58,30 +55,28 @@ void OFFGraphics::DecodeOFF(std::string OFFString) {
 			std::cout << "ERROR::OFF_GRAPHICS::DECODE_ERROR" << std::endl;
 			std::cout << " - Cannot parse certain coordinate: " << word << std::endl;
 		}
-		vertexArray[i] = glm::vec3(x, y, z);
+		(*vertexArray)[i] = glm::vec3(x, y, z);
 	}
 
-	vertexIndicesSize = faceNumber;
-	vertexIndices = new glm::vec3[vertexIndicesSize];
-	int indexListSize;
-	int* indexList;
-	for (int i = 0; i < faceNumber; ++i) {
+	auto indexArray = new std::vector<std::vector<int>>();
+	indexArray->resize(faceCount);
+
+	int edgeInFaceCount;
+	for (int i = 0; i < faceCount; ++i) {
 		try {
-			stringStream >> word; indexListSize = std::stoi(word);
-			if (indexListSize != 3) {
-				printf("WARNING: %d index size not support\n", indexListSize);
+			stringStream >> word;
+			edgeInFaceCount = std::stoi(word);
+			if (edgeInFaceCount != 3) {
+				printf("WARNING: %d index size not support\n", edgeInFaceCount);
 			}
-			indexList = new int[indexListSize];
-			for (int j = 0; j < indexListSize; ++j) {
-				stringStream >> word; indexList[j] = std::stoi(word);
+			for (int j = 0; j < edgeInFaceCount; ++j) {
+				stringStream >> word;
+				(*indexArray)[i].push_back(std::stoi(word));
 			}
 		} catch (std::invalid_argument& argument) {
 			std::cout << "ERROR::OFF_GRAPHICS::DECODE_ERROR" << std::endl;
 			std::cout << " - Cannot parse certain index: " << word << std::endl;
 		}
-
-		// only support 3-size index by now
-		vertexIndices[i] = glm::vec3(indexList[0], indexList[1], indexList[2]);
 	}
 
 	LogTest();

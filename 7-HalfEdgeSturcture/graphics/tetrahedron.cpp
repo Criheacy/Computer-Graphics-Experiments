@@ -15,24 +15,27 @@ Tetrahedron::Tetrahedron(float length)
 
 	float sqrt3 = sqrtf(3.0f);
 	float sqrt6 = sqrtf(6.0f);
-	SetTetrahedronVertices(glm::vec3(0, 0, sqrt6 * length / 4),
-	                       glm::vec3(sqrt3 * length / 3, 0, -sqrt6 * length / 12),
-	                       glm::vec3(-sqrt3 * length / 6, -length / 2, -sqrt6 * length / 12),
-	                       glm::vec3(-sqrt3 * length / 6, length / 2, -sqrt6 * length / 12));
 
-	GenerateDefaultIndices();
+	auto vertexArray = GenerateVertices(glm::vec3(0, 0, sqrt6 * length / 4),
+	                    glm::vec3(sqrt3 * length / 3, 0, -sqrt6 * length / 12),
+	                    glm::vec3(-sqrt3 * length / 6, -length / 2, -sqrt6 * length / 12),
+	                    glm::vec3(-sqrt3 * length / 6, length / 2, -sqrt6 * length / 12));
+	auto indexArray = GenerateDefaultIndices();
+	SetGraphicsArray(*vertexArray, *indexArray);
 }
 
 Tetrahedron::Tetrahedron(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4)
 {
-	SetTetrahedronVertices(point1, point2, point3, point4);
-	GenerateDefaultIndices();
+	auto vertexArray = GenerateVertices(point1, point2, point3, point4);
+	auto indexArray = GenerateDefaultIndices();
+	SetGraphicsArray(*vertexArray, *indexArray);
 }
 
-void Tetrahedron::SetTetrahedronVertices(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4)
+std::vector<glm::vec3>* Tetrahedron::GenerateVertices(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4)
 {
-	vertexArraySize = 4;
-	vertexArray = new glm::vec3[vertexArraySize];
+	vertexCount = 4;
+	auto vertexArray = new std::vector<glm::vec3>();
+	vertexArray->resize(4);
 	/*
 	 *         [0]
 	 *        / | \
@@ -43,16 +46,19 @@ void Tetrahedron::SetTetrahedronVertices(glm::vec3 point1, glm::vec3 point2, glm
 	 *        \ | /
 	 *         [1]
 	 */
-	vertexArray[0] = point1;
-	vertexArray[1] = point2;
-	vertexArray[2] = point3;
-	vertexArray[3] = point4;
+	(*vertexArray)[0] = point1;
+	(*vertexArray)[1] = point2;
+	(*vertexArray)[2] = point3;
+	(*vertexArray)[3] = point4;
+	return vertexArray;
 }
 
-void Tetrahedron::GenerateDefaultIndices()
+std::vector<std::vector<int>>* Tetrahedron::GenerateDefaultIndices()
 {
-	vertexIndicesSize = 4;
-	vertexIndices = new glm::vec3[vertexIndicesSize];
+	edgeCount = 6;
+	faceCount = 4;
+	auto indexArray = new std::vector<std::vector<int>>();
+	indexArray->resize(4);
 
 	// the default cube indices
 	// orders are followed by right-hand system
@@ -62,8 +68,9 @@ void Tetrahedron::GenerateDefaultIndices()
 	 * 0 3 2
 	 * 1 2 3
 	 */
-	vertexIndices[0] = glm::vec3(0, 1, 3);
-	vertexIndices[1] = glm::vec3(0, 2, 1);
-	vertexIndices[2] = glm::vec3(0, 3, 2);
-	vertexIndices[3] = glm::vec3(1, 2, 3);
+	(*indexArray)[0] = {0, 1, 3};
+	(*indexArray)[1] = {0, 2, 1};
+	(*indexArray)[2] = {0, 3, 2};
+	(*indexArray)[3] = {1, 2, 3};
+	return indexArray;
 }

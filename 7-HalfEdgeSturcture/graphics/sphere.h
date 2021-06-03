@@ -12,8 +12,8 @@ public:
 private:
 	Sphere();
 
-	void GenerateVertices(glm::vec3 center, float radius, int subdivisionLevel);
-	void GenerateDefaultIndices();
+	std::vector<glm::vec3>* GenerateVertices(glm::vec3 center, float radius, int subdivisionLevel);
+	std::vector<std::vector<int>>* GenerateDefaultIndices();
 	void Subdivision(int currentIteration, int maxIteration);
 	static const int SUBDIVISION_LEVEL = 1;
 };

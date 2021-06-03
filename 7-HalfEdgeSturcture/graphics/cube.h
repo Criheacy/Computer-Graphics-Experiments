@@ -16,8 +16,8 @@ public:
 
 private:
 	Cube();
-	void SetCubeVertices(glm::vec3 centerPoint, float xLength, float yLength, float zLength);
-	void GenerateDefaultIndices();
+	std::vector<glm::vec3>* GenerateVertices(glm::vec3 centerPoint, float xLength, float yLength, float zLength);
+	std::vector<std::vector<int>>* GenerateDefaultIndices();
 
 };
 

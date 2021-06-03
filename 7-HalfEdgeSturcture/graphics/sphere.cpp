@@ -3,21 +3,24 @@
 Sphere::Sphere() = default;
 
 Sphere::Sphere(float radius) {
-	GenerateVertices(glm::vec3(0.0f), radius, 1);
-	GenerateDefaultIndices();
+	auto vertexArray = GenerateVertices(glm::vec3(0.0f), radius, 1);
+	auto indexArray = GenerateDefaultIndices();
+	SetGraphicsArray(*vertexArray, *indexArray);
 }
 
 Sphere::Sphere(glm::vec3 center, float radius, int subdivisionLevel) {
-	GenerateVertices(center, radius, subdivisionLevel);
-	GenerateDefaultIndices();
+	auto vertexArray = GenerateVertices(center, radius, subdivisionLevel);
+	auto indexArray = GenerateDefaultIndices();
+	SetGraphicsArray(*vertexArray, *indexArray);
 }
 
-void Sphere::GenerateVertices(glm::vec3 center, float radius, int subdivisionLevel) {
+std::vector<glm::vec3>* Sphere::GenerateVertices(glm::vec3 center, float radius, int subdivisionLevel) {
+	vertexCount = 12;
 	float m = (float) (sqrt(50.0 - 10.0 * sqrt(5.0)) * radius / 10.0);
 	float n = (float) (sqrt(50.0 + 10.0 * sqrt(5.0)) * radius / 10.0);
 
-	vertexArraySize = 12;
-	vertexArray = new glm::vec3[vertexArraySize];
+	auto* vertexArray = new std::vector<glm::vec3>();
+	vertexArray->resize(12);
 	for (int dim = 0; dim < 3; ++dim) {
 		for (int i = 0; i < 4; ++i) {
 			float _n = ((float)((i >> 0) & 1) - 0.5f) * 2 * n * radius;
@@ -30,15 +33,17 @@ void Sphere::GenerateVertices(glm::vec3 center, float radius, int subdivisionLev
 			} else if (dim == 2) {
 				_y = _n, _x = _m, _z = 0;
 			}
-			vertexArray[dim * 4 + i] = center + glm::vec3(_x, _y, _z);
+			(*vertexArray)[dim * 4 + i] = center + glm::vec3(_x, _y, _z);
 		}
 	}
+	return vertexArray;
 }
 
-void Sphere::GenerateDefaultIndices() {
-
-	vertexIndicesSize = 20;
-	vertexIndices = new glm::vec3[vertexIndicesSize];
+std::vector<std::vector<int>>* Sphere::GenerateDefaultIndices() {
+	edgeCount = 30;
+	faceCount = 20;
+	auto* indexArray = new std::vector<std::vector<int>>();
+	indexArray->resize(20);
 	/*
 	 * 0 6 4
 	 * 1 4 6
@@ -61,27 +66,27 @@ void Sphere::GenerateDefaultIndices() {
 	 * 3 5 10
 	 * 3 11 7
 	 */
-	vertexIndices[0] = glm::vec3(0, 6, 4);
-	vertexIndices[1] = glm::vec3(1, 4, 6);
-	vertexIndices[2] = glm::vec3(2, 5, 7);
-	vertexIndices[3] = glm::vec3(3, 7, 5);
-	vertexIndices[4] = glm::vec3(0, 8, 2);
-	vertexIndices[5] = glm::vec3(0, 2, 9);
-	vertexIndices[6] = glm::vec3(1, 3, 10);
-	vertexIndices[7] = glm::vec3(1, 11, 3);
-	vertexIndices[8] = glm::vec3(4, 10, 8);
-	vertexIndices[9] = glm::vec3(5, 8, 10);
-	vertexIndices[10] = glm::vec3(6, 9, 11);
-	vertexIndices[11] = glm::vec3(7, 11, 9);
-	vertexIndices[12] = glm::vec3(0, 4, 8);
-	vertexIndices[13] = glm::vec3(0, 9, 6);
-	vertexIndices[14] = glm::vec3(1, 6, 11);
-	vertexIndices[15] = glm::vec3(1, 10, 4);
-	vertexIndices[16] = glm::vec3(2, 8, 5);
-	vertexIndices[17] = glm::vec3(2, 7, 9);
-	vertexIndices[18] = glm::vec3(3, 5, 10);
-	vertexIndices[19] = glm::vec3(3, 11, 7);
-
+	(*indexArray)[0] = std::vector<int>({0, 6, 4});
+	(*indexArray)[1] = std::vector<int>({1, 4, 6});
+	(*indexArray)[2] = std::vector<int>({2, 5, 7});
+	(*indexArray)[3] = std::vector<int>({3, 7, 5});
+	(*indexArray)[4] = std::vector<int>({0, 8, 2});
+	(*indexArray)[5] = std::vector<int>({0, 2, 9});
+	(*indexArray)[6] = std::vector<int>({1, 3, 10});
+	(*indexArray)[7] = std::vector<int>({1, 11, 3});
+	(*indexArray)[8] = std::vector<int>({4, 10, 8});
+	(*indexArray)[9] = std::vector<int>({5, 8, 10});
+	(*indexArray)[10] = std::vector<int>({6, 9, 11});
+	(*indexArray)[11] = std::vector<int>({7, 11, 9});
+	(*indexArray)[12] = std::vector<int>({0, 4, 8});
+	(*indexArray)[13] = std::vector<int>({0, 9, 6});
+	(*indexArray)[14] = std::vector<int>({1, 6, 11});
+	(*indexArray)[15] = std::vector<int>({1, 10, 4});
+	(*indexArray)[16] = std::vector<int>({2, 8, 5});
+	(*indexArray)[17] = std::vector<int>({2, 7, 9});
+	(*indexArray)[18] = std::vector<int>({3, 5, 10});
+	(*indexArray)[19] = std::vector<int>({3, 11, 7});
+	return indexArray;
 }
 
 void Sphere::Subdivision(int currentIteration, int maxIteration) {
