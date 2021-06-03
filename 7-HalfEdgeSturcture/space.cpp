@@ -10,8 +10,8 @@ Space::Space()
 {
 	head = nullptr;
 	graphicsUpdateFlag = true;
-	serializedVerticesArraySize = 0;
-	serializedVerticesArray = nullptr;
+	serializedVertexArraySize = 0;
+	serializedVertexArray = nullptr;
 }
 
 GraphicsLinkNode* Space::AttachGraphics(Graphics *graphics)
@@ -56,65 +56,57 @@ void Space::UpdateGraphicsVerticesArray()
 {
 	if (head == nullptr)
 	{
-		serializedVerticesArraySize = 0;
-		serializedVerticesArray = nullptr;
+		serializedVertexArraySize = 0;
+		serializedVertexArray = nullptr;
 		return;
 	}
-	delete[] serializedVerticesArray;
-	delete[] serializedIndicesArray;
+	delete[] serializedVertexArray;
+	delete[] serializedIndexArray;
 
-	serializedVerticesArraySize = 0;
-	serializedIndicesArray = 0;
+	serializedVertexArraySize = 0;
+	serializedIndexArraySize = 0;
 	GraphicsLinkNode* nowNode;
 
 	// Accumulate number of vertices in all attached graphics
 	nowNode = head;
 	do {
-		serializedVerticesArraySize
-		    += nowNode->graphics->GetVertexArraySize();
-		serializedIndicesArraySize
-		    += nowNode->graphics->GetVertexIndicesSize();
+		serializedVertexArraySize += nowNode->graphics->GetVertexCount();
+		serializedIndexArraySize += nowNode->graphics->GetFaceCount();
 		nowNode = nowNode->next;
 	} while (nowNode != head);
 
-	serializedVerticesArraySize *= 3;
-	serializedIndicesArraySize *= 3;
+	serializedVertexArraySize *= 3;
+	serializedIndexArraySize *= 3;
 	// Reallocate space for new arrays
-	serializedVerticesArray = new float[serializedVerticesArraySize];
-	serializedIndicesArray = new int[serializedIndicesArraySize];
+	serializedVertexArray = new float[serializedVertexArraySize];
+	serializedIndexArray = new int[serializedIndexArraySize];
 
-	// Enumerate and add vertex info to serialized vertices array
+	// Enumerate each graphics and add vertex info to serialized vertices array
 	nowNode = head;
-	int vertexCnt = 0;
-	int indexCnt = 0;
+	int vertexOffset = 0;
+	int indexOffset = 0;
 	do {
-		unsigned int graphicsVerticesNumber
-		    = nowNode->graphics->GetVertexArraySize();
-		glm::vec3* graphicsVertices
-		    = nowNode->graphics->GetVertexArrayPtr();
-
-		unsigned int graphicsIndicesNumber
-		    = nowNode->graphics->GetVertexIndicesSize();
-		glm::vec3* graphicsIndices
-		    = nowNode->graphics->GetVertexIndicesPtr();
-
 		// Serialize indices first
-		for (unsigned int i = 0; i < graphicsIndicesNumber; i++)
+		for (auto it = nowNode->graphics->FaceBegin(); it != nowNode->graphics->FaceEnd(); ++it)
 		{
 			// Indices number needs to add vertex-cnt to match origin vertex in space group
-			serializedIndicesArray[indexCnt * 3] = (int)graphicsIndices[i].x + vertexCnt;
-			serializedIndicesArray[indexCnt * 3 + 1] = (int)graphicsIndices[i].y + vertexCnt;
-			serializedIndicesArray[indexCnt * 3 + 2] = (int)graphicsIndices[i].z + vertexCnt;
-			indexCnt++;
+			auto currentFace = dynamic_cast<Face*>(*it);
+			serializedIndexArray[indexOffset * 3] = currentFace->markedEdge->to->index + vertexOffset;
+			serializedIndexArray[indexOffset * 3 + 1] = currentFace->markedEdge->next->to->index + vertexOffset;
+			serializedIndexArray[indexOffset * 3 + 2] = currentFace->markedEdge->next->next->to->index + vertexOffset;
+			// Discard face object
+			// delete currentFace;
+			indexOffset++;
 		}
 
-		for (unsigned int i = 0; i < graphicsVerticesNumber; i++)
+		for (auto it = nowNode->graphics->VertexBegin(); it != nowNode->graphics->VertexEnd(); ++it)
 		{
 			// Serialize vector data into 3 floats
-			serializedVerticesArray[vertexCnt * 3] = graphicsVertices[i].x;
-			serializedVerticesArray[vertexCnt * 3 + 1] = graphicsVertices[i].y;
-			serializedVerticesArray[vertexCnt * 3 + 2] = graphicsVertices[i].z;
-			vertexCnt++;
+			auto currentVertex = dynamic_cast<Vertex*>(*it);
+			serializedVertexArray[vertexOffset * 3] = currentVertex->position.x;
+			serializedVertexArray[vertexOffset * 3 + 1] = currentVertex->position.y;
+			serializedVertexArray[vertexOffset * 3 + 2] = currentVertex->position.z;
+			vertexOffset++;
 		}
 		nowNode = nowNode->next;
 	} while (nowNode != head);
@@ -126,25 +118,25 @@ void Space::UpdateGraphicsVerticesArray()
 unsigned int Space::GetSerializedVerticesArraySize()
 {
 	if (graphicsUpdateFlag) UpdateGraphicsVerticesArray();
-	return serializedVerticesArraySize;
+	return serializedVertexArraySize;
 }
 
 float* Space::GetSerializedVerticesArrayPtr()
 {
 	if (graphicsUpdateFlag) UpdateGraphicsVerticesArray();
-	return serializedVerticesArray;
+	return serializedVertexArray;
 }
 
 unsigned int Space::GetSerializedIndicesArraySize()
 {
 	if (graphicsUpdateFlag) UpdateGraphicsVerticesArray();
-	return serializedIndicesArraySize;
+	return serializedIndexArraySize;
 }
 
 int* Space::GetSerializedIndicesArrayPtr()
 {
 	if (graphicsUpdateFlag) UpdateGraphicsVerticesArray();
-	return serializedIndicesArray;
+	return serializedIndexArray;
 }
 
 void Space::LogTest()
@@ -152,23 +144,23 @@ void Space::LogTest()
 	if (graphicsUpdateFlag) UpdateGraphicsVerticesArray();
 
 	printf("========== Space Info ==========\n");
-	printf(" -> vertex: %d\n", serializedVerticesArraySize);
+	printf(" -> vertex: %d\n", serializedVertexArraySize);
 	printf(" -> vertex list:\n");
-	for (unsigned int i = 0; i < serializedVerticesArraySize; i += 3)
+	for (unsigned int i = 0; i < serializedVertexArraySize; i += 3)
 	{
 		printf("\t%.1f, %.1f, %.1f,\n",
-		       *(serializedVerticesArray + i),
-		       *(serializedVerticesArray + i + 1),
-		       *(serializedVerticesArray + i + 2));
+		       *(serializedVertexArray + i),
+		       *(serializedVertexArray + i + 1),
+		       *(serializedVertexArray + i + 2));
 	}
 
-	printf(" -> index: %d\n", serializedIndicesArraySize);
-	for (unsigned int i = 0; i < serializedIndicesArraySize; i += 3)
+	printf(" -> index: %d\n", serializedIndexArraySize);
+	for (unsigned int i = 0; i < serializedIndexArraySize; i += 3)
 	{
 		printf("\t%d, %d, %d\n",
-		       *(serializedIndicesArray + i),
-		       *(serializedIndicesArray + i + 1),
-		       *(serializedIndicesArray + i + 2));
+		       *(serializedIndexArray + i),
+		       *(serializedIndexArray + i + 1),
+		       *(serializedIndexArray + i + 2));
 	}
 	printf("===================================\n\n");
 }

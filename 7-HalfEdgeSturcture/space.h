@@ -40,11 +40,11 @@ private:
 	bool graphicsUpdateFlag;
 	GraphicsLinkNode* head;
 
-	unsigned int serializedVerticesArraySize;
-	float* serializedVerticesArray;
+	unsigned int serializedVertexArraySize;
+	float*serializedVertexArray;
 
-	unsigned int serializedIndicesArraySize;
-	int* serializedIndicesArray;
+	unsigned int serializedIndexArraySize;
+	int*serializedIndexArray;
 };
 
 
