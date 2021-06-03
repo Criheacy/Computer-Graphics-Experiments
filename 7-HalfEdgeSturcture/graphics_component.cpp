@@ -224,7 +224,7 @@ void GraphicsIterator::UpdateComponent(GraphicsComponent *component) {
 	 std::vector<GraphicsComponent*> adjacentComponents = component->GetAdjacentComponent();
 	 for (auto adjacentComponent : adjacentComponents)
 	 {
-		 if (inQueueMap[adjacentComponent])
+		 if (!inQueueMap[adjacentComponent])
 		 {
 			 inQueueMap[adjacentComponent] = true;
 			 nextQueue.push(adjacentComponent);
