@@ -22,9 +22,15 @@ public:
 	void SetGraphicsArray(const std::vector<glm::vec3>& vertexArray,
 	                      const std::vector<std::vector<int>>& indexArray);
 
+	int GetVertexCount() const;
 	GraphicsIterator VertexBegin();
 	static GraphicsIterator VertexEnd();
 
+	int GetEdgeCount() const;
+	GraphicsIterator EdgeBegin();
+	static GraphicsIterator EdgeEnd();
+
+	int GetFaceCount() const;
 	GraphicsIterator FaceBegin();
 	static GraphicsIterator FaceEnd();
 
@@ -32,12 +38,14 @@ public:
 
 protected:
 	glm::mat4x4 transform;
-
 	struct GraphicsLinkNode* graphicsIndex;
+
+	int vertexCount;
+	int edgeCount;
+	int faceCount;
 
 private:
 	Vertex* headVertex;
-	int vertexCount;
 };
 
 #endif  //GRAPHICS_H

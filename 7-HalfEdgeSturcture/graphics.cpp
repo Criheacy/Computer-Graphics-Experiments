@@ -3,10 +3,11 @@
 Graphics::Graphics()
 {
 	graphicsIndex = Space::GetInstance().AttachGraphics(this);
-	vertexIndicesSize = 0;
-	vertexArraySize = 0;
-	vertexIndices = nullptr;
-	vertexArray = nullptr;
+	vertexCount = 0;
+	edgeCount = 0;
+	faceCount = 0;
+
+	headVertex = nullptr;
 
 	transform = glm::mat4(1.0f);
 }
@@ -19,38 +20,12 @@ Graphics& Graphics::operator=(const Graphics& origin)
 	Destroy();
 	graphicsIndex = Space::GetInstance().AttachGraphics(this);
 
-	vertexArraySize = origin.vertexArraySize;
-	vertexArray = new glm::vec3[vertexArraySize];
-	for (int i=0; i<vertexArraySize; i++)
-	{
-		vertexArray[i] = origin.vertexArray[i];
-	}
-	vertexIndicesSize = origin.vertexIndicesSize;
-	vertexIndices = new glm::vec3[vertexIndicesSize];
-	for (int i=0; i<vertexIndicesSize; i++)
-	{
-		vertexIndices[i] = origin.vertexIndices[i];
-	}
 	return *this;
 }
 
 Graphics::Graphics(const Graphics& origin)
 {
-	graphicsIndex = Space::GetInstance().AttachGraphics(this);
-
-	vertexArraySize = origin.vertexArraySize;
-	vertexArray = new glm::vec3[vertexArraySize];
-	for (int i=0; i<vertexArraySize; i++)
-	{
-		vertexArray[i] = origin.vertexArray[i];
-	}
-	vertexIndicesSize = origin.vertexIndicesSize;
-	vertexIndices = new glm::vec3[vertexIndicesSize];
-	for (int i=0; i<vertexIndicesSize; i++)
-	{
-		vertexIndices[i] = origin.vertexIndices[i];
-	}
-	transform = origin.transform;
+	*this = origin;
 }
 
 Graphics::~Graphics()
@@ -122,6 +97,11 @@ void Graphics::SetGraphicsArray(const std::vector<glm::vec3>& vertexArray,
 	delete[] vertexList;
 }
 
+int Graphics::GetVertexCount() const
+{
+	return vertexCount;
+}
+
 GraphicsIterator Graphics::VertexBegin()
 {
 	return GraphicsIterator(headVertex);
@@ -132,10 +112,29 @@ GraphicsIterator Graphics::VertexEnd()
 	return GraphicsIterator::end;
 }
 
+int Graphics::GetEdgeCount() const
+{
+	return edgeCount;
+}
+
+GraphicsIterator Graphics::EdgeBegin()
+{
+	return GraphicsIterator(headVertex->headEdge);
+}
+
+GraphicsIterator Graphics::EdgeEnd()
+{
+	return GraphicsIterator::end;
+}
+
+int Graphics::GetFaceCount() const
+{
+	return faceCount;
+}
+
 GraphicsIterator Graphics::FaceBegin()
 {
-	Face* headFace = new Face(headVertex->headEdge);
-	return GraphicsIterator(headFace);
+	return GraphicsIterator(new Face(headVertex->headEdge));
 }
 
 GraphicsIterator Graphics::FaceEnd()
@@ -152,17 +151,24 @@ void Graphics::Destroy()
 	// unnecessary for null pointer checking:
 	// delete[] nullptr has no effect
 
-	// FIXME: Destroy function raises exception when pointers 'vertexIndices' or 'vertexArray' are illegal
-	delete[] vertexIndices;
-	delete[] vertexArray;
-	vertexIndices = nullptr;
-	vertexArray = nullptr;
+	std::vector<Vertex*> verticesToDelete;
+	std::vector<Edge*> edgesToDelete;
+	for (GraphicsIterator it = VertexBegin(); it != VertexEnd(); ++it)
+	{
+		verticesToDelete.push_back(dynamic_cast<Vertex*>(*it));
+	}
+	for (GraphicsIterator it = EdgeBegin(); it != EdgeEnd(); ++it)
+	{
+		edgesToDelete.push_back(dynamic_cast<Edge*>(*it));
+	}
+
+	// TODO: Implement vertices and edges deletion
 }
 
 // Debug log test
 void Graphics::LogTest()
 {
-	printf("========== Graphics Info ==========\n");
+	/*printf("========== Graphics Info ==========\n");
 	printf(" -> vertex: %d\n", vertexArraySize);
 	printf(" -> vertex list:\n");
 	for (int i = 0; i < vertexArraySize; i++)
@@ -175,5 +181,5 @@ void Graphics::LogTest()
 	{
 		printf("\t#%d [%d -> %d -> %d]\n", i, (int)vertexIndices[i].x, (int)vertexIndices[i].y, (int)vertexIndices[i].z);
 	}
-	printf("===================================\n\n");
+	printf("===================================\n\n");*/
 }
