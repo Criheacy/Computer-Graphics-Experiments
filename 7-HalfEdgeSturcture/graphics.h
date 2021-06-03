@@ -19,10 +19,8 @@ public:
 
 	void Destroy();
 
-	unsigned int GetVertexArraySize() const;
-	glm::vec3* GetVertexArrayPtr();
-	unsigned int GetVertexIndicesSize() const;
-	glm::vec3* GetVertexIndicesPtr();
+	void SetGraphicsArray(const std::vector<glm::vec3>& vertexArray,
+	                      const std::vector<std::vector<int>>& indexArray);
 
 	GraphicsIterator VertexBegin();
 	static GraphicsIterator VertexEnd();
@@ -33,18 +31,13 @@ public:
 	void LogTest();
 
 protected:
-	glm::vec3* vertexArray;
-	int vertexArraySize;
-
-	glm::vec3* vertexIndices;
-	int vertexIndicesSize;
-
 	glm::mat4x4 transform;
 
 	struct GraphicsLinkNode* graphicsIndex;
 
 private:
 	Vertex* headVertex;
+	int vertexCount;
 };
 
 #endif  //GRAPHICS_H

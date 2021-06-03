@@ -10,6 +10,47 @@ Vertex::Vertex(int index, glm::vec3 position, Edge *headEdge) {
 	this->headEdge = headEdge;
 }
 
+void Vertex::AddEdge(Edge *newEdge) {
+	newEdge->next = headEdge;
+	headEdge = newEdge;
+}
+
+void Vertex::RemoveEdge(Edge *edgeToRemove) {
+	if (edgeToRemove == headEdge)
+	{
+		headEdge = edgeToRemove->next;
+	}
+	else
+	{
+		Edge* prevEdge = headEdge;
+		for (Edge* edge = headEdge->next; edge != headEdge; edge = edge->next)
+		{
+			if (edge == edgeToRemove)
+			{
+				prevEdge->next = edge->next;
+				break;
+			}
+			prevEdge = edge;
+		}
+	}
+	edgeToRemove->next = nullptr;
+}
+
+Edge* Vertex::GetEdgeTo(Vertex *toVertex) const {
+	if (headEdge->to == toVertex)
+	{
+		return headEdge;
+	}
+	for (Edge* edge = headEdge->next; edge != headEdge; edge = edge->next)
+	{
+		if (edge->to == toVertex)
+		{
+			return edge;
+		}
+	}
+	return nullptr;
+}
+
 bool Vertex::operator==(const GraphicsComponent &rhs) const {
 	if (typeid(rhs) == typeid(*this))
 	{

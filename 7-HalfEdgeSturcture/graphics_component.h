@@ -27,9 +27,16 @@ struct Vertex : public GraphicsComponent
 {
 	Vertex() = default;
 	Vertex(int index, glm::vec3 position, Edge* headEdge);
+
 	int index;
 	glm::vec3 position;
 	Edge* headEdge;
+
+	void AddEdge(Edge* newEdge);
+	void RemoveEdge(Edge* edgeToRemove);
+
+	Edge* GetEdgeTo(Vertex* toVertex) const;
+
 	bool operator==(const GraphicsComponent& rhs) const override;
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;

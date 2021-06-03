@@ -55,8 +55,8 @@ int main()
 
 	// Cube cube = Cube(0.8f);
 	// Tetrahedron tet = Tetrahedron(0.7f);
-	// Sphere sphere = Sphere(0.7f);
-	OFFGraphics* offGraphics = new OFFGraphics("../res/bunny.off");
+	Sphere sphere = Sphere(0.7f);
+	// OFFGraphics* offGraphics = new OFFGraphics("../res/bunny.off");
 
 	Space::GetInstance().LogTest();
 
@@ -102,12 +102,12 @@ int main()
 
 		float timeValue = (float)glfwGetTime();
 		glm::mat4 view = glm::mat4(1.0);
-		view = glm::scale(view, glm::vec3(5.0f, 5.0f, 5.0f));
+
+		/// scale for bunny
+		// view = glm::scale(view, glm::vec3(5.0f, 5.0f, 5.0f));
 
 		/// scale for bumpy
 		// view = glm::scale(view, glm::vec3(0.1f, 0.1f, 0.1f));
-
-		/// scale for bunny
 		view = glm::rotate(view, glm::radians(timeValue * 20), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		shader.Activate();
