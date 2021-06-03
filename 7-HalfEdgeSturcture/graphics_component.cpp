@@ -37,6 +37,10 @@ void Vertex::RemoveEdge(Edge *edgeToRemove) {
 }
 
 Edge* Vertex::GetEdgeTo(Vertex *toVertex) const {
+	if (headEdge == nullptr)
+	{
+		return nullptr;
+	}
 	if (headEdge->to == toVertex)
 	{
 		return headEdge;
