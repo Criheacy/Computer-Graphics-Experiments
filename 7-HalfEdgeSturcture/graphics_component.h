@@ -10,8 +10,13 @@
 struct GraphicsComponent
 {
 	virtual std::vector<GraphicsComponent*> GetAdjacentComponent() = 0;
-	virtual bool operator==(const GraphicsComponent& rhs) const = 0;
 	virtual bool operator<(const GraphicsComponent& rhs) const = 0;
+
+	bool operator<=(const GraphicsComponent& rhs) const;
+	bool operator>(const GraphicsComponent& rhs) const;
+	bool operator>=(const GraphicsComponent& rhs) const;
+	bool operator==(const GraphicsComponent& rhs) const;
+	bool operator!=(const GraphicsComponent& rhs) const;
 };
 
 struct MapComponentComparer
@@ -37,7 +42,6 @@ struct Vertex : public GraphicsComponent
 
 	Edge* GetEdgeTo(Vertex* toVertex) const;
 
-	bool operator==(const GraphicsComponent& rhs) const override;
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
 };
@@ -51,7 +55,6 @@ struct Edge : public GraphicsComponent
 	Edge* opposite;
 	Edge* next;
 	Edge* follow;
-	bool operator==(const GraphicsComponent& rhs) const override;
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
 };
@@ -61,7 +64,6 @@ struct Face : public GraphicsComponent
 	Face() = default;
 	explicit Face(Edge* markedEdge);
 	Edge* markedEdge;
-	bool operator==(const GraphicsComponent& rhs) const override;
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
 };

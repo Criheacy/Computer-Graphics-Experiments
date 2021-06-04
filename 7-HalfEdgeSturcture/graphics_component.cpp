@@ -1,5 +1,25 @@
 #include "graphics_component.h"
 
+bool GraphicsComponent::operator==(const GraphicsComponent &rhs) const {
+	return (!(*this < rhs)) && (!(rhs < *this));
+}
+
+bool GraphicsComponent::operator!=(const GraphicsComponent &rhs) const {
+	return !(*this == rhs);
+}
+
+bool GraphicsComponent::operator<=(const GraphicsComponent &rhs) const {
+	return (*this == rhs || *this < rhs);
+}
+
+bool GraphicsComponent::operator>=(const GraphicsComponent &rhs) const {
+	return !(*this < rhs);
+}
+
+bool GraphicsComponent::operator>(const GraphicsComponent &rhs) const {
+	return (*this >= rhs && *this != rhs);
+}
+
 bool MapComponentComparer::operator()(const GraphicsComponent *a, const GraphicsComponent *b) {
 	return (*a) < (*b);
 }
@@ -55,14 +75,6 @@ Edge* Vertex::GetEdgeTo(Vertex *toVertex) const {
 	return nullptr;
 }
 
-bool Vertex::operator==(const GraphicsComponent &rhs) const {
-	if (typeid(rhs) == typeid(*this))
-	{
-		return this->index == dynamic_cast<const Vertex&>(rhs).index;
-	}
-	return false;
-}
-
 bool Vertex::operator<(const GraphicsComponent &rhs) const {
 	if (typeid(rhs) == typeid(*this))
 	{
@@ -86,15 +98,6 @@ Edge::Edge(Vertex *from, Vertex *to, Edge *opposite, Edge *next, Edge* follow) {
 	this->opposite = opposite;
 	this->next = next;
 	this->follow = follow;
-}
-
-bool Edge::operator==(const GraphicsComponent &rhs) const {
-	if (typeid(rhs) == typeid(*this))
-	{
-		return (this->from == dynamic_cast<const Edge&>(rhs).from)
-		       && (this->to == dynamic_cast<const Edge&>(rhs).to);
-	}
-	return false;
 }
 
 bool Edge::operator<(const GraphicsComponent &rhs) const {
@@ -131,26 +134,6 @@ std::vector<GraphicsComponent *> Face::GetAdjacentComponent() {
 
 Face::Face(Edge *markedEdge) {
 	this->markedEdge = markedEdge;
-}
-
-bool Face::operator==(const GraphicsComponent &rhs) const {
-	if (typeid(rhs) == typeid(*this))
-	{
-		const Face& faceRhs = dynamic_cast<const Face&>(rhs);
-		if (*(this->markedEdge) == *(faceRhs.markedEdge))
-		{
-			return true;
-		}
-		for (Edge* edge = faceRhs.markedEdge->next; edge != faceRhs.markedEdge; edge = edge->next)
-		{
-			if (*(this->markedEdge) == *edge)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	return false;
 }
 
 bool Face::operator<(const GraphicsComponent &rhs) const {
