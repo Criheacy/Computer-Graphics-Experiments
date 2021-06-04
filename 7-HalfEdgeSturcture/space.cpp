@@ -99,13 +99,25 @@ void Space::UpdateGraphicsVerticesArray()
 			indexOffset++;
 		}
 
-		for (auto it = nowNode->graphics->VertexBegin(); it != nowNode->graphics->VertexEnd(); ++it)
+		// Build vertexArray for storing vertex from iterators temporarily
+		// Since vertex accessed from iterator are not order by its index, but in near-by-order instead,
+		// so a sort function to reorder them by index before inserting to the serialized array is necessary
+		Vertex* vertexArray = new Vertex[nowNode->graphics->GetVertexCount()];
+		int vertexArrayCnt = 0;
+		for (auto it = nowNode->graphics->VertexBegin(); it != nowNode->graphics->VertexEnd(); ++it) {
+			vertexArray[vertexArrayCnt++] = *(dynamic_cast<Vertex*>(*it));
+		}
+
+		// Use stable sort to insure time complexity
+		// Sort by index of vertex
+		std::stable_sort(vertexArray, vertexArray + vertexArrayCnt);
+
+		for (int i = 0; i < vertexArrayCnt; i++)
 		{
 			// Serialize vector data into 3 floats
-			auto currentVertex = dynamic_cast<Vertex*>(*it);
-			serializedVertexArray[vertexOffset * 3] = currentVertex->position.x;
-			serializedVertexArray[vertexOffset * 3 + 1] = currentVertex->position.y;
-			serializedVertexArray[vertexOffset * 3 + 2] = currentVertex->position.z;
+			serializedVertexArray[vertexOffset * 3] = vertexArray[i].position.x;
+			serializedVertexArray[vertexOffset * 3 + 1] = vertexArray[i].position.y;
+			serializedVertexArray[vertexOffset * 3 + 2] = vertexArray[i].position.z;
 			vertexOffset++;
 		}
 		nowNode = nowNode->next;

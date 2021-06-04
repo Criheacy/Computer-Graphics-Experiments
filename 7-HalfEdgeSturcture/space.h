@@ -2,6 +2,7 @@
 #ifndef SPACE_H
 #define SPACE_H
 
+#include <algorithm>
 #include <vector>
 
 #include "graphics.h"
