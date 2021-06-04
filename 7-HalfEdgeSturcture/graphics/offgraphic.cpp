@@ -78,6 +78,4 @@ void OFFGraphics::DecodeOFF(std::string OFFString) {
 			std::cout << " - Cannot parse certain index: " << word << std::endl;
 		}
 	}
-
-	LogTest();
 }

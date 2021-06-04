@@ -34,8 +34,6 @@ public:
 	GraphicsIterator FaceBegin();
 	static GraphicsIterator FaceEnd();
 
-	void LogTest();
-
 protected:
 	glm::mat4x4 transform;
 	struct GraphicsLinkNode* graphicsIndex;

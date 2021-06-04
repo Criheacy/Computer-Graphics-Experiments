@@ -20,6 +20,8 @@ Graphics& Graphics::operator=(const Graphics& origin)
 	Destroy();
 	graphicsIndex = Space::GetInstance().AttachGraphics(this);
 
+	// TODO: Implement deep copy
+
 	return *this;
 }
 
@@ -163,23 +165,4 @@ void Graphics::Destroy()
 	}
 
 	// TODO: Implement vertices and edges deletion
-}
-
-// Debug log test
-void Graphics::LogTest()
-{
-	/*printf("========== Graphics Info ==========\n");
-	printf(" -> vertex: %d\n", vertexArraySize);
-	printf(" -> vertex list:\n");
-	for (int i = 0; i < vertexArraySize; i++)
-	{
-		printf("\t#%d (%.1f, %.1f, %.1f)\n", i, vertexArray[i].x, vertexArray[i].y, vertexArray[i].z);
-	}
-
-	printf(" -> index: %d\n", vertexIndicesSize);
-	for (int i = 0; i < vertexIndicesSize; i++)
-	{
-		printf("\t#%d [%d -> %d -> %d]\n", i, (int)vertexIndices[i].x, (int)vertexIndices[i].y, (int)vertexIndices[i].z);
-	}
-	printf("===================================\n\n");*/
 }

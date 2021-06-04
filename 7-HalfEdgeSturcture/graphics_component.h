@@ -7,8 +7,9 @@
 #include <map>
 #include <queue>
 
-struct GraphicsComponent
+class GraphicsComponent
 {
+public:
 	virtual std::vector<GraphicsComponent*> GetAdjacentComponent() = 0;
 	virtual bool operator<(const GraphicsComponent& rhs) const = 0;
 
@@ -24,48 +25,54 @@ struct MapComponentComparer
 	bool operator()(const GraphicsComponent* a, const GraphicsComponent* b);
 };
 
-struct Vertex;
-struct Edge;
-struct Face;
+class Vertex;
+class Edge;
+class Face;
 
-struct Vertex : public GraphicsComponent
+class Vertex : public GraphicsComponent
 {
+public:
 	Vertex() = default;
 	Vertex(int index, glm::vec3 position, Edge* headEdge);
 
-	int index;
-	glm::vec3 position;
-	Edge* headEdge;
-
 	void AddEdge(Edge* newEdge);
 	void RemoveEdge(Edge* edgeToRemove);
-
 	Edge* GetEdgeTo(Vertex* toVertex) const;
 
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
+
+	int index;
+	glm::vec3 position;
+	Edge* headEdge;
 };
 
-struct Edge : public GraphicsComponent
+class Edge : public GraphicsComponent
 {
+public:
 	Edge() = default;
 	Edge(Vertex* from, Vertex* to, Edge* opposite = nullptr, Edge* next = nullptr, Edge* follow = nullptr);
+
+	bool operator<(const GraphicsComponent& rhs) const override;
+	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
+
 	Vertex* from;
 	Vertex* to;
 	Edge* opposite;
 	Edge* next;
 	Edge* follow;
-	bool operator<(const GraphicsComponent& rhs) const override;
-	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
 };
 
-struct Face : public GraphicsComponent
+class Face : public GraphicsComponent
 {
+public:
 	Face() = default;
 	explicit Face(Edge* markedEdge);
-	Edge* markedEdge;
+
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
+
+	Edge* markedEdge;
 
 private:
 	void MinimizeMarkedEdge();
