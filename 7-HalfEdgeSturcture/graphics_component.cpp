@@ -85,7 +85,7 @@ bool Vertex::operator<(const GraphicsComponent &rhs) const {
 
 std::vector<GraphicsComponent*> Vertex::GetAdjacentComponent() {
 	std::vector<GraphicsComponent*> res;
-	for (Edge* edge = this->headEdge; edge != nullptr; edge = edge->next)
+	for (Edge* edge = this->headEdge; edge != nullptr; edge = edge->follow)
 	{
 		res.push_back(edge->to);
 	}
