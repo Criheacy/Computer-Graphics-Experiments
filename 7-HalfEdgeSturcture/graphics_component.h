@@ -66,6 +66,9 @@ struct Face : public GraphicsComponent
 	Edge* markedEdge;
 	bool operator<(const GraphicsComponent& rhs) const override;
 	std::vector<GraphicsComponent*> GetAdjacentComponent() override;
+
+private:
+	void MinimizeMarkedEdge();
 };
 
 class GraphicsIterator

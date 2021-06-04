@@ -103,13 +103,13 @@ Edge::Edge(Vertex *from, Vertex *to, Edge *opposite, Edge *next, Edge* follow) {
 bool Edge::operator<(const GraphicsComponent &rhs) const {
 	if (typeid(rhs) == typeid(*this))
 	{
-		if (this->from != dynamic_cast<const Edge&>(rhs).from)
+		if (*(this->from) != *(dynamic_cast<const Edge&>(rhs).from))
 		{
-			return this->from < dynamic_cast<const Edge&>(rhs).from;
+			return *(this->from) < *(dynamic_cast<const Edge&>(rhs).from);
 		}
 		else
 		{
-			return this->to < dynamic_cast<const Edge&>(rhs).to;
+			return *(this->to) < *(dynamic_cast<const Edge&>(rhs).to);
 		}
 	}
 	return false;
@@ -134,21 +134,27 @@ std::vector<GraphicsComponent *> Face::GetAdjacentComponent() {
 
 Face::Face(Edge *markedEdge) {
 	this->markedEdge = markedEdge;
+	MinimizeMarkedEdge();
 }
 
 bool Face::operator<(const GraphicsComponent &rhs) const {
 	if (typeid(rhs) == typeid(*this))
 	{
-		if (this->markedEdge->from != dynamic_cast<const Face&>(rhs).markedEdge->from)
-		{
-			return this->markedEdge->from < dynamic_cast<const Face&>(rhs).markedEdge->from;
-		}
-		else
-		{
-			return this->markedEdge->to < dynamic_cast<const Face&>(rhs).markedEdge->to;
-		}
+		return *(this->markedEdge) < *(dynamic_cast<const Face&>(rhs).markedEdge);
 	}
 	return false;
+}
+
+void Face::MinimizeMarkedEdge() {
+	Edge* edgeHead = markedEdge;
+	Edge* minimizedMarkedEdge = edgeHead;
+
+	for (Edge* currentEdge = edgeHead->next; currentEdge != edgeHead; currentEdge = currentEdge->next) {
+		if (currentEdge->from->index < minimizedMarkedEdge->from->index) {
+			minimizedMarkedEdge = currentEdge;
+		}
+	}
+	markedEdge = minimizedMarkedEdge;
 }
 
 /******************** Graphics Iterator Implementation ********************/
@@ -156,6 +162,7 @@ bool Face::operator<(const GraphicsComponent &rhs) const {
 GraphicsIterator::GraphicsIterator(GraphicsComponent *beginComponent) {
 	if (beginComponent != nullptr) {
 		nextQueue.push(beginComponent);
+		inQueueMap[beginComponent] = true;
 		UpdateComponent(beginComponent);
 	}
 }
