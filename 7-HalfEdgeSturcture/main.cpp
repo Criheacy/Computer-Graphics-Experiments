@@ -49,9 +49,9 @@ int main()
 	}
 
 	// build and compile our shader program
-	Shader shader("../shader/shader.vs",
-	              "../shader/shader.gs",
-	              "../shader/phong.fs");
+	Shader shader("../shader/frame.vs",
+	              "../shader/frame.gs",
+	              "../shader/frame.fs");
 
 	// Cube cube = Cube(0.8f);
 	// Tetrahedron tet = Tetrahedron(0.7f);
@@ -61,11 +61,11 @@ int main()
 	Space::GetInstance().LogTest();
 
 
-	unsigned int vertexNumber = Space::GetInstance().GetSerializedVerticesArraySize();
-	float* vertex = Space::GetInstance().GetSerializedVerticesArrayPtr();
+	unsigned int vertexCount = Space::GetInstance().GetSerializedVerticesArraySize();
+	float* vertexArray = Space::GetInstance().GetSerializedVerticesArrayPtr();
 
-	unsigned int indicesNumber = Space::GetInstance().GetSerializedIndicesArraySize();
-	int* indices = Space::GetInstance().GetSerializedIndicesArrayPtr();
+	unsigned int indexCount = Space::GetInstance().GetSerializedIndicesArraySize();
+	int* indexArray = Space::GetInstance().GetSerializedIndicesArrayPtr();
 
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -77,16 +77,16 @@ int main()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertexNumber * sizeof(float), vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(float), vertexArray, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesNumber * sizeof(int), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(int), indexArray, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_DEPTH_TEST);
 	// glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
@@ -128,7 +128,7 @@ int main()
 		shader.SetFloat("screenHeight", SCREEN_HEIGHT);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, indicesNumber * 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indexCount * 3, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
