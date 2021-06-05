@@ -8,28 +8,27 @@
 #include "graphics.h"
 
 struct GraphicsLinkNode {
-	class Graphics* graphics;
+	class Graphics *graphics;
 	GraphicsLinkNode *next;
 	GraphicsLinkNode *pre;
 };
 
-class Space final
-{
+class Space final {
 public:
-	static Space& GetInstance();
+	static Space &GetInstance();
 
 	// forbidden to use
-	Space(Space const&) = delete;
-	void operator=(Space const&) = delete;
+	Space(Space const &) = delete;
+	void operator=(Space const &) = delete;
 
-	GraphicsLinkNode* AttachGraphics(class Graphics* graphics);
-	void DetachGraphics(struct GraphicsLinkNode* graphicsIndex);
+	GraphicsLinkNode *AttachGraphics(class Graphics *graphics);
+	void DetachGraphics(struct GraphicsLinkNode *graphicsIndex);
 
 	unsigned int GetSerializedVerticesArraySize();
-	float* GetSerializedVerticesArrayPtr();
+	float *GetSerializedVerticesArrayPtr();
 
 	unsigned int GetSerializedIndicesArraySize();
-	int* GetSerializedIndicesArrayPtr();
+	int *GetSerializedIndicesArrayPtr();
 
 	void LogTest();
 
@@ -39,14 +38,14 @@ private:
 	void UpdateGraphicsVerticesArray();
 
 	bool graphicsUpdateFlag;
-	GraphicsLinkNode* head;
+	GraphicsLinkNode *head;
 
 	unsigned int serializedVertexArraySize;
-	float*serializedVertexArray;
+	float *serializedVertexArray;
 
 	unsigned int serializedIndexArraySize;
-	int*serializedIndexArray;
+	int *serializedIndexArray;
 };
 
 
-#endif  //SPACE_H
+#endif//SPACE_H

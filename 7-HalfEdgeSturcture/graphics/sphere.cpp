@@ -1,11 +1,12 @@
 #include "sphere.h"
 
 Sphere::Sphere() = default;
-
 Sphere::Sphere(float radius) {
 	auto vertexArray = GenerateVertices(glm::vec3(0.0f), radius, 1);
 	auto indexArray = GenerateDefaultIndices();
 	SetGraphicsArray(*vertexArray, *indexArray);
+
+	InsertVertexInEdge((dynamic_cast<Vertex*>(*VertexBegin()))->headEdge);
 }
 
 Sphere::Sphere(glm::vec3 center, float radius, int subdivisionLevel) {
@@ -89,6 +90,6 @@ std::vector<std::vector<int>>* Sphere::GenerateDefaultIndices() {
 	return indexArray;
 }
 
-void Sphere::Subdivision(int currentIteration, int maxIteration) {
+void Sphere::Subdivide(int currentIteration, int maxIteration) {
 
 }

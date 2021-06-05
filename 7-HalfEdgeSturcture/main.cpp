@@ -10,15 +10,14 @@
 
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 800;
 
-int main()
-{
+int main() {
 	// initialize
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -28,12 +27,11 @@ int main()
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	// glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT,
+	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT,
 	                                      "Shader Test",
 	                                      nullptr,
 	                                      nullptr);
-	if (window == nullptr)
-	{
+	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
@@ -42,8 +40,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// glad: load all OpenGL function pointers
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
+	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
@@ -62,10 +59,10 @@ int main()
 
 
 	unsigned int vertexCount = Space::GetInstance().GetSerializedVerticesArraySize();
-	float* vertexArray = Space::GetInstance().GetSerializedVerticesArrayPtr();
+	float *vertexArray = Space::GetInstance().GetSerializedVerticesArrayPtr();
 
 	unsigned int indexCount = Space::GetInstance().GetSerializedIndicesArraySize();
-	int* indexArray = Space::GetInstance().GetSerializedIndicesArrayPtr();
+	int *indexArray = Space::GetInstance().GetSerializedIndicesArrayPtr();
 
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -83,7 +80,7 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(int), indexArray, GL_STATIC_DRAW);
 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
 	glEnableVertexAttribArray(0);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -92,15 +89,14 @@ int main()
 	glEnable(GL_MULTISAMPLE);
 
 	// render loop
-	while (!glfwWindowShouldClose(window))
-	{
+	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 
 		// render
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		float timeValue = (float)glfwGetTime();
+		float timeValue = (float) glfwGetTime();
 		glm::mat4 view = glm::mat4(1.0);
 
 		/// scale for bunny
@@ -143,14 +139,12 @@ int main()
 	return 0;
 }
 
-void processInput(GLFWwindow *window)
-{
+void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	// make sure the viewport matches the new window dimensions; note that width and
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
