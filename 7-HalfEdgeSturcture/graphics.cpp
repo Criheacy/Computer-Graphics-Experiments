@@ -127,7 +127,7 @@ void Graphics::SubdivideFaces() {
 	for (auto it = edgeList.begin(); it != edgeList.end(); ++it) {
 		// Check if the opposite edge has inserted a vertex
 		if ((*it)->opposite->opposite == (*it)) {
-			// Create a new vertex and insert
+			// Create a new vertex and insert it
 			glm::vec3 middlePosition = ((*it)->from->position + (*it)->to->position) / 2.0f;
 			Vertex* vertexToInsert = new Vertex(GetVertexCount(), middlePosition, nullptr);
 			++vertexCount;
