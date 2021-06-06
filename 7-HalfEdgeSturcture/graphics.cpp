@@ -118,6 +118,51 @@ void Graphics::InsertVertexInEdge(Edge *insertedEdge, glm::vec3 vertexPosition) 
 	faceCount++;
 }
 
+void Graphics::SubdivideFaces() {
+	// Subdivide all edges in middle point
+	std::vector<Edge*> edgeList;
+	for (auto it = EdgeBegin(); it != EdgeEnd(); ++it) {
+		edgeList.push_back(dynamic_cast<Edge*>(*it));
+	}
+	for (auto it = edgeList.begin(); it != edgeList.end(); ++it) {
+		// Check if the opposite edge has inserted a vertex
+		if ((*it)->opposite->opposite == (*it)) {
+			// Create a new vertex and insert
+			glm::vec3 middlePosition = ((*it)->from->position + (*it)->to->position) / 2.0f;
+			Vertex* vertexToInsert = new Vertex(GetVertexCount(), middlePosition, nullptr);
+			++vertexCount;
+			InsertVertexInEdgeRaw(vertexToInsert, (*it));
+			// Mark this edge
+			(*it)->opposite = nullptr;
+		} else {
+			// Get vertex inserted by opposite and insert to the edge itself
+			Vertex* vertexToInsert = (*it)->opposite->to;
+			InsertVertexInEdgeRaw(vertexToInsert, (*it));
+			// Update opposite edge
+			(*it)->opposite->opposite = (*it)->next;
+			(*it)->next->opposite = (*it)->opposite;
+			(*it)->opposite->next->opposite = (*it);
+			(*it)->opposite = (*it)->opposite->next;
+		}
+	}
+
+	// Connect the inserted vertices to divide the faces
+	for (auto it = FaceBegin(); it != FaceEnd(); ++it) {
+		// Vertices just created always has larger indices than original vertices,
+		// and the index of from vertex of marked edge of each faces is always the
+		// smallest in the entire face, so the from vertex of marked edge of each
+		// faces is always the original vertex (is NOT just created)
+		Edge* currentEdge = dynamic_cast<Face*>(*it)->markedEdge;
+		// The to vertex of marked edge (MUST be just created)
+		Vertex* firstCreatedVertex = currentEdge->to;
+		do {
+			Face* faceToDivide = new Face(currentEdge);
+			DivideFace(faceToDivide, currentEdge->to, currentEdge->next->next->to);
+			currentEdge = currentEdge->next;
+		} while (currentEdge->to != firstCreatedVertex);
+	}
+}
+
 int Graphics::GetVertexCount() const {
 	return vertexCount;
 }

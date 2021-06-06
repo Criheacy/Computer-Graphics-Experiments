@@ -24,6 +24,7 @@ public:
 	// Modify
 	void InsertVertexInEdge(Edge *insertedEdge);
 	void InsertVertexInEdge(Edge *insertedEdge, glm::vec3 vertexPosition);
+	void SubdivideFaces();
 
 	int GetVertexCount() const;
 	GraphicsIterator VertexBegin();

@@ -14,7 +14,7 @@ private:
 
 	std::vector<glm::vec3>* GenerateVertices(glm::vec3 center, float radius, int subdivisionLevel);
 	std::vector<std::vector<int>>* GenerateDefaultIndices();
-	void Subdivide(int currentIteration, int maxIteration);
+	void NormalizeVertices(float radius);
 	static const int SUBDIVISION_LEVEL = 1;
 };
 
