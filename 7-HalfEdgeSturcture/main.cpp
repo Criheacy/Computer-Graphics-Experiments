@@ -50,6 +50,10 @@ int main() {
 	              "../shader/frame.gs",
 	              "../shader/frame.fs");
 
+//	Shader shader("../shader/shader.vs",
+//	              "../shader/shader.gs",
+//	              "../shader/phong.fs");
+
 	// Cube cube = Cube(0.8f);
 	// Tetrahedron tet = Tetrahedron(0.7f);
 	Sphere sphere = Sphere(0.7f);

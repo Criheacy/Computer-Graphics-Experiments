@@ -99,5 +99,8 @@ std::vector<std::vector<int>>* Sphere::GenerateDefaultIndices() {
 }
 
 void Sphere::NormalizeVertices(float radius) {
-
+	for (auto it = VertexBegin(); it != VertexEnd(); ++it) {
+		dynamic_cast<Vertex*>(*it)->position =
+		    glm::normalize(dynamic_cast<Vertex*>(*it)->position) * radius;
+	}
 }

@@ -38,7 +38,7 @@ Vertex::~Vertex() {
 	Edge* nextEdge = nullptr;
 	while (currentEdge != nullptr) {
 		nextEdge = currentEdge->follow;
-		delete currentEdge;
+		// delete currentEdge;
 		currentEdge = nextEdge;
 	}
 }

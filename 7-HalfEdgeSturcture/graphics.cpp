@@ -48,7 +48,7 @@ void Graphics::SetGraphicsArray(const std::vector<glm::vec3> &vertexArray,
 	// Hangs any vertex in graphics
 	this->headVertex = vertexList[0];
 
-	int faceCount = indexArray.size();
+	faceCount = indexArray.size();
 	for (int i = 0; i < faceCount; i++) {
 		int edgeCountInFace = indexArray[i].size();
 		Edge *firstEdge = nullptr;
@@ -131,6 +131,7 @@ void Graphics::SubdivideFaces() {
 			glm::vec3 middlePosition = ((*it)->from->position + (*it)->to->position) / 2.0f;
 			Vertex* vertexToInsert = new Vertex(GetVertexCount(), middlePosition, nullptr);
 			++vertexCount;
+			++edgeCount;
 			InsertVertexInEdgeRaw(vertexToInsert, (*it));
 			// Mark this edge
 			(*it)->opposite = nullptr;
@@ -147,7 +148,11 @@ void Graphics::SubdivideFaces() {
 	}
 
 	// Connect the inserted vertices to divide the faces
+	std::vector<Face*> faceList;
 	for (auto it = FaceBegin(); it != FaceEnd(); ++it) {
+		faceList.push_back(dynamic_cast<Face *>(*it));
+	}
+	for (auto it = faceList.begin(); it != faceList.end(); ++it) {
 		// Vertices just created always has larger indices than original vertices,
 		// and the index of from vertex of marked edge of each faces is always the
 		// smallest in the entire face, so the from vertex of marked edge of each
@@ -158,6 +163,9 @@ void Graphics::SubdivideFaces() {
 		do {
 			Face* faceToDivide = new Face(currentEdge);
 			DivideFace(faceToDivide, currentEdge->to, currentEdge->next->next->to);
+			++faceCount;
+			++edgeCount;
+			delete faceToDivide;
 			currentEdge = currentEdge->next;
 		} while (currentEdge->to != firstCreatedVertex);
 	}
