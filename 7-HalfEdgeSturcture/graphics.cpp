@@ -88,12 +88,13 @@ void Graphics::SetGraphicsArray(const std::vector<glm::vec3> &vertexArray,
 }
 
 void Graphics::InsertVertexInEdge(Edge *insertedEdge) {
-	glm::vec3 halfPointPosition = (insertedEdge->from->position + insertedEdge->to->position) / 2.0f;
-	InsertVertexInEdge(insertedEdge, halfPointPosition);
+	glm::vec3 middlePosition = (insertedEdge->from->position + insertedEdge->to->position) / 2.0f;
+	InsertVertexInEdge(insertedEdge, middlePosition);
 }
 
 void Graphics::InsertVertexInEdge(Edge *insertedEdge, glm::vec3 vertexPosition) {
 	Vertex* vertexToInsert = new Vertex(GetVertexCount(), vertexPosition, nullptr);
+	++vertexCount;
 
 	Edge* oppositeEdge = insertedEdge->opposite;
 	InsertVertexInEdgeRaw(vertexToInsert, insertedEdge);
@@ -103,19 +104,18 @@ void Graphics::InsertVertexInEdge(Edge *insertedEdge, glm::vec3 vertexPosition) 
 	oppositeEdge->next->opposite = insertedEdge;
 	insertedEdge->next->opposite = oppositeEdge;
 	oppositeEdge->opposite = insertedEdge->next;
-	vertexCount++;
 	edgeCount += 3;
 
 	Face* faceToDivide;
 	faceToDivide = new Face(insertedEdge);
 	DivideFace(faceToDivide, insertedEdge->to, insertedEdge->next->next->to);
 	delete faceToDivide;
-	faceCount++;
+	++faceCount;
 
 	faceToDivide = new Face(insertedEdge->opposite);
 	DivideFace(faceToDivide, insertedEdge->to, insertedEdge->opposite->next->to);
 	delete faceToDivide;
-	faceCount++;
+	++faceCount;
 }
 
 void Graphics::SubdivideFaces() {
