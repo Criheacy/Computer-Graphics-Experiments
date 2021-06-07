@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include <vector>
+#include <algorithm>
 
 typedef void(*OnClickCallback)(glm::vec2);
 typedef void(*OnDragCallback)(glm::vec2, glm::vec2);
@@ -13,11 +14,13 @@ typedef void(*OnDragCallback)(glm::vec2, glm::vec2);
 class InputHandler final {
 public:
 	explicit InputHandler(GLFWwindow* window);
+	void AddOnClickCallback(OnClickCallback* func);
+	void AddOnDragCallback(OnDragCallback* func);
+	void RemoveOnClickCallback(OnClickCallback* func);
+	void RemoveOnDragCallback(OnDragCallback* func);
 
 private:
 	GLFWwindow* window;
-	void AddOnClickCallback(OnClickCallback* func);
-	void AddOnDragCallback(OnDragCallback* func);
 
 	std::vector<OnClickCallback*> onClickCallbackList;
 	std::vector<OnDragCallback*> onDragCallbackList;

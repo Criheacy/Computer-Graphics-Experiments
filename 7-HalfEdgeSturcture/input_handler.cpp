@@ -11,3 +11,17 @@ void InputHandler::AddOnDragCallback(OnDragCallback *func) {
 InputHandler::InputHandler(GLFWwindow *window) {
 	this->window = window;
 }
+
+void InputHandler::RemoveOnClickCallback(OnClickCallback *func) {
+	auto it = std::find(onClickCallbackList.begin(), onClickCallbackList.end(), func);
+	if (it != onClickCallbackList.end()) {
+		onClickCallbackList.erase(it);
+	}
+}
+
+void InputHandler::RemoveOnDragCallback(OnDragCallback *func) {
+	auto it = std::find(onDragCallbackList.begin(), onDragCallbackList.end(), func);
+	if (it != onDragCallbackList.end()) {
+		onDragCallbackList.erase(it);
+	}
+}
