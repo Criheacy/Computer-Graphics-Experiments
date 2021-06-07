@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glfw_toolkit.h"
 
 #include "graphics.h"
 #include "graphics/cube.h"
@@ -13,29 +14,11 @@
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
-// settings
-const unsigned int SCREEN_WIDTH = 800;
-const unsigned int SCREEN_HEIGHT = 800;
-
 int main() {
-	// initialize
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	GLFW::GetInstance().Initialize();
 
-	glfwWindowHint(GLFW_SAMPLES, 8);
+	auto window = GLFW::GetInstance().GetWindow();
 
-	// glfw window creation
-	GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT,
-	                                      "Shader Test",
-	                                      nullptr,
-	                                      nullptr);
-	if (window == nullptr) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -68,37 +51,12 @@ int main() {
 	unsigned int indexCount = Space::GetInstance().GetSerializedIndicesArraySize();
 	int *indexArray = Space::GetInstance().GetSerializedIndicesArrayPtr();
 
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	// bind the Vertex Array Object first,
-	// then bind and set vertex buffer(s),
-	// and then configure vertex attributes(s).
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(float), vertexArray, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(int), indexArray, GL_STATIC_DRAW);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
-	glEnableVertexAttribArray(0);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_CULL_FACE);
-	glEnable(GL_MULTISAMPLE);
+	GLFW::GetInstance().BindVertexArray(vertexCount, vertexArray);
+	GLFW::GetInstance().BindIndexArray(indexCount, indexArray);
 
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
-
-		// render
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		float timeValue = (float) glfwGetTime();
 		glm::mat4 view = glm::mat4(1.0);
@@ -127,19 +85,12 @@ int main() {
 		shader.SetFloat("screenWidth", SCREEN_WIDTH);
 		shader.SetFloat("screenHeight", SCREEN_HEIGHT);
 
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, indexCount * 3, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		glfwSwapBuffers(window);
+		GLFW::GetInstance().Render();
+
 		glfwPollEvents();
 	}
 
-	// delete data array and buffers, clear all previous allocated resources
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-
-	glfwTerminate();
+	GLFW::GetInstance().Terminate();
 	return 0;
 }
 
