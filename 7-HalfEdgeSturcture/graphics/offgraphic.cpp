@@ -28,7 +28,7 @@ std::string OFFGraphics::LoadStringFromFile(const std::string& filePath) {
 	return string;
 }
 
-void OFFGraphics::DecodeOFF(std::string OFFString) {
+void OFFGraphics::DecodeOFF(const std::string& OFFString) {
 	std::stringstream stringStream(OFFString);
 	std::string word;
 
@@ -78,4 +78,6 @@ void OFFGraphics::DecodeOFF(std::string OFFString) {
 			std::cout << " - Cannot parse certain index: " << word << std::endl;
 		}
 	}
+
+	SetGraphicsArray(*vertexArray, *indexArray);
 }

@@ -16,7 +16,7 @@ private:
 	OFFGraphics();
 
 	static std::string LoadStringFromFile(const std::string& filePath);
-	void DecodeOFF(std::string OFFString);
+	void DecodeOFF(const std::string& OFFString);
 };
 
 
