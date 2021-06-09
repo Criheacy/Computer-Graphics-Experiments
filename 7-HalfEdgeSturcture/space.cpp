@@ -1,4 +1,5 @@
 #include "space.h"
+#include "utils/progress_bar.h"
 
 Space &Space::GetInstance() {
 	static Space instance;
@@ -59,10 +60,12 @@ void Space::UpdateGraphicsVerticesArray() {
 	GraphicsLinkNode *nowNode;
 
 	// Accumulate number of vertices in all attached graphics
+	int graphicsCount = 0;
 	nowNode = head;
 	do {
 		serializedVertexArraySize += nowNode->graphics->GetVertexCount();
 		serializedIndexArraySize += nowNode->graphics->GetFaceCount();
+		++graphicsCount;
 		nowNode = nowNode->next;
 	} while (nowNode != head);
 
@@ -72,11 +75,20 @@ void Space::UpdateGraphicsVerticesArray() {
 	serializedVertexArray = new float[serializedVertexArraySize];
 	serializedIndexArray = new int[serializedIndexArraySize];
 
+	int currentGraphics = 0;
 	// Enumerate each graphics and add vertex info to serialized vertices array
 	nowNode = head;
 	int vertexOffset = 0;
 	int indexOffset = 0;
 	do {
+		++currentGraphics;
+
+		ProgressBar indexProcessBar(nowNode->graphics->GetFaceCount());
+		indexProcessBar.SetInterceptInterval(200);
+		indexProcessBar.SetProgressTitle("Upload graphics to space ["
+		                                    + std::to_string(currentGraphics) + "/"
+											+ std::to_string(graphicsCount) + "]"
+		                                    + " - " + "serialize indices");
 		// Serialize indices first
 		for (auto it = nowNode->graphics->FaceBegin(); it != nowNode->graphics->FaceEnd(); ++it) {
 			// Indices number needs to add vertex-cnt to match origin vertex in space group
@@ -87,20 +99,45 @@ void Space::UpdateGraphicsVerticesArray() {
 			// Discard face object
 			// delete currentFace;
 			indexOffset++;
+			indexProcessBar.UpdateProgressValue(1);
+			indexProcessBar.Log();
 		}
 
 		// Build vertexArray for storing vertex from iterators temporarily
 		// Since vertex accessed from iterator are not order by its index, but in near-by-order instead,
 		// so a sort function to reorder them by index before inserting to the serialized array is necessary
+		printf("%s", std::string("START Upload graphics to space ["
+		                         + std::to_string(currentGraphics) + "/"
+		                         + std::to_string(graphicsCount) + "]" + " - vertex converting").c_str());
+		std::cout << std::flush;
 		Vertex *vertexArray = new Vertex[nowNode->graphics->GetVertexCount()];
 		int vertexArrayCnt = 0;
 		for (auto it = nowNode->graphics->VertexBegin(); it != nowNode->graphics->VertexEnd(); ++it) {
 			vertexArray[vertexArrayCnt++] = *(dynamic_cast<Vertex *>(*it));
 		}
 
+		printf(" - COMPLETE\n");
+		std::cout << std::flush;
+
 		// Use stable sort to insure time complexity
 		// Sort by index of vertex
+		printf("%s", std::string("START Upload graphics to space ["
+		 + std::to_string(currentGraphics) + "/"
+		 + std::to_string(graphicsCount) + "]" + " - sorting").c_str());
+		std::cout << std::flush;
+
 		std::sort(vertexArray, vertexArray + vertexArrayCnt);
+
+		printf(" - COMPLETE\n");
+		std::cout << std::flush;
+
+
+		ProgressBar vertexProcessBar(vertexArrayCnt);
+		vertexProcessBar.SetInterceptInterval(200);
+		vertexProcessBar.SetProgressTitle("Upload graphics to space ["
+		                                 + std::to_string(currentGraphics) + "/"
+		                                 + std::to_string(graphicsCount) + "]"
+		                                 + " - " + "serialize vertices");
 
 		for (int i = 0; i < vertexArrayCnt; i++) {
 			// Serialize vector data into 3 floats
@@ -108,6 +145,8 @@ void Space::UpdateGraphicsVerticesArray() {
 			serializedVertexArray[vertexOffset * 3 + 1] = vertexArray[i].position.y;
 			serializedVertexArray[vertexOffset * 3 + 2] = vertexArray[i].position.z;
 			vertexOffset++;
+			vertexProcessBar.SetProgressValue(i + 1);
+			vertexProcessBar.Log();
 		}
 		nowNode = nowNode->next;
 	} while (nowNode != head);

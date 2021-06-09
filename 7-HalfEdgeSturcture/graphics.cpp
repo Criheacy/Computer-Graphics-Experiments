@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "utils/progress_bar.h"
 
 Graphics::Graphics() {
 	graphicsIndex = Space::GetInstance().AttachGraphics(this);
@@ -40,15 +41,24 @@ Graphics::~Graphics() {
 void Graphics::SetGraphicsArray(const std::vector<glm::vec3> &vertexArray,
                                 const std::vector<std::vector<int>> &indexArray) {
 	vertexCount = vertexArray.size();
+	ProgressBar vertexProgressBar(vertexCount);
+	vertexProgressBar.SetProgressTitle("Setting graphics array [1/2] - converting vertices");
+	vertexProgressBar.SetInterceptInterval(1);
+
 	Vertex **vertexList = new Vertex *[vertexCount];
 	for (int i = 0; i < vertexCount; i++) {
 		vertexList[i] = new Vertex(i, vertexArray[i], nullptr);
+		vertexProgressBar.SetProgressValue(i + 1);
+		vertexProgressBar.Log();
 	}
 
 	// Hangs any vertex in graphics
 	this->headVertex = vertexList[0];
 
 	faceCount = indexArray.size();
+	ProgressBar indexProgressBar(faceCount);
+	indexProgressBar.SetProgressTitle("Setting graphics array [2/2] - converting indices");
+	indexProgressBar.SetInterceptInterval(1);
 	for (int i = 0; i < faceCount; i++) {
 		int edgeCountInFace = indexArray[i].size();
 		Edge *firstEdge = nullptr;
@@ -81,6 +91,9 @@ void Graphics::SetGraphicsArray(const std::vector<glm::vec3> &vertexArray,
 		if (prevEdge != nullptr) {
 			prevEdge->next = firstEdge;
 		}
+
+		indexProgressBar.SetProgressValue(i + 1);
+		indexProgressBar.Log();
 	}
 
 	// deletes indexing list pointers, but DO NOT deletes vertex entities
@@ -124,6 +137,11 @@ void Graphics::SubdivideFaces() {
 	for (auto it = EdgeBegin(); it != EdgeEnd(); ++it) {
 		edgeList.push_back(dynamic_cast<Edge*>(*it));
 	}
+
+	ProgressBar edgeProgressBar(static_cast<int>(edgeList.size()));
+	edgeProgressBar.SetProgressTitle("Subdivide faces [1/2] - inserting vertices");
+	edgeProgressBar.SetInterceptInterval(100);
+
 	for (auto it = edgeList.begin(); it != edgeList.end(); ++it) {
 		// Check if the opposite edge has inserted a vertex
 		if ((*it)->opposite->opposite == (*it)) {
@@ -145,13 +163,21 @@ void Graphics::SubdivideFaces() {
 			(*it)->opposite->next->opposite = (*it);
 			(*it)->opposite = (*it)->opposite->next;
 		}
+		edgeProgressBar.UpdateProgressValue(1);
+		edgeProgressBar.Log();
 	}
 
 	// Connect the inserted vertices to divide the faces
 	std::vector<Face*> faceList;
+
 	for (auto it = FaceBegin(); it != FaceEnd(); ++it) {
 		faceList.push_back(dynamic_cast<Face *>(*it));
 	}
+
+	ProgressBar faceProgressBar(static_cast<int>(faceList.size()));
+	faceProgressBar.SetProgressTitle("Subdivide faces [2/2] - divide faces");
+	faceProgressBar.SetInterceptInterval(100);
+
 	for (auto it = faceList.begin(); it != faceList.end(); ++it) {
 		// Vertices just created always has larger indices than original vertices,
 		// and the index of from vertex of marked edge of each faces is always the
@@ -168,6 +194,9 @@ void Graphics::SubdivideFaces() {
 			delete faceToDivide;
 			currentEdge = currentEdge->next;
 		} while (currentEdge->to != firstCreatedVertex);
+
+		faceProgressBar.UpdateProgressValue(1);
+		faceProgressBar.Log();
 	}
 }
 
