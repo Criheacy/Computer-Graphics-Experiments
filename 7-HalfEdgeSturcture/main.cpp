@@ -39,11 +39,14 @@ int main() {
 
 	// Cube cube = Cube(0.8f);
 	// Tetrahedron tet = Tetrahedron(0.7f);
-	Sphere sphere = Sphere(0.7f);
-	// OFFGraphics* offGraphics = new OFFGraphics("../res/bunny.off");
+	// Sphere sphere = Sphere(0.7f);
+	OFFGraphics* offGraphics = new OFFGraphics("../res/bunny.off");
+	offGraphics->SubdivideFaces();
+	offGraphics->SubdivideFaces();
+	offGraphics->SubdivideFaces();
+	offGraphics->SubdivideFaces();
 
-	Space::GetInstance().LogTest();
-
+	// Space::GetInstance().LogTest();
 
 	unsigned int vertexCount = Space::GetInstance().GetSerializedVerticesArraySize();
 	float *vertexArray = Space::GetInstance().GetSerializedVerticesArrayPtr();
@@ -62,7 +65,7 @@ int main() {
 		glm::mat4 view = glm::mat4(1.0);
 
 		/// scale for bunny
-		// view = glm::scale(view, glm::vec3(5.0f, 5.0f, 5.0f));
+		view = glm::scale(view, glm::vec3(10.0f, 10.0f, 10.0f));
 
 		/// scale for bumpy
 		// view = glm::scale(view, glm::vec3(0.1f, 0.1f, 0.1f));
