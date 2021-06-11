@@ -11,6 +11,8 @@ Space::Space() {
 	graphicsUpdateFlag = true;
 	serializedVertexArraySize = 0;
 	serializedVertexArray = nullptr;
+
+	view = glm::mat4(1.0);
 }
 
 GraphicsLinkNode *Space::AttachGraphics(Graphics *graphics) {

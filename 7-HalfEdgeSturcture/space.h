@@ -4,8 +4,8 @@
 
 #include <algorithm>
 #include <vector>
-
-#include "graphics.h"
+#include <glm/glm.hpp>
+#include "graphics/graphics.h"
 
 struct GraphicsLinkNode {
 	class Graphics *graphics;
@@ -24,6 +24,9 @@ public:
 	GraphicsLinkNode *AttachGraphics(class Graphics *graphics);
 	void DetachGraphics(struct GraphicsLinkNode *graphicsIndex);
 
+	glm::mat4 GetView() {return view;};
+	void SetView(glm::mat4 viewToSet) {view = viewToSet;};
+
 	unsigned int GetSerializedVerticesArraySize();
 	float *GetSerializedVerticesArrayPtr();
 
@@ -36,6 +39,8 @@ private:
 	Space();
 
 	void UpdateGraphicsVerticesArray();
+
+	glm::mat4 view;
 
 	bool graphicsUpdateFlag;
 	GraphicsLinkNode *head;
