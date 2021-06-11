@@ -1,7 +1,7 @@
 #ifndef TETRAHEDRON_H
 #define TETRAHEDRON_H
 
-#include "../graphics.h"
+#include "graphics.h"
 
 class Tetrahedron : public Graphics
 {

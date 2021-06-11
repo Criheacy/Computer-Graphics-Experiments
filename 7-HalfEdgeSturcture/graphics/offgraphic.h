@@ -2,11 +2,11 @@
 
 #ifndef OFF_GRAPHICS_H
 #define OFF_GRAPHICS_H
-#include "../graphics.h"
-#include <string>
+#include "graphics.h"
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 class OFFGraphics: public Graphics {
 public:

@@ -3,7 +3,7 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#include "../graphics.h"
+#include "graphics.h"
 
 class Cube : public Graphics
 {

@@ -3,7 +3,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "../graphics.h"
+#include "graphics.h"
 class Sphere : public Graphics {
 public:
 	explicit Sphere(float radius);
