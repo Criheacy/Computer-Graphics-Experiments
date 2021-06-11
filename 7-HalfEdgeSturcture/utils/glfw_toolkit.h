@@ -1,8 +1,10 @@
+#pragma once
 #ifndef GLFW_TOOLKIT_H
 #define GLFW_TOOLKIT_H
 
-#include <glad/glad.h>
+#include "input_handler.h"
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <iostream>
 
 // settings
@@ -23,13 +25,18 @@ public:
 	void Terminate();
 
 	GLFWwindow* GetWindow();
+	class InputHandler* GetInputHandler();
 
 private:
 	GLFW();
 
+	static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+	static void MousePositionCallback(GLFWwindow* window, double positionX, double positionY);
+
 	unsigned int VBO, VAO, EBO;
 	unsigned int vertexCount, indexCount;
 	GLFWwindow* mWindow;
+	class InputHandler* mInputHandler;
 };
 
 

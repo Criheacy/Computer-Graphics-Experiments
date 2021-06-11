@@ -2,8 +2,8 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include "../space.h"
 #include "graphics_component.h"
-#include "space.h"
 #include <cstdio>
 #include <glm/mat4x4.hpp>
 

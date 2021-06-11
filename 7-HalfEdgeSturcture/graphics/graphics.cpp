@@ -1,5 +1,5 @@
 #include "graphics.h"
-#include "utils/progress_bar.h"
+#include "../utils/progress_bar.h"
 
 Graphics::Graphics() {
 	graphicsIndex = Space::GetInstance().AttachGraphics(this);

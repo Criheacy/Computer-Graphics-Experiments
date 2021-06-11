@@ -1,12 +1,23 @@
 #include "glfw_toolkit.h"
 
 GLFW::GLFW() {
-
+	vertexCount = 0;
+	indexCount = 0;
+	mInputHandler = nullptr;
 }
 
 GLFW &GLFW::GetInstance() {
 	static GLFW instance;
 	return instance;
+}
+
+/**************************** Input Callbacks ****************************/
+void GLFW::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+	GLFW::GetInstance().mInputHandler->HandleMouseButtonInput(button, action, mods);
+}
+
+void GLFW::MousePositionCallback(GLFWwindow *window, double positionX, double positionY) {
+	GLFW::GetInstance().mInputHandler->HandleMouseMotion(glm::vec2(positionX, positionY));
 }
 
 bool GLFW::Initialize() {
@@ -21,13 +32,17 @@ bool GLFW::Initialize() {
 	// glfw window creation
 	mWindow = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT,
 	                           GLFW_WINDOW_TITLE,
-	                                      nullptr,
-	                                      nullptr);
+                              nullptr, nullptr);
 	if (mWindow == nullptr) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return false;
 	}
+
+	mInputHandler = new InputHandler(mWindow);
+	glfwSetCursorPosCallback(mWindow, MousePositionCallback);
+	glfwSetMouseButtonCallback(mWindow, MouseButtonCallback);
+
 	return true;
 }
 
@@ -83,4 +98,8 @@ void GLFW::Terminate() {
 	glDeleteBuffers(1, &EBO);
 
 	glfwTerminate();
+}
+
+InputHandler *GLFW::GetInputHandler() {
+	return mInputHandler;
 }
