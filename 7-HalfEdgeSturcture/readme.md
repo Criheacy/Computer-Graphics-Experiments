@@ -30,12 +30,12 @@
 	  }
 	  ```
 	
-	  ```c++
-  for (auto it = testGraphics.FaceBegin(); it = testGraphics.FaceEnd(); ++it) {
-      	Face* current = dynamic_cast<Face*>(*it);
-      // do something on current face
+	  ```C++
+	  for (auto it = testGraphics.FaceBegin(); it = testGraphics.FaceEnd(); ++it) {
+	      Face* current = dynamic_cast<Face*>(*it);
+	      // do something on current face
 	  }
-      ```
+	  ```
 
     - 实现细节：
     
