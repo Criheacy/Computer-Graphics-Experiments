@@ -1,5 +1,6 @@
 #pragma once
 #include "Settings.h"
+#include "MathUtils.h"
 
 class Polyline
 {

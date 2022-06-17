@@ -212,7 +212,7 @@ GraphicsIterator Graphics::VertexEnd() {
 	return GraphicsIterator::end;
 }
 
-int Graphics::GetEdgeCount() const {
+int Graphics::GetEdgeCount() const {=
 	return edgeCount;
 }
 

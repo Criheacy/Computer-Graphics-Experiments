@@ -108,7 +108,8 @@ void Grid::SetEndPoint(glm::vec2 point)
             endPoint = point;
             ClearPoints();
 
-            Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+            Algorithm::DDALine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
+            // Algorithm::BresenhamLine(this, startPoint.x, endPoint.x, startPoint.y, endPoint.y);
         }
     }
     else if (shapeType == SHAPE_CIRCLE)

@@ -122,8 +122,8 @@ void Grid::HandleButtonEvent()
 void Grid::OnMouseEventUpdate()
 {
 	delete curve;
-	curve = new B_Spline(polyline, 3, BEZIER_CURVE_PRECISION);
-	// curve = new BezierCurve(polyline, BEZIER_CURVE_PRECISION);
+	// curve = new B_Spline(polyline, 3, BEZIER_CURVE_PRECISION);
+	curve = new BezierCurve(polyline, BEZIER_CURVE_PRECISION);
 }
 
 glm::vec2 Grid::Transform(glm::vec2 src)

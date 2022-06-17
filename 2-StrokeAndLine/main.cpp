@@ -1,4 +1,4 @@
-#include <GL/glut.h>
+#include <glut.h>
 
 #include "UIComponents.h"
 #include "Settings.h"

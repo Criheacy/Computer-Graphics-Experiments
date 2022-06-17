@@ -11,7 +11,7 @@ void Algorithm::DDALine(class Grid* grid, int fromX, int toX, int fromY, int toY
 
 	for (int x = fromX; x <= toX; x++)
 	{
-		MarkMappedPoint(grid, x, (int)y + 0.5f, fromX, fromY, section);
+		MarkMappedPoint(grid, x, (int)(y + 0.5f), fromX, fromY, section);
 		y = y + k;
 	}
 }
@@ -96,7 +96,8 @@ int Algorithm::ConvertToSection(int& fromX, int& toX, int& fromY, int& toY)
 	}
 
 	// Different positive and negative
-	if ((deltaX & NEG_INT_MIN) != (deltaY & NEG_INT_MIN))
+	if ((deltaX >> 31) != (deltaY >> 31))
+	    // same as: if ((deltaX & NEG_INT_MIN) != (deltaY & NEG_INT_MIN))
 	{
 		section |= (1 << 1);
 		deltaY = -deltaY;
