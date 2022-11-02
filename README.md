@@ -1,5 +1,8 @@
 ## SDU 图形学课程实验参考
 
+![LICENSE](https://img.shields.io/github/license/Criheacy/Computer-Graphics-Experiments?style=flat-square)
+![STARS](https://img.shields.io/github/stars/Criheacy/Computer-Graphics-Experiments?style=flat-square)
+
 该仓库中储存了 2020-2021 春季计算机图形学课程的实验代码。当时课程的实验要求见 [task.md](./task.md) 文档，以后学期的实验要求可能会改变，请以课程实验的具体要求为准。
 
 代码是我（@Criheacy，2019级）当时的课程实验代码（不是标准答案），在这里开源出来供大家交流学习。有代码中的 bug 欢迎指正。
